@@ -1,0 +1,131 @@
+{% extends 'layouts/base.html' %} {% load static %} 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link href="/static/assets/vendors/@coreui/chartjs/css/coreui-chartjs.css" rel="stylesheet">
+{% endblock stylesheets %}
+{% block content %}
+{% include 'alihmedia_inactive/menu.html'%}
+<div class="row">
+  <div class="col-12 col-lg-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Status data scan inaktif per bagian</h5>
+        <canvas id="chartseparate" width="400" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Status data scan inaktif Keseluruhan</h5>
+          <canvas id="chartall" width="400" height="200"></canvas>
+        </div>
+      </div>
+  
+  </div>
+</div>
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Jumlah Halaman scan perhari</h5>
+          <canvas id="chartscan" width="400" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+{% endblock %}
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  {% comment %} <script src="/static/assets/vendors/chart.js/js/chart.min.js"></script> {% endcomment %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+
+  <script src="/static/assets/vendors/@coreui/chartjs/js/coreui-chartjs.js"></script>
+  {% comment %} <script src="/static/assets/js/charts.js"></script> {% endcomment %}
+  <script>
+    // jquery function
+            var ctx = document.getElementById('chartseparate').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: {{ depnamelist|safe }}, //loop through queryset,
+                    datasets: [{
+                        label: '',
+                        data: {{ depvaluelist|safe }},
+                        backgroundColor: {{ colorlist|safe }},
+                        borderColor:{{ colorlist|safe }},
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+          });
+          var ctx = document.getElementById('chartall').getContext('2d');
+          var myChart = new Chart(ctx, {
+              type: 'doughnut',
+              data: {
+                  labels: ["Sudah Scan =" + {{ foundall }}, "Belum Scan =" + {{ notfoundall }}], //loop through queryset,
+                  datasets: [{
+                      label: '',
+                      data: [{{ procfound }}, {{ procnotfound }}],
+                      backgroundColor: {{ colorlist|safe }},
+                      borderColor:{{ colorlist|safe }},
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      y: {
+                          beginAtZero: true
+                      }
+                  },
+                  legend: {
+                      display: false
+                  }
+              }
+          });
+          var ctx = document.getElementById('chartscan').getContext('2d');
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: {{ docdate|safe }}, //loop through queryset,
+                  datasets: [{
+                      label: '',
+                      data: {{ docscan|safe }},
+                      backgroundColor: {{ doccolor|safe }},
+                      borderColor:{{ doccolor|safe }},
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  scales: {
+                      yAxes: [{
+                          id: 'A',
+                          type: 'linear',
+                          position: 'left',
+                          ticks: {
+                              max: 4000,
+                              min: 0
+                          }
+                        }]
+                  },
+                  legend: {
+                      display: false
+                  }
+              }
+          });
+
+        </script>
+  
+{% endblock javascripts %}
+

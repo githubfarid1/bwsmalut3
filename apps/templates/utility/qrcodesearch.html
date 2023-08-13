@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+{% include 'messages.html'%}
+<div class="container mt-5">
+    <div class="col-lg-6 col-md-8 col-sm-12">  
+  <h2>Lihat Isi Box Arsip</h2>
+  <form action="" method="post">
+    {% csrf_token %}
+    {{form|crispy}}
+ 
+    <button type="submit" class="btn btn-primary">Cari..</button>
+  </form>
+</div>
+</div>
+
+{% endblock %}
