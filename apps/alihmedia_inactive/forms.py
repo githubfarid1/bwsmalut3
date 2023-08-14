@@ -16,8 +16,8 @@ class DeletePdfFile(forms.Form):
         to_field_name="name",
         required=True
     )
-    box_number = forms.IntegerField() 
-    doc_number = forms.IntegerField()
+    box_number = forms.IntegerField(min_value=1) 
+    doc_number = forms.IntegerField(min_value=1)
 
 class SearchQRCodeForm(forms.Form): 
     qrcode = forms.CharField(label="QR Code", max_length = 255, help_text = "Search QR Code") 

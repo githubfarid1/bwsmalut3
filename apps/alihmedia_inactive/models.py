@@ -29,7 +29,7 @@ class Bundle(models.Model):
         related_name="bundles"
     )        
     def __str__(self) -> str:
-        return f'{self.box_number}_{self.bundle_number}'
+        return f'{self.box_number}_{self.bundle_number}_{self.title}'
 
 class Doc(models.Model):
     id = models.AutoField(primary_key=True)
@@ -42,6 +42,8 @@ class Doc(models.Model):
     page_count = models.SmallIntegerField(null=True)
     # uuid_id = models.CharField(max_length=36)
     uuid_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    def __str__(self) -> str:
+        return f'{self.doc_number}_{self.description}'
 
     bundle = models.ForeignKey(
         Bundle,
