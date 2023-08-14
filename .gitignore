@@ -33,3 +33,5 @@ apps/static/assets/.temp
 apps/media/tmpfiles/*
 apps/static/cover/*
 /gitme.sh
+/.env
+apps/core/settings.py
