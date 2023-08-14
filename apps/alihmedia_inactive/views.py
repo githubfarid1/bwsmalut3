@@ -466,7 +466,7 @@ def deletePdfFile(request):
                     os.remove(path)
                     if exists(os.path.join(settings.COVER_URL, coverfilename)):
                         os.remove(os.path.join(settings.COVER_URL, coverfilename))
-                    return redirect(f"/{__package__.split('.')[1]}/{folder}")
+                    return redirect(f"/{__package__.split('.')[1]}/{folder}#{box_number}")
                 
             return HttpResponse("File not found")
                     
