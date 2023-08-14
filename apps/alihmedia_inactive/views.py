@@ -13,8 +13,9 @@ from datetime import datetime, timedelta
 import fitz
 from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.http import JsonResponse
-from .forms import UploadFileForm, DeletePdfFile
+from .forms import UploadFileForm, DeletePdfFile, SearchQRCodeForm
 from django.core.files.storage import FileSystemStorage
+from django.views.decorators.csrf import csrf_exempt
 
 # from django_user_agents.utils import get_user_agent
 
@@ -181,7 +182,7 @@ def summarydata(data):
 def irigasi(request):
     # user_agent = get_user_agent(request)
     if not request.user.is_authenticated:
-        return redirect('front_page')
+        return redirect('login')
     funcname = __package__.split('.')[1] + "_" + sys._getframe().f_code.co_name
     data = getdata(method=request.method, parquery=request.GET.get("search"))
     summary = summarydata(data)
@@ -204,7 +205,7 @@ def irigasi(request):
 
 def air_baku(request):
     if not request.user.is_authenticated:
-        return redirect('front_page')
+        return redirect('login')
     funcname = __package__.split('.')[1] + "_" + sys._getframe().f_code.co_name
     data = getdata(method=request.method, parquery=request.GET.get("search"))
     summary = summarydata(data)
@@ -223,7 +224,7 @@ def air_baku(request):
 
 def sungai(request):
     if not request.user.is_authenticated:
-        return redirect('front_page')
+        return redirect('login')
     funcname = __package__.split('.')[1] + "_" + sys._getframe().f_code.co_name
     data = getdata(method=request.method, parquery=request.GET.get("search"))
     summary = summarydata(data)
@@ -242,7 +243,7 @@ def sungai(request):
 
 def pantai(request):
     if not request.user.is_authenticated:
-        return redirect('front_page')
+        return redirect('login')
 
     funcname = __package__.split('.')[1] + "_" + sys._getframe().f_code.co_name
     data = getdata(method=request.method, parquery=request.GET.get("search"))
@@ -262,7 +263,7 @@ def pantai(request):
 
 def keuangan(request):
     if not request.user.is_authenticated:
-        return redirect('front_page')
+        return redirect('login')
 
     funcname = __package__.split('.')[1] + "_" + sys._getframe().f_code.co_name
     data = getdata(method=request.method, parquery=request.GET.get("search"))
@@ -282,7 +283,7 @@ def keuangan(request):
 
 def pdfdownload(request, uuid_id):
     if not request.user.is_authenticated:
-        return redirect('front_page')
+        return redirect('login')
 
     doc = Doc.objects.get(uuid_id=uuid_id)
     folder = doc.bundle.department.folder
@@ -301,7 +302,7 @@ def pdfdownload(request, uuid_id):
 
 def statistics(request):
     if not request.user.is_authenticated:
-        return redirect('front_page')
+        return redirect('login')
 
     deps = Department.objects.all()
     depnamelist = []
@@ -370,54 +371,63 @@ def statistics(request):
         "doccolor": doccolor,
     }
     return render(request=request, template_name='alihmedia_inactive/statistics.html', context=context)
-
-def boxsearch(request, link, box_number):
+@csrf_exempt
+# def boxsearch(request, link, box_number):
+def boxsearch(request):
     if not request.user.is_authenticated:
-        return redirect('front_page')
-    d = Department.objects.get(link=link)
-    depname = d.name
-    docs = Doc.objects.filter(bundle__department_id__exact=d.id, bundle__box_number__exact=box_number)
-    boxdata = []
-    for ke, doc in enumerate(docs):
-        path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], d.link, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
-        pdffound = False
-        coverfilename = ""
-        if exists(path):
-            pdffound = True
-            coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], d.link, doc.bundle.box_number, doc.doc_number)
-        boxdata.append({
-            "box_number": doc.bundle.box_number,
-            "bundle_number": doc.bundle.bundle_number,
-            "doc_number": doc.doc_number,
-            "bundle_code": doc.bundle.code,
-            "bundle_title": doc.bundle.title,
-            "bundle_year": doc.bundle.year,
-            "doc_description": doc.description,
-            "doc_count": doc.doc_count,
-            "bundle_orinot": doc.bundle.orinot,
-            "row_number": ke + 1,
-            "pdffound": pdffound,
-            "doc_id": doc.id,
-            "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
-            "filesize": doc.filesize,
-            "pagecount": doc.page_count,
-        })
+        return redirect('login')
+    if request.method == 'POST':
+        qrcode = request.POST.get("qrcode")
+        strlist = qrcode.strip().split('/')
+        try:
+            folder = strlist[3]
+            box_number = strlist[4]
+        except:
+            return HttpResponse("QRcode Error")
+        # return HttpResponse(folder + box)
+        d = Department.objects.get(folder=folder)
+        depname = d.name
+        docs = Doc.objects.filter(bundle__department_id__exact=d.id, bundle__box_number__exact=box_number)
+        boxdata = []
+        for ke, doc in enumerate(docs):
+            path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
+            pdffound = False
+            coverfilename = ""
+            if exists(path):
+                pdffound = True
+                coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
+            boxdata.append({
+                "box_number": doc.bundle.box_number,
+                "bundle_number": doc.bundle.bundle_number,
+                "doc_number": doc.doc_number,
+                "bundle_code": doc.bundle.code,
+                "bundle_title": doc.bundle.title,
+                "bundle_year": doc.bundle.year,
+                "doc_description": doc.description,
+                "doc_count": doc.doc_count,
+                "bundle_orinot": doc.bundle.orinot,
+                "row_number": ke + 1,
+                "pdffound": pdffound,
+                "doc_id": doc.id,
+                "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
+                "filesize": doc.filesize,
+                "pagecount": doc.page_count,
+                "doc_uuid_id": doc.uuid_id,
+            })
 
-    # return HttpResponse(docs[2].bundle.title)
-    context = {'data':boxdata, 'depname':depname, 'box_number': box_number, "link": link}
-    return render(request=request, template_name='alihmedia_inactive/boxsearch2.html', context=context)
-
-def single_upload(request):
-    filename = request.FILES.get("filepath")
-    docid = request.POST["doc_id"]
-    # print(filename)
-    # Doc.objects.create(file=file)
-    return JsonResponse({"message": f"Success {filename}-{docid}"})
-
+        # return HttpResponse(docs[2].bundle.title)
+        # context['form'] = SearchQRCodeForm()
+        context = {'data':boxdata, 'depname':depname, 'box_number': box_number, "folder": folder, 'form': SearchQRCodeForm()}
+        return render(request=request, template_name='alihmedia_inactive/boxsearch2.html', context=context)
+        # pass
+    context = {}
+    context['form'] = SearchQRCodeForm()
+    # context['url'] = url
+    return render(request, 'alihmedia_inactive/boxsearch2.html', context=context)
 
 def pdfupload(request, uuid_id):
     if not request.user.is_authenticated:
-        return redirect('front_page')
+        return redirect('login')
     if request.method == 'POST' and request.FILES['filepath']:
         upload = request.FILES['filepath']
         fss = FileSystemStorage()
@@ -440,7 +450,7 @@ def pdfupload(request, uuid_id):
 
 def deletePdfFile(request):
     if not request.user.is_authenticated:
-        return redirect('front_page')
+        return redirect('login')
     if request.method == 'POST':
         form = DeletePdfFile(request.POST or None)
         if form.is_valid():

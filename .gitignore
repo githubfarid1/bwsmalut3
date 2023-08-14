@@ -30,6 +30,6 @@ apps/static/assets/yarn.lock
 apps/static/assets/.temp
 
 /bwsmalut3-venv
-/apps/media/tmpfiles/*
-/apps/static/cover/*
-
+apps/media/tmpfiles/*
+apps/static/cover/*
+/gitme.sh

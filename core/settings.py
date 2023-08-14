@@ -5,6 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 import os, environ
 from pathlib import Path
+from datetime import timedelta
 
 env = environ.Env(
     # set casting, default value
@@ -44,7 +45,7 @@ INSTALLED_APPS = [
     'apps.alihmedia_inactive',
     'django_extensions',
     'crispy_forms',
-    'apps.utility',
+    # 'apps.utility',
 
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -57,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_auto_logout.middleware.auto_logout', # auto logout
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -76,6 +78,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'apps.context_processors.cfg_assets_root',
+                'django_auto_logout.context_processors.auto_logout_client', # auto logout
+
             ],
         },
     },
@@ -151,6 +155,13 @@ STATICFILES_DIRS = (
 
 #############################################################
 #############################################################
+# auto logout
+AUTO_LOGOUT = {
+    'IDLE_TIME': timedelta(minutes=1),
+    # 'SESSION_TIME': timedelta(minutes=60),
+    'MESSAGE': 'The session has expired. Please login again to continue.',
+    'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
+}
 
 PDF_LOCATION = "/home/farid/pdfs/"
 COVER_LOCATION = os.path.join(BASE_DIR, "static", "cover")

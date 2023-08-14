@@ -10,7 +10,8 @@ urlpatterns = [
     path(route='keuangan', view=keuangan, name=prefix + "keuangan"),
     path(route='pdfdownload/<str:uuid_id>', view=pdfdownload, name=prefix + 'pdfdownload'),
     path(route='', view=statistics, name=prefix + "statistics"),
-    path(route='boxsearch/<str:link>/<str:box_number>', view=boxsearch, name=prefix + 'boxsearch'),
+    # path(route='boxsearch/<str:link>/<str:box_number>', view=boxsearch, name=prefix + 'boxsearch'),
+    path(route='boxsearch', view=boxsearch, name=prefix + 'boxsearch'),
     path(route='pdfupload/<str:uuid_id>', view=pdfupload, name=prefix + 'pdfupload'),
     path(route='deletepdf', view=deletePdfFile, name=prefix + 'deletepdf'),
 
