@@ -7,7 +7,30 @@ Copyright (c) 2019 - present AppSeed.us
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, SignUpForm
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import login,  logout, authenticate, update_session_auth_hash
+from django.contrib import messages
 
+
+def updatePasswordRequest(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            messages.info(request, 'Ubah Password sukses, Silahkan login lagi!!')
+            logout(request)
+            return redirect('login')
+        else:
+            messages.info(request, 'Berikan password yang benar sesuai format..!!')
+            return redirect('update_password')
+    else:
+        form = PasswordChangeForm(user=request.user)
+        
+    context = {'form' : form}
+    return render(request, 'accounts/update_password.html', context)
 
 def login_view(request):
     form = LoginForm(request.POST or None)
@@ -24,6 +47,7 @@ def login_view(request):
                 login(request, user)
                 return redirect("/")
             else:
+                messages.info(request, 'Invalid credentials')
                 msg = 'Invalid credentials'
         else:
             msg = 'Error validating the form'
