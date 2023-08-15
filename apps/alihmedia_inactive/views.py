@@ -396,7 +396,12 @@ def boxsearch(request):
             folder = strlist[3]
             box_number = strlist[4]
         except:
-            return HttpResponse("QRcode Error")
+            messages.info(request, "Data tidak ditemukan")
+            context = {}
+            context['form'] = SearchQRCodeForm()
+            return render(request, 'alihmedia_inactive/boxsearch2.html', context=context)
+            # return HttpResponse("QRcode Error")
+        
         # return HttpResponse(folder + box)
         d = Department.objects.get(folder=folder)
         depname = d.name
@@ -487,7 +492,7 @@ def deletePdfFile(request):
                         os.remove(os.path.join(settings.COVER_URL, coverfilename))
                     return redirect(f"/{__package__.split('.')[1]}/{folder}#{box_number}")
                 
-            return HttpResponse("File not found")
+            messages.info(request, 'Data tidak ditemukan')
                     
 
     context = {}
