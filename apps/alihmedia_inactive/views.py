@@ -13,26 +13,63 @@ from datetime import datetime, timedelta
 import fitz
 from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.http import JsonResponse
-from .forms import UploadFileForm, DeletePdfFile, SearchQRCodeForm
+from .forms import UploadFileForm, DeletePdfFile, SearchQRCodeForm, ListDocByBox
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import Group
 
 # from django_user_agents.utils import get_user_agent
 
 def getmenu():
     return Department.objects.all()
+def getdatabybox(box_number, link):
+    d = Department.objects.get(link=link)
+    depname = d.name
+    folder = d.folder
+    docs = Doc.objects.filter(bundle__department_id__exact=d.id, bundle__box_number__exact=box_number)
+    # return HttpResponse(docs)
+    boxdata = []
+    for ke, doc in enumerate(docs):
+        path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
+        pdffound = False
+        coverfilename = ""
+        if exists(path):
+            pdffound = True
+            coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
+        filetmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", f"{__package__.split('.')[1]}-{doc.id}.pdf")
+        pdftmpfound = False
+        if exists(filetmppath):
+            pdftmpfound = True
+        
+        boxdata.append({
+            "box_number": doc.bundle.box_number,
+            "bundle_number": doc.bundle.bundle_number,
+            "doc_number": doc.doc_number,
+            "bundle_code": doc.bundle.code,
+            "bundle_title": doc.bundle.title,
+            "bundle_year": doc.bundle.year,
+            "doc_description": doc.description,
+            "doc_count": doc.doc_count,
+            "bundle_orinot": doc.bundle.orinot,
+            "row_number": ke + 1,
+            "pdffound": pdffound,
+            "doc_id": doc.id,
+            "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
+            "filesize": doc.filesize,
+            "pagecount": doc.page_count,
+            "doc_uuid_id": doc.uuid_id,
+            "pdftmpfound": pdftmpfound,
+        })
+    return (boxdata, depname, folder)
+    
 
-def getdata(method, parquery):
+def getdata(method, parquery, link):
     query = ""
     if method == "GET":
         query = parquery
 
     isfirst = True
     boxlist = []
-    #get caller function name
-    curframe = inspect.currentframe()
-    calframe = inspect.getouterframes(curframe, 2)
-    link = "alihmedia_inactive_" + calframe[1][3]
     d = Department.objects.get(link=link)
     if query == None or query == '':
         docs = Doc.objects.filter(bundle__department_id__exact=d.id)
@@ -157,7 +194,6 @@ def getdata(method, parquery):
         boxlist[rowbundle]['bundlespan'] = bundlespan
 
     return boxlist
-
 def summarydata(data):
     sumscan = 0
     listyear = []
@@ -177,110 +213,89 @@ def summarydata(data):
         percent = 0
 
     return (len(data), sumscan, sumnotscan, percent, unyearstr )
-
 # @permission_required('apps_alihmedia_inactive.irigasi')
+
+class GenerateScriptView:
+    def __init__(self, funcname, request) -> None:
+        self.__funcname = funcname
+        self.__request = request
+
+    def gencontext(self):
+        test_group = Group.objects.get(name='arsip')
+        if test_group in self.__request.user.groups.all():
+            self.__template_name = "alihmedia_inactive/arsip_view.html"
+            data = getdata(method=self.__request.method, parquery=self.__request.GET.get("search"), link=self.__funcname)
+            summary = summarydata(data)
+            self.__context = {
+                "data": data,
+                "link": self.__funcname,
+                "totscan": summary[1],
+                "totnotscan": summary[2],
+                "totdata": summary[0],
+                "percent": f"{summary[3]:.3f}",
+                "years": summary[4],
+                "menu": getmenu(),
+                "appname":__package__.split('.')[1],
+            }
+        else:
+            self.__template_name = "alihmedia_inactive/nonarsip_view.html"
+            if self.__request.method == 'POST':
+                form = ListDocByBox(self.__request.POST or None)
+                if form.is_valid():
+                    box_number = form.cleaned_data['box_number']
+                    data = getdatabybox(box_number, self.__funcname)
+                    boxdata = data[0]
+                    depname = data[1]                
+                    folder = data[2]
+                    # return HttpResponse(next)    
+                    self.__context = {'data':boxdata, 'depname':depname, 'box_number': box_number, "folder": folder, 'form': ListDocByBox(),"menu": getmenu(), "appname":__package__.split('.')[1], "link": self.__funcname}
+            else:        
+                self.__context = {'form':ListDocByBox(), 'menu': getmenu(), 'appname': __package__.split('.')[1], 'link': self.__funcname}
+
+    @property
+    def context(self):
+        return self.__context
+    @property
+    def template_name(self):
+        return self.__template_name
+
 def irigasi(request):
-    # user_agent = get_user_agent(request)
     if not request.user.is_authenticated:
         return redirect('login')
-    funcname = __package__.split('.')[1] + "_" + sys._getframe().f_code.co_name
-    data = getdata(method=request.method, parquery=request.GET.get("search"))
-    summary = summarydata(data)
-    context = {
-        "data": data,
-        "link": funcname,
-        "totscan": summary[1],
-        "totnotscan": summary[2],
-        "totdata": summary[0],
-        "percent": f"{summary[3]:.3f}",
-        "years": summary[4],
-        "menu": getmenu(),
-        "appname":__package__.split('.')[1],
-    }
-    return render(request=request, template_name='alihmedia_inactive/irigasi2.html', context=context)
-    # if user_agent.is_mobile:
-    #     return render(request=request, template_name='alihmedia_inactive/irigasi.html', context=context)
-    # else:
-    #     return render(request=request, template_name='alihmedia_inactive/irigasi.html', context=context)
+    data = GenerateScriptView(__package__.split('.')[1] + "_" + sys._getframe().f_code.co_name, request)
+    data.gencontext()
+    return render(request=request, template_name=data.template_name, context=data.context)
 
 def air_baku(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    funcname = __package__.split('.')[1] + "_" + sys._getframe().f_code.co_name
-    data = getdata(method=request.method, parquery=request.GET.get("search"))
-    summary = summarydata(data)
-    context = {
-        "data": data,
-        "link": funcname,
-        "totscan": summary[1],
-        "totnotscan": summary[2],
-        "totdata": summary[0],
-        "percent": f"{summary[3]:.3f}",
-        "years": summary[4],
-        "menu": getmenu(),
-        "appname":__package__.split('.')[1],
-    }
-    return render(request=request, template_name='alihmedia_inactive/irigasi2.html', context=context)
+    data = GenerateScriptView(__package__.split('.')[1] + "_" + sys._getframe().f_code.co_name, request)
+    data.gencontext()
+    return render(request=request, template_name=data.template_name, context=data.context)
+
 
 def sungai(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    funcname = __package__.split('.')[1] + "_" + sys._getframe().f_code.co_name
-    data = getdata(method=request.method, parquery=request.GET.get("search"))
-    summary = summarydata(data)
-    context = {
-        "data": data,
-        "link": funcname,
-        "totscan": summary[1],
-        "totnotscan": summary[2],
-        "totdata": summary[0],
-        "percent": f"{summary[3]:.3f}",
-        "years": summary[4],
-        "menu": getmenu(),
-        "appname":__package__.split('.')[1],
-    }
-    return render(request=request, template_name='alihmedia_inactive/irigasi2.html', context=context)
+    data = GenerateScriptView(__package__.split('.')[1] + "_" + sys._getframe().f_code.co_name, request)
+    data.gencontext()
+    return render(request=request, template_name=data.template_name, context=data.context)
 
 def pantai(request):
     if not request.user.is_authenticated:
         return redirect('login')
-
-    funcname = __package__.split('.')[1] + "_" + sys._getframe().f_code.co_name
-    data = getdata(method=request.method, parquery=request.GET.get("search"))
-    summary = summarydata(data)
-    context = {
-        "data": data,
-        "link": funcname,
-        "totscan": summary[1],
-        "totnotscan": summary[2],
-        "totdata": summary[0],
-        "percent": f"{summary[3]:.3f}",
-        "years": summary[4],
-        "menu": getmenu(),
-        "appname":__package__.split('.')[1],
-    }
-    return render(request=request, template_name='alihmedia_inactive/irigasi2.html', context=context)
+    data = GenerateScriptView(__package__.split('.')[1] + "_" + sys._getframe().f_code.co_name, request)
+    data.gencontext()
+    return render(request=request, template_name=data.template_name, context=data.context)
 
 def keuangan(request):
     if not request.user.is_authenticated:
         return redirect('login')
+    data = GenerateScriptView(__package__.split('.')[1] + "_" + sys._getframe().f_code.co_name, request)
+    data.gencontext()
+    return render(request=request, template_name=data.template_name, context=data.context)
 
-    funcname = __package__.split('.')[1] + "_" + sys._getframe().f_code.co_name
-    data = getdata(method=request.method, parquery=request.GET.get("search"))
-    summary = summarydata(data)
-    context = {
-        "data": data,
-        "link": funcname,
-        "totscan": summary[1],
-        "totnotscan": summary[2],
-        "totdata": summary[0],
-        "percent": f"{summary[3]:.3f}",
-        "years": summary[4],
-        "menu": getmenu(),
-        "appname":__package__.split('.')[1],
-    }
-    return render(request=request, template_name='alihmedia_inactive/irigasi2.html', context=context)
-
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())
 def pdfdownload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -372,7 +387,6 @@ def statistics(request):
     }
     return render(request=request, template_name='alihmedia_inactive/statistics.html', context=context)
 @csrf_exempt
-# def boxsearch(request, link, box_number):
 def boxsearch(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -441,13 +455,17 @@ def pdfupload(request, uuid_id):
         if exists(filepath):
             os.remove(filepath)
         fss.save(filepath, upload)
+        # next = request.POST.get('next', '/')
         return redirect(f"/{__package__.split('.')[1]}/{folder}#{box_number}")
+        # return redirect(f"/{next}#{box_number}")
+
 
     context = {}
     context['form'] = UploadFileForm(initial={'uuid_id': uuid_id})
     # context['url'] = url
     return render(request,'alihmedia_inactive/pdfupload.html', context=context)
 
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())
 def deletePdfFile(request):
     if not request.user.is_authenticated:
         return redirect('login')

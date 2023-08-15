@@ -1,8 +1,11 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
+{% extends "layouts/base.html" %} {% load static %}
+{% block title %} | Data Inaktif {% endblock %}
+
+{% block content %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 {% include 'alihmedia_inactive/menu.html'%}
 <div class="container">
-  {% include 'messages.html'%}
+  {% comment %} {% include 'messages.html'%} {% endcomment %}
   <h3>Monitoring Alih Media Data Inaktif</h3>
   <div class="summary">
     <form action="{% url link %}" class="row g-3" style="float: right">
@@ -79,7 +82,7 @@
         <td>
           <div class="card border-info">
             <div class="card-header text-info"><small>{{ d.filesize }} kb / {{ d.pagecount }} pages</small>
-              <div style="float: right;"><a href="{% url 'pdfdownload' link d.doc_id %}" target="_new" class="btn btn-success btn-sm">
+              <div style="float: right;"><a href="#" target="_new" class="btn btn-success btn-sm">
                 <i class="bi-download"></i>
               </a>
               <a href="{% static d.coverfilepath %}" target="_new" class="btn btn-info btn-sm">

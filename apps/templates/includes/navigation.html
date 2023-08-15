@@ -6,7 +6,8 @@
             <svg class="icon icon-lg">
               <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-menu"></use>
             </svg>&nbsp;&nbsp;<strong>BWS Maluku Utara</strong>
-          </button><a class="header-brand d-md-none" href="#">
+          </button>
+          <a class="header-brand d-md-none" href="#"></a>
             {% comment %} <svg width="118" height="46" alt="BWS Maluku Utara">
               <use xlink:href="/static/assets/brand/coreui.svg#full"></use>
             </svg></a> {% endcomment %}
@@ -30,8 +31,10 @@
                   <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-envelope-open"></use>
                 </svg></a></li>
           </ul> {% endcomment %}
+          
           <ul class="header-nav ms-3">
-            <li class="nav-item dropdown"><a class="nav-link py-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown" style="text-align: center;">{{ request.user.username }}
+              <a class="nav-link py-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                 <div class="avatar avatar-md"><img class="avatar-img" src="/static/assets/img/avatars/2.jpg" alt="user@email.com"></div>
               </a>
               <div class="dropdown-menu dropdown-menu-end pt-0">

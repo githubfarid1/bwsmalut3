@@ -21,3 +21,6 @@ class DeletePdfFile(forms.Form):
 
 class SearchQRCodeForm(forms.Form): 
     qrcode = forms.CharField(label="QR Code", max_length = 255, help_text = "Search QR Code") 
+
+class ListDocByBox(forms.Form):
+    box_number = forms.IntegerField(min_value=1) 

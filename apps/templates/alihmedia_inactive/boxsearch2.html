@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
 
     <div class="col-lg-4 col-md-8 col-sm-12">  
-  <h3>Scan Isi Box Arsip</h3>
+  <h3>Scan Isi Box Arsip Inaktif</h3>
   <form action="{% url 'alihmedia_inactive_boxsearch' %}" method="post">
     {% csrf_token %}
     {{form|crispy}}
@@ -22,15 +22,18 @@
 
 <div class="row">
     {% for d in data %}
-    <div class="col-12 col-lg-4 mt-3">
+    <div class="col-12 col-lg-3 mt-3">
         {% if d.pdffound %}
         <div class="card">
             <div class="row no-gutters">
+                
                 <div class="col-sm-5 mt-3">
+                    <div class="card-body">
                     <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
                 </div>
+                </div>
                 <div class="col-sm-7 mt-3 text-center">
-                        <p><small>No. Berkas: {{d.bundle_number}}<br>No. Urut: {{d.doc_number}}<br>Tahun: {{d.bundle_year}}<br>Ukuran File: {{d.filesize}} kb<br>Jml Halaman: {{d.pagecount}}<br>
+                        <p><small>No. Berkas: {{d.bundle_number}}<br>No. Urut: {{d.doc_number}}<br>Tahun: {{d.bundle_year}}<br>Ukuran: {{d.filesize}} kb<br>Jml Hlmn: {{d.pagecount}}<br>
                         </small> </p>
                 </div>
                 <div class="col-sm-12">
