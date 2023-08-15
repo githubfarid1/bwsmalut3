@@ -35,3 +35,4 @@ apps/static/assets/.temp
 /gitme.sh
 /.env
 /core/settings.py
+/media/tmpfiles/*
