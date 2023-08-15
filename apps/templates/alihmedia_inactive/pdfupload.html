@@ -4,18 +4,36 @@
 
 <div class="container mt-5">
   <div class="row  justify-content-center">
+    <div class="col-lg-4 col-md-6 col-sm-12 border">  
+      <h2 class="text-center">Upload PDF</h2>
+      <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form|crispy}}
+        {% comment %} <input type="hidden" name="next" value="{{ request.path }}"> {% endcomment %}
+        <button type="submit" class="btn btn-primary mt-2">Submit..</button>
+      </form>
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-12 border">
+      <div class="card bg-secondary">
+        <div class="row no-gutters">
+            <div class="col-sm-12">
+                <div class="card-body">
+                    <h5 class="card-title text-center"><em>{{ data.bundle.department.name|title }}</em></h5>
+                    <h5 class="card-title">{{data.description}}</h5>
+                    <p class="card-text"><small>{{data.bundle.title}}
+                      <br>No. Box: {{data.bundle.box_number}}<br>No. Berkas: {{data.bundle.bundle_number}}<br>No. Urut: {{data.doc_number}}<br>Tahun: {{data.bundle.year}}
+                    </small> </p>
+                </div>
+            </div>
+        </div>
+      </div>
 
-  
-    <div class="col-lg-3 col-md-8 col-sm-12">  
-  <h2>{{"UPLOAD FILE"|title}} PDF</h2>
-  <form action="" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{form|crispy}}
-    {% comment %} <input type="hidden" name="next" value="{{ request.path }}"> {% endcomment %}
-    <button type="submit" class="btn btn-primary mt-2">Submit..</button>
-  </form>
-</div>
-</div>
+    </div>
+
+
+
+    </div>  
+  </div>
 </div>
 
 {% endblock %}

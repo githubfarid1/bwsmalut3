@@ -80,7 +80,6 @@ def getdata(method, parquery, link):
     curbundle_number = ""
     # mlink = d.link.replace(__package__.split('.')[1] + "_", "")    
     for ke, doc in enumerate(docs):
-        
         path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], d.folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
         pdffound = False
         filesize = 0
@@ -442,26 +441,28 @@ def boxsearch(request):
 def pdfupload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
+    doc = Doc.objects.get(uuid_id=uuid_id)
     if request.method == 'POST' and request.FILES['filepath']:
         upload = request.FILES['filepath']
         fss = FileSystemStorage()
-        doc = Doc.objects.get(uuid_id=uuid_id)
         folder = doc.bundle.department.folder
         doc_id = doc.id
         box_number = doc.bundle.box_number
         # doc_number = doc.doc_number
-        
-        filepath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", f"{__package__.split('.')[1]}-{doc_id}.pdf")
-        if exists(filepath):
-            os.remove(filepath)
-        fss.save(filepath, upload)
-        # next = request.POST.get('next', '/')
+        pdfpath = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
+        if not exists(pdfpath):
+            tmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", f"{__package__.split('.')[1]}-{doc_id}.pdf")
+            if exists(tmppath):
+                os.remove(tmppath)
+            fss.save(tmppath, upload)
         return redirect(f"/{__package__.split('.')[1]}/{folder}#{box_number}")
-        # return redirect(f"/{next}#{box_number}")
 
 
     context = {}
     context['form'] = UploadFileForm(initial={'uuid_id': uuid_id})
+    context['data'] = doc
+    
+
     # context['url'] = url
     return render(request,'alihmedia_inactive/pdfupload.html', context=context)
 
