@@ -2,7 +2,7 @@
 {% block title %} | Statistik Data Inaktif {% endblock %}
 {% block stylesheets %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-    <link href="/static/assets/vendors/@coreui/chartjs/css/coreui-chartjs.css" rel="stylesheet">
+    <link href="{% static 'assets/vendors/coreui/chartjs/css/coreui-chartjs.css' %}" rel="stylesheet">
 {% endblock stylesheets %}
 {% block content %}
 <div class="container-fluid">
@@ -53,7 +53,7 @@
   {% comment %} <script src="/static/assets/vendors/chart.js/js/chart.min.js"></script> {% endcomment %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
 
-  <script src="/static/assets/vendors/@coreui/chartjs/js/coreui-chartjs.js"></script>
+  <script src="{% static 'assets/vendors/coreui/chartjs/js/coreui-chartjs.js' %}"></script>
   {% comment %} <script src="/static/assets/js/charts.js"></script> {% endcomment %}
   <script>
     // jquery function
