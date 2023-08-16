@@ -85,7 +85,9 @@
                 <div class="row no-gutters">
                     <div class="col-sm-5 mt-3">
                         <div class="card-body">
-                        <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
+                        {% if d.pdftmpfound %}
+                            <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
+                        {% endif %}
                     </div>
                     </div>
                     <div class="col-sm-7 mt-3 text-center">
