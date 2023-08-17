@@ -17,6 +17,7 @@ from .forms import UploadFileForm, DeletePdfFile, SearchQRCodeForm, ListDocByBox
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import Group
+import time
 
 # from django_user_agents.utils import get_user_agent
 
@@ -442,29 +443,33 @@ def boxsearch(request):
     context['form'] = SearchQRCodeForm()
     # context['url'] = url
     return render(request, 'alihmedia_inactive/boxsearch2.html', context=context)
-
 def pdfupload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
     doc = Doc.objects.get(uuid_id=uuid_id)
-    if request.method == 'POST' and request.FILES['filepath']:
+    folder = doc.bundle.department.folder
+    doc_id = doc.id
+    pdfpath = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
+    tmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", f"{__package__.split('.')[1]}-{doc_id}.pdf")
+    if exists(pdfpath):
+        messages.info(request, "File sudah ada")
+        return redirect(f"/{__package__.split('.')[1]}/{folder}#{str(doc.bundle.box_number)}")
+
+
+    if request.method == 'POST' and request.FILES['filepath'] and not exists(pdfpath):
         upload = request.FILES['filepath']
         fss = FileSystemStorage()
-        folder = doc.bundle.department.folder
-        doc_id = doc.id
-        box_number = doc.bundle.box_number
-        # doc_number = doc.doc_number
-        pdfpath = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
-        if not exists(pdfpath):
-            tmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", f"{__package__.split('.')[1]}-{doc_id}.pdf")
-            if exists(tmppath):
-                os.remove(tmppath)
-            fss.save(tmppath, upload)
-        return redirect(f"/{__package__.split('.')[1]}/{folder}#{box_number}")
+        if exists(tmppath):
+            os.remove(tmppath)
+        fss.save(tmppath, upload)
+        messages.info(request, "File berhasil diupload, akan segera diproses")
+        # time.sleep(2)
+        # return redirect(f"/{__package__.split('.')[1]}/{folder}#{doc.bundle.box_number}")
 
 
     context = {}
     context['form'] = UploadFileForm(initial={'uuid_id': uuid_id})
+    context['isexist'] = exists(tmppath)
     context['data'] = doc
     
 
@@ -488,8 +493,9 @@ def deletePdfFile(request):
                 if exists(path):
                     coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, box_number, doc_number)
                     os.remove(path)
-                    if exists(os.path.join(settings.COVER_URL, coverfilename)):
-                        os.remove(os.path.join(settings.COVER_URL, coverfilename))
+                    if exists(os.path.join(settings.COVER_LOCATION, coverfilename)):
+                        os.remove(os.path.join(settings.COVER_LOCATION, coverfilename))
+                    messages.info(request, "Berhasil dihapus")
                     return redirect(f"/{__package__.split('.')[1]}/{folder}#{box_number}")
                 
             messages.info(request, 'Data tidak ditemukan')
