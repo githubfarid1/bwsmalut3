@@ -266,6 +266,7 @@ def irigasi(request):
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
 
+@csrf_exempt
 def air_baku(request):
     if not request.user.is_authenticated:
         return redirect('login')
