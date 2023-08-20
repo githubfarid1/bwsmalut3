@@ -13,7 +13,7 @@
             </svg> Data Inaktif</a>
           <ul class="nav-group-items">
             <li class="nav-item"><a class="nav-link" href="{% url 'alihmedia_inactive_statistics' %}"><span class="nav-icon"></span> Daftar Berkas</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'alihmedia_inactive_deletepdf' %}"><span class="nav-icon"></span> Hapus Berkas PDF</a></li>
+            {% comment %} <li class="nav-item"><a class="nav-link" href="{% url 'alihmedia_inactive_deletepdf' %}"><span class="nav-icon"></span> Hapus Berkas PDF</a></li> {% endcomment %}
             <li class="nav-item"><a class="nav-link" href="{% url 'alihmedia_inactive_boxsearch' %}"><span class="nav-icon"></span> Scan Dokumen QR Code</a></li>
           </ul>
         </li>

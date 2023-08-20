@@ -24,3 +24,6 @@ class SearchQRCodeForm(forms.Form):
 
 class ListDocByBox(forms.Form):
     box_number = forms.IntegerField(min_value=1) 
+
+class DeleteDoc(forms.Form):
+    box_number = forms.IntegerField(min_value=1) 

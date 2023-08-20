@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 import fitz
 from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.http import JsonResponse
-from .forms import UploadFileForm, DeletePdfFile, SearchQRCodeForm, ListDocByBox
+from .forms import UploadFileForm, DeletePdfFile, SearchQRCodeForm, ListDocByBox, DeleteDoc
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import Group
@@ -466,41 +466,47 @@ def pdfupload(request, uuid_id):
         # time.sleep(2)
         # return redirect(f"/{__package__.split('.')[1]}/{folder}#{doc.bundle.box_number}")
 
-
     context = {}
     context['form'] = UploadFileForm(initial={'uuid_id': uuid_id})
     context['isexist'] = exists(tmppath)
     context['data'] = doc
-    
 
     # context['url'] = url
     return render(request,'alihmedia_inactive/pdfupload.html', context=context)
 
+    
 @user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())
-def deletePdfFile(request):
+def pdfremove(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
+    doc = Doc.objects.get(uuid_id=uuid_id)
+    folder = doc.bundle.department.folder
+    doc_id = doc.id
+    pdfpath = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
+    if not exists(pdfpath):
+        messages.info(request, "File tidak ada")
+        return redirect(f"/{__package__.split('.')[1]}/{folder}#{str(doc.bundle.box_number)}")
+    coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
     if request.method == 'POST':
-        form = DeletePdfFile(request.POST or None)
-        if form.is_valid():
-            depname = form.cleaned_data['listdepartment']
-            box_number = form.cleaned_data['box_number']
-            doc_number = form.cleaned_data['doc_number']
-            doc = Doc.objects.filter(bundle__box_number__exact=box_number, doc_number__exact=doc_number, bundle__department__name__exact=depname).first()
-            if doc is not None:
-                folder = doc.bundle.department.folder
-                path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(box_number), str(doc_number) + ".pdf")
-                if exists(path):
-                    coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, box_number, doc_number)
-                    os.remove(path)
-                    if exists(os.path.join(settings.COVER_LOCATION, coverfilename)):
-                        os.remove(os.path.join(settings.COVER_LOCATION, coverfilename))
-                    messages.info(request, "Berhasil dihapus")
-                    return redirect(f"/{__package__.split('.')[1]}/{folder}#{box_number}")
-                
-            messages.info(request, 'Data tidak ditemukan')
-                    
-
+        if exists(pdfpath):
+            ts = str(time.time())
+            pdfrename = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + "_" + ts + ".pdf")
+            os.rename(pdfpath, pdfrename)
+            coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
+            if exists(os.path.join(settings.COVER_LOCATION, coverfilename)):
+                os.remove(os.path.join(settings.COVER_LOCATION, coverfilename))
+            tmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", f"{__package__.split('.')[1]}-{doc_id}.pdf")
+            if exists(tmppath):
+                os.remove(tmppath)
+            messages.info(request, "Berhasil dihapus")
+            return redirect(f"/{__package__.split('.')[1]}/{folder}#{doc.bundle.box_number}")
+        else:
+            messages.info(request, "File tidak ada")
     context = {}
-    context['form'] = DeletePdfFile()
-    return render(request,'alihmedia_inactive/delete_pdf.html', context=context)    
+    context['uuid_id'] = uuid_id
+    context['isexist'] = exists(pdfpath)
+    context['data'] = doc
+    context["coverfilepath"] =  os.path.join(settings.COVER_URL, coverfilename)
+
+    # context['url'] = url
+    return render(request,'alihmedia_inactive/pdfremove.html', context=context)
