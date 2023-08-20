@@ -63,7 +63,6 @@ def getdatabybox(box_number, link):
         })
     return (boxdata, depname, folder)
     
-
 def getdata(method, parquery, link):
     query = ""
     if method == "GET":
@@ -469,7 +468,7 @@ def pdfupload(request, uuid_id):
         fss.save(tmppath, upload)
         messages.info(request, "File berhasil diupload, akan segera diproses")
         # time.sleep(2)
-        # return redirect(f"/{__package__.split('.')[1]}/{folder}#{doc.bundle.box_number}")
+        return redirect(f"/{__package__.split('.')[1]}/{folder}")
 
     context = {}
     context['form'] = UploadFileForm(initial={'uuid_id': uuid_id})
@@ -495,7 +494,7 @@ def pdfremove(request, uuid_id):
     if request.method == 'POST':
         if exists(pdfpath):
             ts = str(time.time())
-            pdfrename = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + "_" + ts + ".pdf")
+            pdfrename = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf." + str(ts))
             os.rename(pdfpath, pdfrename)
             coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
             if exists(os.path.join(settings.COVER_LOCATION, coverfilename)):
@@ -503,6 +502,9 @@ def pdfremove(request, uuid_id):
             tmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", f"{__package__.split('.')[1]}-{doc_id}.pdf")
             if exists(tmppath):
                 os.remove(tmppath)
+            doc.filesize = None
+            doc.page_count = None
+            doc.save()     
             messages.info(request, "Berhasil dihapus")
             return redirect(f"/{__package__.split('.')[1]}/{folder}#{doc.bundle.box_number}")
         else:
