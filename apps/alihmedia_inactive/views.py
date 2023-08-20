@@ -259,6 +259,7 @@ class GenerateScriptView:
     def template_name(self):
         return self.__template_name
 
+@csrf_exempt
 def irigasi(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -275,6 +276,7 @@ def air_baku(request):
     return render(request=request, template_name=data.template_name, context=data.context)
 
 
+@csrf_exempt
 def sungai(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -282,6 +284,7 @@ def sungai(request):
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
 
+@csrf_exempt
 def pantai(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -289,6 +292,7 @@ def pantai(request):
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
 
+@csrf_exempt
 def keuangan(request):
     if not request.user.is_authenticated:
         return redirect('login')
