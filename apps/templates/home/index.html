@@ -1,11 +1,11 @@
 {% extends "layouts/base.html" %}
-
+{% load static %}
 {% block title %} Dashboard {% endblock %} 
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
     
-    <link href="/static/assets/vendors/coreui/chartjs/css/coreui-chartjs.css" rel="stylesheet">
+    <link href="{% static 'assets/vendors/coreui/chartjs/css/coreui-chartjs.css' %}" rel="stylesheet">
 
 {% endblock stylesheets %}
 
