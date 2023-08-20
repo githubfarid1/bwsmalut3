@@ -10,6 +10,7 @@ from .forms import LoginForm, SignUpForm
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import login,  logout, authenticate, update_session_auth_hash
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
 
 
 def updatePasswordRequest(request):
@@ -32,6 +33,7 @@ def updatePasswordRequest(request):
     context = {'form' : form}
     return render(request, 'accounts/update_password.html', context)
 
+@csrf_exempt
 def login_view(request):
     form = LoginForm(request.POST or None)
 
