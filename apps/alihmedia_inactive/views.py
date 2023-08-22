@@ -468,7 +468,7 @@ def pdfupload(request, uuid_id):
         fss.save(tmppath, upload)
         messages.info(request, "File berhasil diupload, akan segera diproses")
         # time.sleep(2)
-        return redirect(f"/{__package__.split('.')[1]}/{folder}")
+        return redirect(f"/{__package__.split('.')[1]}/{folder}#{str(doc.bundle.box_number)}")
 
     context = {}
     context['form'] = UploadFileForm(initial={'uuid_id': uuid_id})
