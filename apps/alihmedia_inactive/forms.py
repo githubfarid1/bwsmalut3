@@ -29,4 +29,10 @@ class DeleteDoc(forms.Form):
     box_number = forms.IntegerField(min_value=1) 
 
 class SearchDoc(forms.Form):
+    folder = forms.ModelChoiceField(
+        queryset=Department.objects.all(),
+        widget=forms.Select(),
+        to_field_name="folder",
+        required=True, label="Kelompok"
+    )
     search = forms.CharField()

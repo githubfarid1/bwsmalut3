@@ -13,8 +13,10 @@
     </div>  
   </div>
   {% if data %}
+  <br>
+<h3 class="text-left mx-2">{{ folder|title }} :: {{ query }}</h3>
     
-  <div class="row">
+  <div class="row mx-2">
       {% for d in data %}
       <div class="col-12 col-lg-3 mt-3">
           {% if d.pdffound %}
@@ -31,7 +33,8 @@
                   </div>
                   <div class="col-sm-12">
                       <div class="card-body">
-                          <h5 class="card-title">{{d.doc_description}}</h5>
+                        <h5 class="card-title">Box Nomor: {{d.box_number}}</h5>
+                        <h5 class="card-title">{{d.doc_description}}</h5>
                           <p class="card-text font-italic"><small>{{d.bundle_title}}</small></p>
                       </div>
                   </div>
@@ -46,8 +49,7 @@
               <div class="row no-gutters">
                   <div class="col-sm-12">
                       <div class="card-body">
-                          <h4 class="card-title">{{d.department_folder|title}}</h4>
-                          <h5 class="card-title">No BOX: {{d.box_number}}</h5>
+                          <h5 class="card-title">Box Nomor: {{d.box_number}}</h5>
                           <h5 class="card-title">{{d.doc_description}}</h5>
                           <p class="card-text"><small>{{d.bundle_title}}
                               <br>No. Berkas: {{d.bundle_number}}<br>No. Urut: {{d.doc_number}}<br>Tahun: {{d.bundle_year}}
