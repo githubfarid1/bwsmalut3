@@ -524,6 +524,8 @@ def searchdoc(request):
         folder = request.GET.get("folder")
         d = Department.objects.get(folder=folder)
         docs = Doc.objects.filter(Q(bundle__department_id__exact=d.id) & (Q(description__icontains=query)  | Q(bundle__title__icontains=query) | Q(bundle__year__contains=query)))
+        if not docs:
+            messages.info(request, "Data tidak ditemukan")
         boxdata = []
         for ke, doc in enumerate(docs):
             path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], doc.bundle.department.folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
