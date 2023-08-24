@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import irigasi, pdfdownload, air_baku, sungai, pantai, keuangan, statistics, boxsearch, pdfupload, pdfremove
+from .views import irigasi, pdfdownload, air_baku, sungai, pantai, keuangan, statistics, boxsearch, pdfupload, pdfremove, searchdoc
 #tes2, tes1
 prefix = __package__.split('.')[1] + "_"
 urlpatterns = [
@@ -14,6 +14,7 @@ urlpatterns = [
     path(route='boxsearch', view=boxsearch, name=prefix + 'boxsearch'),
     path(route='pdfupload/<str:uuid_id>', view=pdfupload, name=prefix + 'pdfupload'),
     path(route='pdfremove/<str:uuid_id>', view=pdfremove, name=prefix + 'pdfremove'),
-
+    path(route='searchdoc', view=searchdoc, name=prefix + 'searchdoc'),
+    
 
 ]

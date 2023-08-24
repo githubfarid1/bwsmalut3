@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 import fitz
 from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.http import JsonResponse
-from .forms import UploadFileForm, DeletePdfFile, SearchQRCodeForm, ListDocByBox, DeleteDoc
+from .forms import UploadFileForm, DeletePdfFile, SearchQRCodeForm, ListDocByBox, DeleteDoc, SearchDoc
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import Group
@@ -274,7 +274,6 @@ def air_baku(request):
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
 
-
 @csrf_exempt
 def sungai(request):
     if not request.user.is_authenticated:
@@ -478,7 +477,6 @@ def pdfupload(request, uuid_id):
     # context['url'] = url
     return render(request,'alihmedia_inactive/pdfupload.html', context=context)
 
-    
 @user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())
 def pdfremove(request, uuid_id):
     if not request.user.is_authenticated:
@@ -517,3 +515,47 @@ def pdfremove(request, uuid_id):
 
     # context['url'] = url
     return render(request,'alihmedia_inactive/pdfremove.html', context=context)
+
+def searchdoc(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    if request.method == "GET":
+        if request.GET.get("search"):
+            query = request.GET.get("search")
+            docs = Doc.objects.filter((Q(description__icontains=query)  | Q(bundle__title__icontains=query) | Q(bundle__year__contains=query)))
+            boxdata = []
+            for ke, doc in enumerate(docs):
+                path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], doc.bundle.department.folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
+                pdffound = False
+                filesize = 0
+                pagecount = 0
+                coverfilename = ""
+                if exists(path):
+                    pdffound = True
+                    coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], doc.bundle.department.folder, doc.bundle.box_number, doc.doc_number)
+                boxdata.append({
+                    "department_folder": doc.bundle.department.folder,
+                    "box_number": doc.bundle.box_number,
+                    "bundle_number": doc.bundle.bundle_number,
+                    "doc_number": doc.doc_number,
+                    "bundle_code": doc.bundle.code,
+                    "bundle_title": doc.bundle.title,
+                    "bundle_year": doc.bundle.year,
+                    "doc_description": doc.description,
+                    "doc_count": doc.doc_count,
+                    "bundle_orinot": doc.bundle.orinot,
+                    "row_number": ke + 1,
+                    "pdffound": pdffound,
+                    "doc_id": doc.id,
+                    "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
+                    "filesize": doc.filesize,
+                    "pagecount": doc.page_count,
+                    "doc_uuid_id": doc.uuid_id,
+                })
+            context = {'data':boxdata, 'form': SearchDoc()}
+            # return HttpResponse(boxdata)
+            return render(request,'alihmedia_inactive/searchdoc.html', context=context)
+
+    context = {}
+    context['form'] = SearchDoc()
+    return render(request,'alihmedia_inactive/searchdoc.html', context=context)

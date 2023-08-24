@@ -27,3 +27,6 @@ class ListDocByBox(forms.Form):
 
 class DeleteDoc(forms.Form):
     box_number = forms.IntegerField(min_value=1) 
+
+class SearchDoc(forms.Form):
+    search = forms.CharField()
