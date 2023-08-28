@@ -36,3 +36,9 @@ apps/static/assets/.temp
 /.env
 /core/settings.py
 /media/tmpfiles/*
+
+#UTILITIES
+/utilities/settings.py
+/utilities/rungencover.sh
+/utilities/runmovepdf.sh
+/utilities/runbackup.sh
