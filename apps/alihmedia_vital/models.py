@@ -3,13 +3,15 @@ import uuid
 # Create your models here.
 class Variety(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    folder = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self) -> str:
         return self.name
 
 class Doc(models.Model):
     id = models.AutoField(primary_key=True)
+    doc_number = models.SmallIntegerField(null=True)
     name = models.TextField(null=True, blank=True)
     work_unit = models.CharField(max_length=100, null=True, blank=True)
     period = models.CharField(max_length=4, null=True, blank=True)

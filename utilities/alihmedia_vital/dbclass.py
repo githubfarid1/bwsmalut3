@@ -15,6 +15,7 @@ class Variety(Base):
     __tablename__ =  TABLE_PREFIX + VARIETY_TABLE
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
+    folder: Mapped[str] = mapped_column(String(100))
 
 
 
@@ -22,6 +23,7 @@ class Doc(Base):
     __tablename__ = TABLE_PREFIX + DOC_TABLE
     id: Mapped[int] = mapped_column(primary_key=True)
     variety_id: Mapped[int] = mapped_column(ForeignKey(TABLE_PREFIX + VARIETY_TABLE + ".id"))
+    doc_number: Mapped[int] = mapped_column(SmallInteger)
     name: Mapped[str] = mapped_column(Text, nullable=True)
     work_unit: Mapped[str] = mapped_column(String(100), nullable=True)
     period: Mapped[str] = mapped_column(String(4), nullable=True)
