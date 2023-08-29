@@ -38,7 +38,12 @@ apps/static/assets/.temp
 /media/tmpfiles/*
 
 #UTILITIES
-/utilities/settings.py
-/utilities/rungencover.sh
-/utilities/runmovepdf.sh
-/utilities/runbackup.sh
+/utilities/alihmedia_inactive/settings.py
+/utilities/alihmedia_inactive/rungencover.sh
+/utilities/alihmedia_inactive/runmovepdf.sh
+/utilities/alihmedia_inactive/runbackup.sh
+
+/utilities/alihmedia_vital/settings.py
+/utilities/alihmedia_vital/rungencover.sh
+/utilities/alihmedia_vital/runmovepdf.sh
+/utilities/alihmedia_vital/runbackup.sh

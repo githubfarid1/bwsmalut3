@@ -22,6 +22,8 @@ class Doc(models.Model):
     save_location = models.TextField(null=True, blank=True)
     protect_method = models.CharField(max_length=100, null=True, blank=True)
     description = models.CharField(max_length=100, null=True, blank=True)
+    filesize = models.IntegerField(null=True)
+    page_count = models.SmallIntegerField(null=True)
 
     variety = models.ForeignKey(
         Variety,

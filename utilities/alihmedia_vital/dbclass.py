@@ -34,5 +34,7 @@ class Doc(Base):
     save_location: Mapped[str] = mapped_column(Text, nullable=True)
     protect_method: Mapped[str] = mapped_column(String(100), nullable=True)
     description: Mapped[str] = mapped_column(String(100), nullable=True)
+    page_count: Mapped[str] = mapped_column(SmallInteger, nullable=True)
+    filesize: Mapped[int] = mapped_column(Integer, nullable=True)
     variety = relationship("Variety")
     

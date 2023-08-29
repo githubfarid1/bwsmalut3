@@ -1,0 +1,74 @@
+{% extends "layouts/base.html" %} {% load static %}
+{% block title %} | Data Vital {% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="container mt-5">
+  <h3 class="text-center">Data Vital :: {{ title }}</h3>
+  
+  <div class="row mx-2">
+    {% if data %}
+      {% for d in data %}
+      <div class="col-12 col-lg-3 mt-3">
+        {% if d.pdffound %}
+        <div class="card">
+            <div class="row no-gutters">
+                <div class="col-sm-5 mt-3">
+                    <div class="card-body">
+                    <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
+                </div>
+                </div>
+                <div class="col-sm-7 mt-3 text-center">
+                        <p><small>No. Berkas: {{d.doc_number}}<br>Tahun: {{d.period}}<br>Ukuran: {{d.filesize}} kb<br>Jml Hlmn: {{d.pagecount}}<br>
+                        </small> </p>
+                </div>
+                <div class="col-sm-12">
+                    <div class="card-body">
+                        <h5 class="card-title">{{d.countstr}}</h5>
+                        <p class="card-text font-italic"><small>{{d.name}}</small></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% else %}
+
+        {% if d.pdftmpfound %}
+        <div class="card bg-light">
+       {% else %}
+       <div class="card bg-secondary">
+       {% endif %}  
+            <div class="row no-gutters">
+                <div class="col-sm-5 mt-3">
+                    <div class="card-body">
+                    {% if d.pdffound %}
+                        <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
+                    {% endif %}
+                </div>
+                </div>
+                <div class="col-sm-7 mt-3 text-center">
+                        <p><small><strong>No. Berkas: {{d.doc_number}}</strong><br>Tahun: {{d.period}}<br>Ukuran: {{d.filesize}} kb<br>Jml Hlmn: {{d.pagecount}}<br>
+                        </small> </p>
+                </div>
+                <div class="col-sm-12">
+                    <div class="card-body">
+                        <a href="{% url 'alihmedia_vital_pdfupload' d.uuid_id %}"><h5 class="card-title">{{d.countstr}}</h5></a>
+                        <p class="card-text font-italic"><small><strong>Unit Kerja: {{d.work_unit}}</strong><br>Nama Berkas: {{d.name}}</small></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        {% endif %}
+    </div>
+  {% endfor %}
+  </div>
+</div>
+{% endif %}  
+</div>
+{% endblock %}
