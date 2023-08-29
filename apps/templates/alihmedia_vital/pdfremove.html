@@ -16,15 +16,15 @@
             </div>
             </div>
             <div class="col-sm-7 mt-3 text-center">
-                    <p><small>No. Box: {{data.bundle.box_number}}<br>No. Berkas: {{data.bundle.bundle_number}}<br><strong>No. Urut: {{data.doc_number}}</strong><br>Tahun: {{data.bundle.year}}<br>Ukuran: {{data.filesize}} kb<br>Jml Hlmn: {{data.page_count}}<br>
-                    </small> </p>
+              <p><small><strong>No. Berkas: {{data.doc_number}}</strong><br>Tahun: {{data.period}}<br>Ukuran: {{data.filesize}} kb<br>Jml Hlmn: {{data.page_count}}<br>
+              </small> </p>
             </div>
             <div class="col-sm-12">
-                <div class="card-body">
-                    <h5 class="card-title">{{data.description}}</h5>
-                    <p class="card-text font-italic"><small>{{data.bundle.title}}</small></p>
-                </div>
-            </div>
+              <div class="card-body">
+                  <h5 class="card-title">{{data.countstr}}</h5>
+                  <p class="card-text font-italic"><small><strong>Unit Kerja: {{data.work_unit}}</strong><br>{{data.name}}</small></p>
+              </div>
+          </div>
 
         </div>
         </div>

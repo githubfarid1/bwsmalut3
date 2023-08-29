@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import searchdoc, index, sertifikat, bpkb_mobil_dan_motor, pdfupload
+from .views import searchdoc, index, sertifikat, bpkb_mobil_dan_motor, pdfupload, pdfdownload, pdfremove
 
 prefix = __package__.split('.')[1] + "_"
 urlpatterns = [
@@ -8,6 +8,8 @@ urlpatterns = [
     path(route='sertifikat', view=sertifikat, name=prefix + 'sertifikat'),
     path(route='bpkb_mobil_dan_motor', view=bpkb_mobil_dan_motor, name=prefix + 'bpkb_mobil_dan_motor'),
     path(route='pdfupload/<str:uuid_id>', view=pdfupload, name=prefix + 'pdfupload'),
+    path(route='pdfdownload/<str:uuid_id>', view=pdfdownload, name=prefix + 'pdfdownload'),
+    path(route='pdfremove/<str:uuid_id>', view=pdfremove, name=prefix + 'pdfremove'),
 
 
 ]

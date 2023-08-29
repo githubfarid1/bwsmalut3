@@ -7,8 +7,8 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<div class="container mt-5">
-  <h3 class="text-center">Data Vital :: {{ title }}</h3>
+<div class="container-fluid">
+    <h3 class="text-center">Data Vital :: {{ title }}</h3>
   
   <div class="row mx-2">
     {% if data %}
@@ -29,8 +29,14 @@
                 <div class="col-sm-12">
                     <div class="card-body">
                         <h5 class="card-title">{{d.countstr}}</h5>
-                        <p class="card-text font-italic"><small>{{d.name}}</small></p>
+                        <p class="card-text font-italic"><small><strong>Unit Kerja: {{d.work_unit}}</strong><br>{{d.name}}</small></p>
                     </div>
+                </div>
+                <div class="col-sm-6 mt-2">
+                    <a href="{% url 'alihmedia_vital_pdfdownload' d.uuid_id %}" target="_new" class="btn btn-info btn-block btn-sm mb-2 mx-2">Download</a>
+                </div>
+                <div class="col-sm-6 mt-2">
+                    <a href="{% url 'alihmedia_vital_pdfremove' d.uuid_id %}" target="_new" class="btn btn-danger btn-block btn-sm mb-2 mx-2">Hapus</a>
                 </div>
 
             </div>
