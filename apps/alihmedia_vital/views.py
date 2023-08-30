@@ -137,6 +137,7 @@ def searchdoc(request):
     return render(request,'alihmedia_vital/searchdoc.html', context=context)
 
 @user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
+@csrf_exempt
 def pdfupload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
