@@ -17,3 +17,4 @@ PDF_LOCATION = "/home/farid/pdfs/"
 EXCEL_FILE = "Contoh Daftar Arsip Vital_6 April 2023.xlsx"
 TMPPDF_LOCATION = "/home/farid/dev/python/bwsmalut3/media/tmpfiles"
 BACKUP_LOCATION = "/home/farid/backup"
+COVER_LOCATION = os.path.join("/home/farid/dev/python/bwsmalut3/apps", "static", "cover")
