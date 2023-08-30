@@ -188,6 +188,7 @@ def pdfdownload(request, uuid_id):
     raise Http404
 
 @user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
+@csrf_exempt
 def pdfremove(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
