@@ -14,7 +14,12 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Font
 from openpyxl.styles.borders import Border, Side
 import roman
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import permission_required, user_passes_test
+from django.views.decorators.csrf import csrf_exempt
 
+
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
 def index(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -63,6 +68,7 @@ def getdata(folder):
 
         })
     return docdata
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
 def sertifikat(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -72,6 +78,7 @@ def sertifikat(request):
     context = {'data':docdata, "title": d.name}
     return render(request,'alihmedia_vital/datalist.html', context=context)
 
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
 def bpkb_mobil_dan_motor(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -81,6 +88,7 @@ def bpkb_mobil_dan_motor(request):
     context = {'data':docdata, "title": d.name}
     return render(request,'alihmedia_vital/datalist.html', context=context)
 
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
 def searchdoc(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -128,6 +136,7 @@ def searchdoc(request):
     context['form'] = SearchDoc()
     return render(request,'alihmedia_vital/searchdoc.html', context=context)
 
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
 def pdfupload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -159,6 +168,7 @@ def pdfupload(request, uuid_id):
     # context['url'] = url
     return render(request,'alihmedia_vital/pdfupload.html', context=context)
 
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
 def pdfdownload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -176,6 +186,7 @@ def pdfdownload(request, uuid_id):
             return response
     raise Http404
 
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
 def pdfremove(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -323,6 +334,7 @@ def create_xls(datalist):
     return wb
 
 
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
 def export(request):
     if not request.user.is_authenticated:
         return redirect('login')
