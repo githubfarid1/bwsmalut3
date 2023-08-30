@@ -227,9 +227,7 @@ def pdfremove(request, uuid_id):
 
 def create_xls(datalist):
     wb = Workbook()
-    wb = Workbook()
     sheet = wb.active
-    
     sheet.title = "DATA VITAL"
     sheet.column_dimensions['A'].width = 4.1
     sheet.column_dimensions['B'].width = 37

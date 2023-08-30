@@ -36,3 +36,11 @@ class SearchDoc(forms.Form):
         required=True, label="Kelompok"
     )
     search = forms.CharField()
+
+class ExportForm(forms.Form):
+    folder = forms.ModelChoiceField(
+        queryset=Department.objects.all(),
+        widget=forms.Select(),
+        to_field_name="folder",
+        required=True, label="Kelompok"
+    )
