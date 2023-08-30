@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'apps.alihmedia_inactive',
     'django_extensions',
     'crispy_forms',
+    'apps.alihmedia_vital',
     # 'apps.utility',
 
 ]
@@ -159,9 +160,13 @@ AUTO_LOGOUT = {
 }
 
 PDF_LOCATION = "/home/farid/pdfs/"
-COVER_LOCATION = os.path.join(BASE_DIR, "static", "cover")
+COVER_LOCATION = os.path.join(BASE_DIR, "apps","static", "cover")
 COVER_URL = "cover/"
 
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+PYTHON_UTILITY = "/home/farid/dev/python/arsip-utility/util-env/bin/python"
+GENCOVER_SCRIPT = "/home/farid/dev/python/arsip-utility/gencover.py"
+MOVEPDF_SCRIPT = "/home/farid/dev/python/arsip-utility/movepdf.py"
