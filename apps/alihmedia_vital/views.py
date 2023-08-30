@@ -9,6 +9,11 @@ import os
 from os.path import exists
 from .forms import SearchDoc, InserPdfDoc, UploadFileForm
 import sys
+import json
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Alignment, Font
+from openpyxl.styles.borders import Border, Side
+import roman
 
 def index(request):
     if not request.user.is_authenticated:
@@ -206,3 +211,133 @@ def pdfremove(request, uuid_id):
 
     # context['url'] = url
     return render(request,'alihmedia_vital/pdfremove.html', context=context)
+
+def create_xls(datalist):
+    wb = Workbook()
+    wb = Workbook()
+    sheet = wb.active
+    
+    sheet.title = "DATA VITAL"
+    sheet.column_dimensions['A'].width = 4.1
+    sheet.column_dimensions['B'].width = 37
+    sheet.column_dimensions['C'].width = 11.3
+    sheet.column_dimensions['D'].width = 8.8
+    sheet.column_dimensions['E'].width = 9.5
+    sheet.column_dimensions['F'].width = 12.8
+    sheet.column_dimensions['G'].width = 16
+    sheet.column_dimensions['H'].width = 23.5 
+    sheet.column_dimensions['I'].width = 15.5 
+    sheet.column_dimensions['J'].width = 14.6
+    sheet.merge_cells('A1:J1')
+    sheet['A1'] = "DAFTAR ARSIP VITAL"
+    sheet['A1'].alignment = Alignment(horizontal='center')
+    sheet['A1'].font = Font(name='Arial', size=12, bold=True)
+    centervh = Alignment(horizontal='center', vertical='center', wrap_text=True)
+    centerv = Alignment(vertical='center', wrap_text=True)
+
+    thin_border = Border(left=Side(style='thin'), 
+                        right=Side(style='thin'), 
+                        top=Side(style='thin'), 
+                        bottom=Side(style='thin'))
+    thin_border2 = Border(bottom=Side(style='thin'),right=Side(style='thin'),left=Side(style='thin'))
+    thin_border3 = Border(right=Side(style='thin'),left=Side(style='thin'))
+    font_style1 = Font(name='Arial', size=8.5, bold=True)
+    font_style2 = Font(name='Arial', size=8.5)
+    font_style3 = Font(name='Arial', size=8.5, italic=True)
+
+
+    sheet.row_dimensions[7].height = 28
+    for cell in sheet["7:7"]:
+        cell.alignment = centervh
+        cell.font = font_style1
+    headers = ("NO", "JENIS ARSIP", "UNIT KERJA", "KURUN WAKTU", "MEDIA", "JUMLAH", "JANGKA SIMPAN", "LOKASI SIMPAN", "METODE PERLINDUNGAN", "KETERANGAN")
+    for i in headers:
+        sheet.cell(row=7, column=headers.index(i)+1).value = i
+        sheet.cell(row=7, column=headers.index(i)+1).border = thin_border
+    row = 8
+    for idx1, d in enumerate(datalist):
+        sheet.cell(row=row, column=1).value = roman.toRoman(idx1+1)
+        sheet.cell(row=row, column=1).alignment = centervh
+        sheet.cell(row=row, column=1).font = font_style1
+        sheet.cell(row=row, column=2).value = d['variety']
+        sheet.cell(row=row, column=2).font = font_style1
+        
+        for cell in sheet["{}:{}".format(row,row) ]:
+            cell.border = thin_border3
+        
+        row += 1
+        for idx2, data in enumerate(d['data']):
+            sheet.cell(row=row, column=1).value = idx2+1
+            sheet.cell(row=row, column=1).alignment = centerv
+            sheet.cell(row=row, column=1).border = thin_border2
+            sheet.cell(row=row, column=1).font = font_style2
+            
+            sheet.cell(row=row, column=2).value = data['name']
+            sheet.cell(row=row, column=2).alignment = centerv
+            sheet.cell(row=row, column=2).border = thin_border2
+            sheet.cell(row=row, column=2).font = font_style2
+
+            sheet.cell(row=row, column=3).value = data['work_unit']
+            sheet.cell(row=row, column=3).alignment = centervh
+            sheet.cell(row=row, column=3).border = thin_border2
+            sheet.cell(row=row, column=3).font = font_style2
+
+            sheet.cell(row=row, column=4).value = data['period']
+            sheet.cell(row=row, column=4).alignment = centervh
+            sheet.cell(row=row, column=4).border = thin_border2
+            sheet.cell(row=row, column=4).font = font_style2
+
+            sheet.cell(row=row, column=5).value = data['media']
+            sheet.cell(row=row, column=5).alignment = centervh
+            sheet.cell(row=row, column=5).border = thin_border2
+            sheet.cell(row=row, column=5).font = font_style2
+
+            sheet.cell(row=row, column=6).value = data['countstr']
+            sheet.cell(row=row, column=6).alignment = centervh
+            sheet.cell(row=row, column=6).border = thin_border2
+            sheet.cell(row=row, column=6).font = font_style2
+
+            sheet.cell(row=row, column=7).value = data['save_life']
+            sheet.cell(row=row, column=7).alignment = centervh
+            sheet.cell(row=row, column=7).border = thin_border2
+            sheet.cell(row=row, column=7).font = font_style2
+            
+            sheet.cell(row=row, column=8).value = data['save_location']
+            sheet.cell(row=row, column=8).alignment = centerv
+            sheet.cell(row=row, column=8).border = thin_border2
+            sheet.cell(row=row, column=8).font = font_style2
+
+            sheet.cell(row=row, column=9).value = data['protect_method']
+            sheet.cell(row=row, column=9).alignment = centervh
+            sheet.cell(row=row, column=9).border = thin_border2
+            sheet.cell(row=row, column=9).font = font_style3
+
+            sheet.cell(row=row, column=10).value = data['description']
+            sheet.cell(row=row, column=10).alignment = centervh
+            sheet.cell(row=row, column=10).border = thin_border2
+            sheet.cell(row=row, column=10).font = font_style2
+            
+            row += 1
+    
+    
+    return wb
+
+
+def export(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    varieties = Variety.objects.all()
+    datalist = []
+    for vr in varieties:
+        mdict = {}
+        data = getdata(vr.folder)
+        mdict["variety"] = vr.name
+        mdict["data"] = data
+        datalist.append(mdict)
+
+    filename = f"data_{__package__.split('.')[1]}.xlsx"
+    wb = create_xls(datalist)
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)    
+    wb.save(response)
+    return response

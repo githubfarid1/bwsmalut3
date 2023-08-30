@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import searchdoc, index, sertifikat, bpkb_mobil_dan_motor, pdfupload, pdfdownload, pdfremove
+from .views import searchdoc, index, sertifikat, bpkb_mobil_dan_motor, pdfupload, pdfdownload, pdfremove, export
 
 prefix = __package__.split('.')[1] + "_"
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     path(route='pdfupload/<str:uuid_id>', view=pdfupload, name=prefix + 'pdfupload'),
     path(route='pdfdownload/<str:uuid_id>', view=pdfdownload, name=prefix + 'pdfdownload'),
     path(route='pdfremove/<str:uuid_id>', view=pdfremove, name=prefix + 'pdfremove'),
+    path(route='export', view=export, name=prefix + 'export'),
 
 
 ]
