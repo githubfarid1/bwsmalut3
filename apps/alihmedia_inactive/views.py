@@ -621,7 +621,7 @@ def create_xls(datalist, app_name, folder):
     sheet.column_dimensions['G'].width = 7
     sheet.column_dimensions['H'].width = 5 
     sheet.column_dimensions['I'].width = 7 
-    sheet.column_dimensions['J'].width = 7.5
+    sheet.column_dimensions['J'].width = 8
     sheet.merge_cells('A1:J1')
     sheet['A1'] = "DAFTAR ARSIP INAKTIF"
     sheet['A1'].alignment = Alignment(horizontal='center')
