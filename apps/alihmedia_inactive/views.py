@@ -19,9 +19,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import Group
 import time
 from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Alignment, Font
+from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.styles.borders import Border, Side
-
 
 # from django_user_agents.utils import get_user_agent
 
@@ -605,8 +604,12 @@ def searchdoc(request):
     context['form'] = SearchDoc()
     return render(request,'alihmedia_inactive/searchdoc.html', context=context)
 
-def create_xls(datalist):
+def create_xls(datalist, app_name, folder):
     wb = Workbook()
+    wb.create_sheet("CONFIG")
+    sheet = wb["CONFIG"]
+    sheet['A1'].value = os.path.join("D:\\", "media") + "\\"
+
     sheet = wb.active
     sheet.title = "DATA INAKTIF"
     sheet.column_dimensions['A'].width = 7
@@ -627,16 +630,20 @@ def create_xls(datalist):
     centerv = Alignment(vertical='center', wrap_text=True)
     wraptxt = Alignment(wrap_text=True)
 
-    thin_border = Border(left=Side(style='thin'), 
+    thin_border1 = Border(left=Side(style='thin'), 
                         right=Side(style='thin'), 
                         top=Side(style='thin'), 
                         bottom=Side(style='thin'))
+    
     thin_border2 = Border(bottom=Side(style='thin'),right=Side(style='thin'),left=Side(style='thin'))
-    thin_border3 = Border(right=Side(style='thin'),left=Side(style='thin'))
+    thin_border3 = Border(top=Side(style='thin'), right=Side(style='thin'),left=Side(style='thin'))
+    thin_border4 = Border(right=Side(style='thin'),left=Side(style='thin'))
+    thin_border5 = Border(top=Side(style='thin'), bottom=Side(style='thin'))
+
     font_style1 = Font(name='Arial Narrow', size=11, bold=True)
     font_style2 = Font(name='Arial', size=8.5)
     font_style3 = Font(name='Arial', size=8.5, italic=True)
-
+    color1 = PatternFill(start_color="c6d5f7", fill_type = "solid")
 
     sheet.row_dimensions[7].height = 28
     for cell in sheet["7:7"]:
@@ -646,24 +653,7 @@ def create_xls(datalist):
     headers = ("NO BOX", "NO BRKS", "NO URUT", "KODE", "INDEKS", "URAIAN MASALAH", "THN", "JML", "KET", "ACTION")
     for i in headers:
         sheet.cell(row=7, column=headers.index(i)+1).value = i
-        sheet.cell(row=7, column=headers.index(i)+1).border = thin_border
-            # "box_number": doc.bundle.box_number,
-            # "bundle_number": doc.bundle.bundle_number,
-            # "doc_number": doc.doc_number,
-            # "bundle_code": doc.bundle.code,
-            # "bundle_title": doc.bundle.title,
-            # "bundle_year": doc.bundle.year,
-            # "doc_description": doc.description,
-            # "doc_count": doc.doc_count,
-            # "bundle_orinot": doc.bundle.orinot,
-            # "row_number": ke + 1,
-            # "pdffound": pdffound,
-            # "doc_id": doc.id,
-            # "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
-            # "filesize": doc.filesize,
-            # "pagecount": doc.page_count,
-            # "doc_uuid_id": doc.uuid_id,
-            # "pdftmpfound": pdftmpfound,
+        sheet.cell(row=7, column=headers.index(i)+1).border = thin_border1
     
     i = 8
     result = datalist
@@ -671,6 +661,18 @@ def create_xls(datalist):
     curbundle = result[0]["bundle_number"]
     isfirst = True
     for res in result:
+        sheet['{}{}'.format('A', i)].border = thin_border4
+        sheet['{}{}'.format('B', i)].border = thin_border4
+        sheet['{}{}'.format('C', i)].border = thin_border4
+        sheet['{}{}'.format('D', i)].border = thin_border4
+        sheet['{}{}'.format('E', i)].border = thin_border4
+        sheet['{}{}'.format('F', i)].border = thin_border4
+        sheet['{}{}'.format('G', i)].border = thin_border4
+        sheet['{}{}'.format('H', i)].border = thin_border4
+        sheet['{}{}'.format('I', i)].border = thin_border4
+        sheet['{}{}'.format('J', i)].border = thin_border4
+        sheet['{}{}'.format('C', i)].border = thin_border5
+        sheet['{}{}'.format('F', i)].border = thin_border5
         if isfirst:
             isfirst = False
             sheet['{}{}'.format('A', i)].value = res["box_number"]
@@ -686,6 +688,7 @@ def create_xls(datalist):
             if curbox != res["box_number"]:
                 curbox = res["box_number"]
                 sheet['{}{}'.format('A', i)].value = res["box_number"]
+                sheet['{}{}'.format('A', i)].border = thin_border3
             else:
                 sheet['{}{}'.format('A', i)].value = "" 
             if curbundle != res["bundle_number"]:
@@ -695,6 +698,13 @@ def create_xls(datalist):
                 sheet['{}{}'.format('E', i)].value = res["bundle_title"]
                 sheet['{}{}'.format('G', i)].value = res["bundle_year"]
                 sheet['{}{}'.format('I', i)].value = res["bundle_orinot"]
+
+                sheet['{}{}'.format('B', i)].border = thin_border3
+                sheet['{}{}'.format('D', i)].border = thin_border3
+                sheet['{}{}'.format('E', i)].border = thin_border3
+                sheet['{}{}'.format('G', i)].border = thin_border3
+                sheet['{}{}'.format('I', i)].border = thin_border3
+
             else:
                 sheet['{}{}'.format('B', i)].value = ""
                 sheet['{}{}'.format('D', i)].value = ""
@@ -716,79 +726,14 @@ def create_xls(datalist):
         sheet['{}{}'.format('I', i)].alignment = centervh
         sheet['{}{}'.format('J', i)].alignment = centervh
         
-        # if res.filesize is not None:
-        #     filelocation = os.path.join(APP_NAME, res.Bundle.Department.link, str(res.Bundle.box_number), str(res.doc_number) + ".pdf")
-        #     sheet['{}{}'.format('F', i)].color = RgbColor.rgbLightSkyBlue
-        #     sheet['{}{}'.format('J', i)].color = RgbColor.rgbLightSkyBlue
-        #     sheet['{}{}'.format('J', i)].value = '=HYPERLINK(CONCATENATE(setting!A1, "{}")'.format(filelocation) + ', "LIHAT")'
+        if res['filesize'] is not None:
+            filelocation = os.path.join(app_name, folder, str(res['box_number']), str(res['doc_number']) + ".pdf")
+            sheet['{}{}'.format('F', i)].fill = color1
+            sheet['{}{}'.format('J', i)].fill = color1
+            sheet['{}{}'.format('J', i)].value = '=HYPERLINK(CONCATENATE(CONFIG!A1, "{}")'.format(filelocation) + ', "LIHAT")'
+            sheet['{}{}'.format('J', i)].border = thin_border1
+            sheet['{}{}'.format('J', i)].font = Font(underline='single', bold=True, color="96251b")
         i += 1
-    
-    # row = 8
-    # for idx1, d in enumerate(datalist):
-    #     sheet.cell(row=row, column=1).value = roman.toRoman(idx1+1)
-    #     sheet.cell(row=row, column=1).alignment = centervh
-    #     sheet.cell(row=row, column=1).font = font_style1
-    #     sheet.cell(row=row, column=2).value = d['variety']
-    #     sheet.cell(row=row, column=2).font = font_style1
-        
-    #     for cell in sheet["{}:{}".format(row,row) ]:
-    #         cell.border = thin_border3
-        
-    #     row += 1
-    #     for idx2, data in enumerate(d['data']):
-    #         sheet.cell(row=row, column=1).value = idx2+1
-    #         sheet.cell(row=row, column=1).alignment = centerv
-    #         sheet.cell(row=row, column=1).border = thin_border2
-    #         sheet.cell(row=row, column=1).font = font_style2
-            
-    #         sheet.cell(row=row, column=2).value = data['name']
-    #         sheet.cell(row=row, column=2).alignment = centerv
-    #         sheet.cell(row=row, column=2).border = thin_border2
-    #         sheet.cell(row=row, column=2).font = font_style2
-
-    #         sheet.cell(row=row, column=3).value = data['work_unit']
-    #         sheet.cell(row=row, column=3).alignment = centervh
-    #         sheet.cell(row=row, column=3).border = thin_border2
-    #         sheet.cell(row=row, column=3).font = font_style2
-
-    #         sheet.cell(row=row, column=4).value = data['period']
-    #         sheet.cell(row=row, column=4).alignment = centervh
-    #         sheet.cell(row=row, column=4).border = thin_border2
-    #         sheet.cell(row=row, column=4).font = font_style2
-
-    #         sheet.cell(row=row, column=5).value = data['media']
-    #         sheet.cell(row=row, column=5).alignment = centervh
-    #         sheet.cell(row=row, column=5).border = thin_border2
-    #         sheet.cell(row=row, column=5).font = font_style2
-
-    #         sheet.cell(row=row, column=6).value = data['countstr']
-    #         sheet.cell(row=row, column=6).alignment = centervh
-    #         sheet.cell(row=row, column=6).border = thin_border2
-    #         sheet.cell(row=row, column=6).font = font_style2
-
-    #         sheet.cell(row=row, column=7).value = data['save_life']
-    #         sheet.cell(row=row, column=7).alignment = centervh
-    #         sheet.cell(row=row, column=7).border = thin_border2
-    #         sheet.cell(row=row, column=7).font = font_style2
-            
-    #         sheet.cell(row=row, column=8).value = data['save_location']
-    #         sheet.cell(row=row, column=8).alignment = centerv
-    #         sheet.cell(row=row, column=8).border = thin_border2
-    #         sheet.cell(row=row, column=8).font = font_style2
-
-    #         sheet.cell(row=row, column=9).value = data['protect_method']
-    #         sheet.cell(row=row, column=9).alignment = centervh
-    #         sheet.cell(row=row, column=9).border = thin_border2
-    #         sheet.cell(row=row, column=9).font = font_style3
-
-    #         sheet.cell(row=row, column=10).value = data['description']
-    #         sheet.cell(row=row, column=10).alignment = centervh
-    #         sheet.cell(row=row, column=10).border = thin_border2
-    #         sheet.cell(row=row, column=10).font = font_style2
-            
-    #         row += 1
-    
-    
     return wb
 
 
@@ -800,7 +745,7 @@ def export(request):
         datalist = getdatabyfolder(folder)
         # return HttpResponse(json.dumps(datalist, default=str), content_type="application/json")
         filename = f"data_{__package__.split('.')[1]}_{folder}.xlsx"
-        wb = create_xls(datalist)
+        wb = create_xls(datalist, __package__.split('.')[1], folder)
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename={}'.format(filename)    
         wb.save(response)
