@@ -673,6 +673,7 @@ def create_xls(datalist, app_name, folder):
         sheet['{}{}'.format('J', i)].border = thin_border4
         sheet['{}{}'.format('C', i)].border = thin_border5
         sheet['{}{}'.format('F', i)].border = thin_border5
+        sheet['{}{}'.format('H', i)].border = thin_border5
         if isfirst:
             isfirst = False
             sheet['{}{}'.format('A', i)].value = res["box_number"]
