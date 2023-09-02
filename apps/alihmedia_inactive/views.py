@@ -522,6 +522,7 @@ def pdfupload(request, uuid_id):
     return render(request,'alihmedia_inactive/pdfupload.html', context=context)
 
 @user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())
+@csrf_exempt
 def pdfremove(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
