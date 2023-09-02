@@ -488,6 +488,8 @@ def boxsearch(request):
     context['form'] = SearchQRCodeForm()
     # context['url'] = url
     return render(request, 'alihmedia_inactive/boxsearch2.html', context=context)
+
+@csrf_exempt
 def pdfupload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
