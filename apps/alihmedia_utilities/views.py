@@ -5,10 +5,12 @@ from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.contrib.auth.models import Group
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
 @user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())
+@csrf_exempt
 def inactive(request):
     comlist = [settings.PYTHON_UTILITY]
     if request.method == 'POST':
