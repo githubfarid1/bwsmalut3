@@ -11,7 +11,7 @@ from .forms import SearchDoc, InserPdfDoc, UploadFileForm
 import sys
 import json
 from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Alignment, Font
+from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.styles.borders import Border, Side
 import roman
 from django.contrib.auth.models import Group
@@ -227,8 +227,12 @@ def pdfremove(request, uuid_id):
 
 def create_xls(datalist):
     wb = Workbook()
+    wb.create_sheet("CONFIG")
+    sheet = wb["CONFIG"]
+    sheet['A1'].value = os.path.join("D:\\", "media") + "\\"
+
     sheet = wb.active
-    sheet.title = "DATA VITAL"
+    sheet.title = "DATA INAKTIF"
     sheet.column_dimensions['A'].width = 4.1
     sheet.column_dimensions['B'].width = 37
     sheet.column_dimensions['C'].width = 11.3
@@ -256,10 +260,11 @@ def create_xls(datalist):
     font_style1 = Font(name='Arial', size=8.5, bold=True)
     font_style2 = Font(name='Arial', size=8.5)
     font_style3 = Font(name='Arial', size=8.5, italic=True)
+    color1 = PatternFill(start_color="c6d5f7", fill_type = "solid")
 
 
     sheet.row_dimensions[7].height = 28
-    for cell in sheet["7:7"]:
+    for cell in sheet["8:7"]:
         cell.alignment = centervh
         cell.font = font_style1
     headers = ("NO", "JENIS ARSIP", "UNIT KERJA", "KURUN WAKTU", "MEDIA", "JUMLAH", "JANGKA SIMPAN", "LOKASI SIMPAN", "METODE PERLINDUNGAN", "KETERANGAN", "ACTION")
@@ -329,6 +334,17 @@ def create_xls(datalist):
             sheet.cell(row=row, column=10).border = thin_border2
             sheet.cell(row=row, column=10).font = font_style2
             
+            sheet.cell(row=row, column=11).value = ""
+            sheet.cell(row=row, column=11).alignment = centervh
+            sheet.cell(row=row, column=11).border = thin_border2
+            sheet.cell(row=row, column=11).font = font_style2
+            if data['filesize'] is not None:
+                filelocation = os.path.join(__package__.split('.')[1], d['folder'], str(data['doc_number']) + ".pdf")
+                sheet.cell(row=row, column=11).fill = color1
+                sheet.cell(row=row, column=2).fill = color1
+                sheet.cell(row=row, column=11).value = '=HYPERLINK(CONCATENATE(CONFIG!A1, "{}")'.format(filelocation) + ', "LIHAT")'
+                sheet.cell(row=row, column=11).font = Font(underline='single', bold=True, color="96251b")
+
             row += 1
     
     
@@ -345,10 +361,13 @@ def export(request):
         mdict = {}
         data = getdata(vr.folder)
         mdict["variety"] = vr.name
+        mdict["folder"] = vr.folder
         mdict["data"] = data
         datalist.append(mdict)
 
     filename = f"data_{__package__.split('.')[1]}.xlsx"
+    # return HttpResponse(json.dumps(datalist, default=str), content_type="application/json")
+
     wb = create_xls(datalist)
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename={}'.format(filename)    
