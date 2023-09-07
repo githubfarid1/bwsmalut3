@@ -23,7 +23,7 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.styles.borders import Border, Side
 
 # from django_user_agents.utils import get_user_agent
-
+#tes abc
 def getmenu():
     return Department.objects.all()
 def getdatabybox(box_number, link):
