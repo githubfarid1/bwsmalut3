@@ -239,6 +239,7 @@ def create_xls(datalist):
     sheet.column_dimensions['H'].width = 23.5 
     sheet.column_dimensions['I'].width = 15.5 
     sheet.column_dimensions['J'].width = 14.6
+    sheet.column_dimensions['K'].width = 8.8
     sheet.merge_cells('A1:J1')
     sheet['A1'] = "DAFTAR ARSIP VITAL"
     sheet['A1'].alignment = Alignment(horizontal='center')
@@ -261,7 +262,7 @@ def create_xls(datalist):
     for cell in sheet["7:7"]:
         cell.alignment = centervh
         cell.font = font_style1
-    headers = ("NO", "JENIS ARSIP", "UNIT KERJA", "KURUN WAKTU", "MEDIA", "JUMLAH", "JANGKA SIMPAN", "LOKASI SIMPAN", "METODE PERLINDUNGAN", "KETERANGAN")
+    headers = ("NO", "JENIS ARSIP", "UNIT KERJA", "KURUN WAKTU", "MEDIA", "JUMLAH", "JANGKA SIMPAN", "LOKASI SIMPAN", "METODE PERLINDUNGAN", "KETERANGAN", "ACTION")
     for i in headers:
         sheet.cell(row=7, column=headers.index(i)+1).value = i
         sheet.cell(row=7, column=headers.index(i)+1).border = thin_border
