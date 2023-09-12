@@ -23,19 +23,22 @@
                 </div>
                 </div>
                 <div class="col-sm-7 mt-3 text-center">
-                        <p><small>No. Berkas: {{d.doc_number}}<br>Tahun: {{d.period}}<br>Ukuran: {{d.filesize}} kb<br>Jml Hlmn: {{d.pagecount}}<br>
+                        <p><small><strong>No. Berkas: {{d.doc_number}}</strong><br>Tahun: {{d.period}}<br>Ukuran: {{d.filesize}} kb<br>Jml Hlmn: {{d.pagecount}}<br>
                         </small> </p>
                 </div>
                 <div class="col-sm-12">
                     <div class="card-body">
                         <h5 class="card-title">{{d.countstr}}</h5>
-                        <p class="card-text font-italic"><small><strong>Unit Kerja: {{d.work_unit}}</strong><br>{{d.name}}</small></p>
+                        <p class="card-text font-italic"><small><strong>Unit Kerja: {{d.work_unit}}</strong><br>Nama Berkas: {{d.name|truncatechars:50}}</small></p>
                     </div>
                 </div>
-                <div class="col-sm-6 mt-2">
+                <div class="col-sm-5 mt-2">
                     <a href="{% url 'alihmedia_vital_pdfdownload' d.uuid_id %}" target="_new" class="btn btn-info btn-block btn-sm mb-2 mx-2">Download</a>
                 </div>
-                <div class="col-sm-6 mt-2">
+                <div class="col-sm-3 mt-2">
+                    <a href="{% url 'alihmedia_vital_update' d.uuid_id %}?next={{ request.path }}" class="btn btn-success btn-block btn-sm mb-2 mx-2">Edit</a>
+                </div>
+                <div class="col-sm-2 mt-2">
                     <a href="{% url 'alihmedia_vital_pdfremove' d.uuid_id %}" class="btn btn-danger btn-block btn-sm mb-2 mx-2">Hapus</a>
                 </div>
 
@@ -62,9 +65,15 @@
                 </div>
                 <div class="col-sm-12">
                     <div class="card-body">
-                        <a href="{% url 'alihmedia_vital_pdfupload' d.uuid_id %}"><h5 class="card-title">{{d.countstr}}</h5></a>
-                        <p class="card-text font-italic"><small><strong>Unit Kerja: {{d.work_unit}}</strong><br>Nama Berkas: {{d.name}}</small></p>
+                        <h5 class="card-title">{{d.countstr}}</h5>
+                        <p class="card-text font-italic"><small><strong>Unit Kerja: {{d.work_unit}}</strong><br>Nama Berkas: {{d.name|truncatechars:50}}</small></p>
                     </div>
+                </div>
+                <div class="col-sm-6 mt-2">
+                    <a href="{% url 'alihmedia_vital_pdfupload' d.uuid_id %}" class="btn btn-warning btn-block btn-sm mb-2 mx-2">Upload</a>
+                </div>
+                <div class="col-sm-6 mt-2">
+                    <a href="{% url 'alihmedia_vital_update' d.uuid_id %}?next={{ request.path }}" class="btn btn-success btn-block btn-sm mb-2 mx-2">Edit</a>
                 </div>
 
             </div>

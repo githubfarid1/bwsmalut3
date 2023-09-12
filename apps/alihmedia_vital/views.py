@@ -7,7 +7,7 @@ from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 import os
 from os.path import exists
-from .forms import SearchDoc, InserPdfDoc, UploadFileForm
+from .forms import SearchDoc, InsertPdfDoc, UploadFileForm, DocAddForm
 import sys
 import json
 from openpyxl import Workbook, load_workbook
@@ -27,7 +27,7 @@ def index(request):
         folder = request.GET.get("folder")
         return redirect(f"/{__package__.split('.')[1]}/{folder}")
     context = {}
-    context['form'] = InserPdfDoc()
+    context['form'] = InsertPdfDoc()
     return render(request,'alihmedia_vital/index.html', context=context)
 
 def getdata(folder):
@@ -225,6 +225,22 @@ def pdfremove(request, uuid_id):
     # context['url'] = url
     return render(request,'alihmedia_vital/pdfremove.html', context=context)
 
+def update(request, uuid_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    doc = Doc.objects.get(uuid_id=uuid_id)
+    updateForm=DocAddForm(instance=doc)
+    if request.method=='POST':
+        docAdd=DocAddForm(request.POST,instance=doc)
+        if docAdd.is_valid():
+            docAdd.save()
+            messages.success(request, 'Data has been updated.')
+            next = request.POST.get('next', '/')
+            return redirect(next)
+    return render(request,'alihmedia_vital/update.html',{
+        'form':updateForm,
+        'item':doc})
+
 def create_xls(datalist):
     wb = Workbook()
     wb.create_sheet("CONFIG")
@@ -244,7 +260,7 @@ def create_xls(datalist):
     sheet.column_dimensions['I'].width = 15.5 
     sheet.column_dimensions['J'].width = 14.6
     sheet.column_dimensions['K'].width = 8.8
-    sheet.merge_cells('A1:J1')
+    sheet.merge_cells('A1:K1')
     sheet['A1'] = "DAFTAR ARSIP VITAL"
     sheet['A1'].alignment = Alignment(horizontal='center')
     sheet['A1'].font = Font(name='Arial', size=12, bold=True)
@@ -264,13 +280,15 @@ def create_xls(datalist):
 
 
     sheet.row_dimensions[7].height = 28
-    for cell in sheet["8:7"]:
-        cell.alignment = centervh
-        cell.font = font_style1
+    # for cell in sheet["7:7"]:
+    #     cell.alignment = centervh
+    #     cell.font = font_style1
     headers = ("NO", "JENIS ARSIP", "UNIT KERJA", "KURUN WAKTU", "MEDIA", "JUMLAH", "JANGKA SIMPAN", "LOKASI SIMPAN", "METODE PERLINDUNGAN", "KETERANGAN", "ACTION")
     for i in headers:
         sheet.cell(row=7, column=headers.index(i)+1).value = i
         sheet.cell(row=7, column=headers.index(i)+1).border = thin_border
+        sheet.cell(row=7, column=headers.index(i)+1).alignment = centervh
+        sheet.cell(row=7, column=headers.index(i)+1).font = font_style1
     row = 8
     for idx1, d in enumerate(datalist):
         sheet.cell(row=row, column=1).value = roman.toRoman(idx1+1)
