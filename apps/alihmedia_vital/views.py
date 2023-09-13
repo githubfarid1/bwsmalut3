@@ -17,7 +17,7 @@ import roman
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
-
+from django.db.models import Max
 
 @user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
 def index(request):
@@ -75,7 +75,7 @@ def sertifikat(request):
     folder = sys._getframe().f_code.co_name
     d = Variety.objects.get(folder=folder)
     docdata = getdata(folder)
-    context = {'data':docdata, "title": d.name}
+    context = {'data':docdata, "title": d.name, "folder": folder}
     return render(request,'alihmedia_vital/datalist.html', context=context)
 
 @user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
@@ -85,7 +85,7 @@ def bpkb_mobil_dan_motor(request):
     folder = sys._getframe().f_code.co_name
     d = Variety.objects.get(folder=folder)
     docdata = getdata(folder)
-    context = {'data':docdata, "title": d.name}
+    context = {'data':docdata, "title": d.name, "folder": folder}
     return render(request,'alihmedia_vital/datalist.html', context=context)
 
 @user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
@@ -240,6 +240,26 @@ def update(request, uuid_id):
     return render(request,'alihmedia_vital/update.html',{
         'form':updateForm,
         'item':doc})
+
+def add(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    addForm=DocAddForm()
+    if request.method=='POST':
+        docAdd=DocAddForm(request.POST)
+        folder = request.POST.get('folder')
+        variety = Variety.objects.get(folder=folder)
+        docmax = Doc.objects.filter(variety=variety).aggregate(Max('doc_number'))
+        if docAdd.is_valid():
+            instance = docAdd.save(commit=False)
+            instance.variety_id = variety.id
+            instance.doc_number = docmax['doc_number__max'] + 1
+            instance.save()
+            messages.success(request, 'Data has been added.')
+            next = request.POST.get('next', '/')
+            return redirect(next)
+    return render(request,'alihmedia_vital/add.html',{
+        'form':addForm})
 
 def create_xls(datalist):
     wb = Workbook()

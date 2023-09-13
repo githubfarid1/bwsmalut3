@@ -35,3 +35,15 @@ class DocAddForm(ModelForm):
             'save_location': forms.Textarea(attrs={'cols': 80, 'rows': 4}),
 
         }
+        labels = {
+            'name': 'Jenis Arsip',
+            'work_unit': 'Unit Kerja',
+            'period': 'Kurun Waktu',
+            'media': 'Media',
+            'countstr': 'Jumlah',
+            'save_life': 'Jangka Simpan',
+            'save_location': 'Lokasi Simpan',
+            'protect_method': 'Metode Perlindungan',
+            'description': 'Keterangan',
+
+        }

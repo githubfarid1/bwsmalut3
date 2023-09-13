@@ -1,0 +1,29 @@
+{% extends "layouts/base.html" %} {% load static %}
+{% block title %} | Data Vital {% endblock %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="container-fluid">
+  <h3 class="text-center">Tambah Data Vital</h3>
+    <div class="row  justify-content-center">
+    <div class="col-lg-4 col-md-6 col-sm-12 border">  
+      <form action="" method="POST">
+        {% csrf_token %}
+        {{form|crispy}}
+        <input type="hidden" name="next" value="{{ request.GET.next }}">
+        <input type="hidden" name="folder" value="{{ request.GET.folder }}">
+
+        <button type="submit" class="btn btn-primary mt-2">Submit</button>
+      </form>
+    </div>
+    </div>  
+  </div>
+  {% if data %}
+  <br>
+<h3 class="text-left mx-2">{{ folder|title }}</h3>
+    
+  
+{% endif %}  
+
+{% endblock %}
