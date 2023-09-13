@@ -72,8 +72,7 @@ def main():
     #START
     session = Session(engine)
     wb = load_workbook(filename=EXCEL_FILE, data_only=True)
-    sheetname = 'Contoh Daftar Arsip Vital'
-    ws = wb[sheetname]
+    ws = wb[EXCEL_SHEET]
     datalist = parse(ws)
 
     listtodb(datalist=datalist, session=session)
