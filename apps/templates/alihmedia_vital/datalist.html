@@ -42,7 +42,7 @@
                     <a href="{% url 'alihmedia_vital_pdfremove' d.uuid_id %}" class="btn btn-danger btn-block btn-sm mb-2 mx-2">Hapus PDF</a>
                 </div>
                 <div class="col-sm-6 mt-1">
-                    <a href="{% url 'alihmedia_vital_pdfremove' d.uuid_id %}" class="btn btn-danger btn-block btn-sm mb-2 mx-2">Hapus Doc</a>
+                    <a href="{% url 'alihmedia_vital_delete' d.uuid_id %}" class="btn btn-danger btn-block btn-sm mb-2 mx-2">Hapus</a>
                 </div>
 
             </div>
@@ -72,11 +72,14 @@
                         <p class="card-text font-italic"><small><strong>Unit Kerja: {{d.work_unit}}</strong><br>Nama Berkas: {{d.name|truncatechars:50}}</small></p>
                     </div>
                 </div>
-                <div class="col-sm-6 mt-2">
+                <div class="col-sm-4 mt-2">
                     <a href="{% url 'alihmedia_vital_pdfupload' d.uuid_id %}" class="btn btn-warning btn-block btn-sm mb-2 mx-2">Upload</a>
                 </div>
-                <div class="col-sm-6 mt-2">
+                <div class="col-sm-4 mt-2">
                     <a href="{% url 'alihmedia_vital_update' d.uuid_id %}?next={{ request.path }}" class="btn btn-success btn-block btn-sm mb-2 mx-2">Edit</a>
+                </div>
+                <div class="col-sm-4 mt-2">
+                    <a href="{% url 'alihmedia_vital_delete' d.uuid_id %}" class="btn btn-danger btn-block btn-sm mb-2 mx-2">Hapus</a>
                 </div>
 
             </div>

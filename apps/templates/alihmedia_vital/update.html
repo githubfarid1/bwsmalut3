@@ -4,24 +4,26 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<div class="container-fluid">
+<div class="container-fluid px-4">
   <h3 class="text-center">Update Data Vital</h3>
-    <div class="row  justify-content-center">
-    <div class="col-lg-4 col-md-6 col-sm-12 border">  
-      <form action="" method="POST">
+  <form action="" method="POST">
+    <div class="row border">  
         {% csrf_token %}
-        {{form|crispy}}
+        {% for field in form %}
+            <div class="col-md-6 p-2">{{field|as_crispy_field}}</div>
+        {%endfor%}
+        {% comment %} {{form|crispy}} {% endcomment %}
         <input type="hidden" name="next" value="{{ request.GET.next }}">
-        <button type="submit" class="btn btn-primary mt-2">Submit</button>
-      </form>
-    </div>
+        <div class="col-md-12">
+            <ul class="list-inline text-right">
+                <li class="list-inline-item">
+                    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+                </li>
+            </ul>
+        </div>        
     </div>  
+  </form>
+     
   </div>
-  {% if data %}
-  <br>
-<h3 class="text-left mx-2">{{ folder|title }}</h3>
-    
-  
-{% endif %}  
 
 {% endblock %}
