@@ -10,7 +10,8 @@ class SearchDoc(forms.Form):
         to_field_name="folder",
         required=True, label="Jenis Dokumen"
     )
-    search = forms.CharField(required=False)
+    search = forms.CharField(required=False, label="Keyword")
+
 
 class InsertPdfDoc(forms.Form):
     folder = forms.ModelChoiceField(
