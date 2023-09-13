@@ -56,7 +56,7 @@
        {% endif %}  
             <div class="row no-gutters">
                 <div class="col-sm-5 mt-3">
-                    <div class="card-body">
+                    <div class="ps-3">
                     {% if d.pdffound %}
                         <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
                     {% endif %}
@@ -67,9 +67,9 @@
                         </small> </p>
                 </div>
                 <div class="col-sm-12">
-                    <div class="card-body">
+                    <div class="ps-3">
                         <h5 class="card-title">{{d.countstr}}</h5>
-                        <p class="card-text font-italic"><small><strong>Unit Kerja: {{d.work_unit}}</strong><br>Nama Berkas: {{d.name|truncatechars:50}}</small></p>
+                        <p class="card-text font-italic"><small><strong>Unit Kerja: {{d.work_unit}}</strong><br>Nama Berkas: {{d.name|truncatechars:75}}</small></p>
                     </div>
                 </div>
                 <div class="col-sm-4 mt-2">
