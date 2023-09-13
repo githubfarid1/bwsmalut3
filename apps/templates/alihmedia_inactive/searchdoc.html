@@ -22,15 +22,16 @@
     
   <div class="row mx-2">
       {% for d in data %}
-      <div class="col-12 col-lg-3 mt-3">
+      <div class="col-12 col-lg-3 my-3">
           {% if d.pdffound %}
           <div class="card">
               <div class="row no-gutters">
                   <div class="col-12 mt-3 mx-2">
-                    <h5>Box Nomor: {{d.box_number}}</h5>
-                  </div>    
+                    <h5>Nomor Box: {{d.box_number}}</h5>
+                  </div>
+
                   <div class="col-sm-6 mt-3">
-                      <div>
+                      <div class="ps-3">
                       <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
                   </div>
                   </div>
@@ -39,7 +40,7 @@
                           </small> </p>
                   </div>
                   <div class="col-sm-12">
-                      <div>
+                    <div class="px-3">
                         <h5 class="mx-1 mt-1">{{d.doc_description}}</h5>
                         <p class="small mx-1"><small>{{d.bundle_title}}</small></p>
                       </div>
@@ -53,8 +54,8 @@
           {% else %}
           <div class="card bg-secondary">
               <div class="row no-gutters">
-                  <div class="col-sm-12">
-                      <div class="card-body">
+                  <div class="col-sm-12 my-3 px-3">
+                      <div class="ps-3">
                           <h5 class="card-title">Box Nomor: {{d.box_number}}</h5>
                           <h5 class="card-title">{{d.doc_description}}</h5>
                           <p class="card-text"><small>{{d.bundle_title}}

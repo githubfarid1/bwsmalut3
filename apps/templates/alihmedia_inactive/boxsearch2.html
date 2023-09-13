@@ -18,30 +18,28 @@
 {% if data %}
 <h3 class="text-center">{{ depname }} :: BOX Nomor {{ box_number }}</h3>
 
-
 <div class="row">
     {% for d in data %}
-    <div class="col-12 col-lg-3 mt-3">
+    <div class="col-12 col-lg-3 my-3">
         {% if d.pdffound %}
         <div class="card">
             <div class="row no-gutters">
-                
-                <div class="col-sm-5 mt-3">
-                    <div class="card-body">
+                <div class="col-sm-6 my-3">
+                    <div class="ps-3">
                     <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
                 </div>
                 </div>
-                <div class="col-sm-7 mt-3 text-center">
+                <div class="col-sm-6 mt-3 text-center">
                         <p><small>No. Berkas: {{d.bundle_number}}<br>No. Urut: {{d.doc_number}}<br>Tahun: {{d.bundle_year}}<br>Ukuran: {{d.filesize}} kb<br>Jml Hlmn: {{d.pagecount}}<br>
                         </small> </p>
                 </div>
                 <div class="col-sm-12">
-                    <div class="card-body">
+                    <div class="px-3">
                         <h5 class="card-title">{{d.doc_description}}</h5>
                         <p class="card-text font-italic"><small>{{d.bundle_title}}</small></p>
                     </div>
                 </div>
-                <div class="col-sm-12 mt-2">
+                <div class="col-sm-12 mt-2 px-4">
                     <a href="{% url 'alihmedia_inactive_pdfdownload' d.doc_uuid_id %}" target="_new" class="btn btn-info btn-block mb-2 w-100">Download</a>
                 </div>
 

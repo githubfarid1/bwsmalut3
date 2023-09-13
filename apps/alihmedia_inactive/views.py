@@ -279,7 +279,12 @@ class GenerateScriptView:
                 "appname":__package__.split('.')[1],
             }
         else:
-            self.__template_name = "alihmedia_inactive/nonarsip_view.html"
+            test_group = Group.objects.get(name='assesor')
+            if test_group in self.__request.user.groups.all():
+                self.__template_name = "alihmedia_inactive/assesor_view.html"
+            else:
+                self.__template_name = "alihmedia_inactive/guest_view.html"
+
             if self.__request.method == 'POST':
                 form = ListDocByBox(self.__request.POST or None)
                 if form.is_valid():
@@ -289,10 +294,19 @@ class GenerateScriptView:
                     depname = data[1]                
                     folder = data[2]
                     # return HttpResponse(next)    
-                    self.__context = {'data':boxdata, 'depname':depname, 'box_number': box_number, "folder": folder, 'form': ListDocByBox(),"menu": getmenu(), "appname":__package__.split('.')[1], "link": self.__funcname}
+                    self.__context = {'data':boxdata, 
+                                        'depname':depname, 
+                                        'box_number': box_number, 
+                                        "folder": folder, 
+                                        'form': ListDocByBox(),
+                                        "menu": getmenu(), 
+                                        "appname":__package__.split('.')[1], 
+                                        "link": self.__funcname}
             else:        
-                self.__context = {'form':ListDocByBox(), 'menu': getmenu(), 'appname': __package__.split('.')[1], 'link': self.__funcname}
-
+                self.__context = {'form':ListDocByBox(), 
+                                    'menu': getmenu(), 
+                                    'appname': __package__.split('.')[1], 
+                                    'link': self.__funcname}
     @property
     def context(self):
         return self.__context
@@ -340,7 +354,7 @@ def keuangan(request):
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
 
-@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
 def pdfdownload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -431,6 +445,7 @@ def statistics(request):
         "doccolor": doccolor,
     }
     return render(request=request, template_name='alihmedia_inactive/statistics.html', context=context)
+
 @csrf_exempt
 def boxsearch(request):
     if not request.user.is_authenticated:
@@ -740,7 +755,7 @@ def create_xls(datalist, app_name, folder):
         i += 1
     return wb
 
-
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
 def export(request):
     if not request.user.is_authenticated:
         return redirect('login')
