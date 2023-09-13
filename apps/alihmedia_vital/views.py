@@ -196,9 +196,6 @@ def delete(request, uuid_id):
     folder = doc.variety.folder
     doc_id = doc.id
     pdfpath = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.doc_number) + ".pdf")
-    # if not exists(pdfpath):
-    #     messages.info(request, "File tidak ada")
-    #     return redirect(f"/{__package__.split('.')[1]}/{folder}")
     coverfilename = "{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.doc_number)
     if request.method == 'POST':
         if exists(pdfpath):
@@ -258,6 +255,8 @@ def pdfremove(request, uuid_id):
     # context['url'] = url
     return render(request,'alihmedia_vital/pdfremove.html', context=context)
 
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
+@csrf_exempt
 def update(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -274,6 +273,8 @@ def update(request, uuid_id):
         'form':updateForm,
         'item':doc})
 
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all())
+@csrf_exempt
 def add(request):
     if not request.user.is_authenticated:
         return redirect('login')
