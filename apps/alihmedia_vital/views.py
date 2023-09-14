@@ -19,7 +19,7 @@ from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max
 
-@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
 def index(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -68,7 +68,7 @@ def getdata(folder):
 
         })
     return docdata
-@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
 def sertifikat(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -78,7 +78,7 @@ def sertifikat(request):
     context = {'data':docdata, "title": d.name, "folder": folder}
     return render(request,'alihmedia_vital/datalist.html', context=context)
 
-@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
 def bpkb_mobil_dan_motor(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -88,7 +88,7 @@ def bpkb_mobil_dan_motor(request):
     context = {'data':docdata, "title": d.name, "folder": folder}
     return render(request,'alihmedia_vital/datalist.html', context=context)
 
-@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
 def searchdoc(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -169,7 +169,7 @@ def pdfupload(request, uuid_id):
     # context['url'] = url
     return render(request,'alihmedia_vital/pdfupload.html', context=context)
 
-@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
 def pdfdownload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -255,7 +255,7 @@ def pdfremove(request, uuid_id):
     # context['url'] = url
     return render(request,'alihmedia_vital/pdfremove.html', context=context)
 
-@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
 @csrf_exempt
 def update(request, uuid_id):
     if not request.user.is_authenticated:
@@ -273,7 +273,7 @@ def update(request, uuid_id):
         'form':updateForm,
         'item':doc})
 
-@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
 @csrf_exempt
 def add(request):
     if not request.user.is_authenticated:
@@ -299,7 +299,7 @@ def create_xls(datalist):
     wb = Workbook()
     wb.create_sheet("CONFIG")
     sheet = wb["CONFIG"]
-    sheet['A1'].value = os.path.join("D:\\", "media") + "\\"
+    sheet['A1'].value = os.path.join("D:", "media") + "\\"
 
     sheet = wb.active
     sheet.title = "DATA INAKTIF"
@@ -422,8 +422,7 @@ def create_xls(datalist):
     
     return wb
 
-
-@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='BMN') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
 def export(request):
     if not request.user.is_authenticated:
         return redirect('login')

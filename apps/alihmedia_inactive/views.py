@@ -280,9 +280,9 @@ class GenerateScriptView_old:
                 "appname":__package__.split('.')[1],
             }
         else:
-            test_group = Group.objects.get(name='assesor')
+            test_group = Group.objects.get(name='asesor')
             if test_group in self.__request.user.groups.all():
-                self.__template_name = "alihmedia_inactive/assesor_view.html"
+                self.__template_name = "alihmedia_inactive/asesor_view.html"
             else:
                 self.__template_name = "alihmedia_inactive/guest_view.html"
 
@@ -390,7 +390,7 @@ def keuangan(request):
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
 
-@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
 def pdfdownload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -683,7 +683,7 @@ def create_xls(datalist, app_name, folder):
     wb = Workbook()
     wb.create_sheet("CONFIG")
     sheet = wb["CONFIG"]
-    sheet['A1'].value = os.path.join("D:\\", "media") + "\\"
+    sheet['A1'].value = os.path.join("D:", "media") + "\\"
 
     sheet = wb.active
     sheet.title = "DATA INAKTIF"
@@ -812,7 +812,7 @@ def create_xls(datalist, app_name, folder):
         i += 1
     return wb
 
-@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='assesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
 def export(request):
     if not request.user.is_authenticated:
         return redirect('login')

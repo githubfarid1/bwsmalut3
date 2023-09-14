@@ -30,14 +30,14 @@
             <li class="nav-item"><a class="nav-link" href="{% url 'alihmedia_vital_export' %}"><span class="nav-icon"></span> Export ke Excel</a></li>
           </ul>
         </li>
-        <li class="nav-group"><a class="nav-link nav-group-toggle" href="#">
+        {% comment %} <li class="nav-group"><a class="nav-link nav-group-toggle" href="#">
           <svg class="nav-icon">
             <use xlink:href="{% static 'assets/vendors/coreui/icons/svg/free.svg' %}#cil-settings"></use>
           </svg> Utility</a>
           <ul class="nav-group-items">
             <li class="nav-item"><a class="nav-link" href="{% url 'alihmedia_utilities_inactive' %}"><span class="nav-icon"></span> Alihmedia Inaktif</a></li>
           </ul>
-        </li>
+        </li> {% endcomment %}
 
       </ul>
   <button class="sidebar-toggler" type="button" data-coreui-toggle="unfoldable" title="Title"></button>
