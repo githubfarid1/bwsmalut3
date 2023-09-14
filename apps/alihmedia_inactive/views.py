@@ -21,6 +21,7 @@ import time
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.styles.borders import Border, Side
+from django.db.models import Max
 
 # from django_user_agents.utils import get_user_agent
 
@@ -256,7 +257,7 @@ def summarydata(data):
     return (len(data), sumscan, sumnotscan, percent, unyearstr )
 # @permission_required('apps_alihmedia_inactive.irigasi')
 
-class GenerateScriptView:
+class GenerateScriptView_old:
     def __init__(self, funcname, request) -> None:
         self.__funcname = funcname
         self.__request = request
@@ -307,6 +308,41 @@ class GenerateScriptView:
                                     'menu': getmenu(), 
                                     'appname': __package__.split('.')[1], 
                                     'link': self.__funcname}
+    @property
+    def context(self):
+        return self.__context
+    @property
+    def template_name(self):
+        return self.__template_name
+
+class GenerateScriptView:
+    def __init__(self, funcname, request) -> None:
+        self.__funcname = funcname
+        self.__request = request
+
+    def gencontext(self):
+        self.__template_name = "alihmedia_inactive/datalist.html"
+        if self.__request.method == 'POST':
+            form = ListDocByBox(self.__request.POST or None)
+            if form.is_valid():
+                box_number = form.cleaned_data['box_number']
+                data = getdatabybox(box_number, self.__funcname)
+                boxdata = data[0]
+                depname = data[1]                
+                folder = data[2]
+                self.__context = {'data':boxdata, 
+                                    'depname':depname, 
+                                    'box_number': box_number, 
+                                    "folder": folder, 
+                                    'form': ListDocByBox(),
+                                    "menu": getmenu(), 
+                                    "appname":__package__.split('.')[1], 
+                                    "link": self.__funcname}
+        else:        
+            self.__context = {'form':ListDocByBox(), 
+                                'menu': getmenu(), 
+                                'appname': __package__.split('.')[1], 
+                                'link': self.__funcname}
     @property
     def context(self):
         return self.__context
@@ -551,9 +587,10 @@ def pdfremove(request, uuid_id):
     coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
     if request.method == 'POST':
         if exists(pdfpath):
-            ts = str(time.time())
-            pdfrename = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf." + str(ts))
-            os.rename(pdfpath, pdfrename)
+            # ts = str(time.time())
+            # pdfrename = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf." + str(ts))
+            # os.rename(pdfpath, pdfrename)
+            os.remove(pdfpath)
             coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
             if exists(os.path.join(settings.COVER_LOCATION, coverfilename)):
                 os.remove(os.path.join(settings.COVER_LOCATION, coverfilename))
@@ -621,6 +658,26 @@ def searchdoc(request):
     context = {}
     context['form'] = SearchDoc()
     return render(request,'alihmedia_inactive/searchdoc.html', context=context)
+
+# def add(request):
+#     if not request.user.is_authenticated:
+#         return redirect('login')
+#     addForm=DocAddForm()
+#     if request.method=='POST':
+#         docAdd=DocAddForm(request.POST)
+#         folder = request.POST.get('folder')
+#         variety = Variety.objects.get(folder=folder)
+#         docmax = Doc.objects.filter(variety=variety).aggregate(Max('doc_number'))
+#         if docAdd.is_valid():
+#             instance = docAdd.save(commit=False)
+#             instance.variety_id = variety.id
+#             instance.doc_number = docmax['doc_number__max'] + 1
+#             instance.save()
+#             messages.success(request, 'Data has been added.')
+#             next = request.POST.get('next', '/')
+#             return redirect(next)
+#     return render(request,'alihmedia_vital/add.html',{
+#         'form':addForm})
 
 def create_xls(datalist, app_name, folder):
     wb = Workbook()

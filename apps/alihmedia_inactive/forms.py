@@ -1,5 +1,6 @@
 from django import forms
-from .models import Department
+from .models import Department, Doc
+from django.forms import ModelForm
 
 # creating a form  
 
@@ -44,3 +45,5 @@ class ExportForm(forms.Form):
         to_field_name="folder",
         required=True, label="Kelompok"
     )
+
+
