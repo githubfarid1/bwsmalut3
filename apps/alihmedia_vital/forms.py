@@ -37,7 +37,7 @@ class DocAddForm(ModelForm):
 
         }
         labels = {
-            'name': 'Jenis Arsip',
+            'name': 'Nama Arsip',
             'work_unit': 'Unit Kerja',
             'period': 'Kurun Waktu',
             'media': 'Media',
