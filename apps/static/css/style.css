@@ -36,4 +36,5 @@ td.file-not-exist {
 }
 nav a.active {
     border: solid 1px black;
+    background-color: burlywood;
 }

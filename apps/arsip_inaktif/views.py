@@ -1,0 +1,422 @@
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, Http404
+from .models import Bundle, Doc
+from django.contrib import messages
+import os
+from django.db.models import Q
+from os.path import exists
+from django.conf import settings
+import json
+import sys
+import time
+from datetime import datetime, timedelta, date
+import fitz
+from django.contrib.auth.decorators import permission_required, user_passes_test
+from django.http import JsonResponse
+# from .forms import UploadFileForm, DeletePdfFile, SearchQRCodeForm, ListDocByBox, DeleteDoc, SearchDoc, ExportForm
+from django.core.files.storage import FileSystemStorage
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import Group
+import time
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.styles.borders import Border, Side
+from django.db.models import Max
+from .forms import SearchDoc
+
+class GenerateScriptView:
+    def __init__(self, year, request) -> None:
+        self.__year = year
+        self.__request = request
+
+    def gencontext(self):
+        if self.__request.GET.get("search"):
+            query = self.__request.GET.get("search")
+            # print(query)
+            # code = self.__request.GET.get("code")
+            docs = Doc.objects.filter(Q(bundle__year__exact=self.year) & (Q(description__icontains=query)  | Q(bundle__title__icontains=query)))
+        else:
+            docs = Doc.objects.filter(bundle__year__exact=self.year)
+        datalist = []
+        for ke, doc in enumerate(docs):
+            datalist.append({
+                "box_number": doc.bundle.box_number,
+                "bundle_number": doc.bundle.bundle_number,
+                "doc_number": doc.doc_number,
+                "bundle_code": doc.bundle.code,
+                "bundle_title": doc.bundle.title,
+                "bundle_year": doc.bundle.year,
+                "doc_description": doc.description,
+                "doc_count": doc.doc_count,
+                "bundle_orinot": doc.bundle.orinot,
+                "row_number": ke + 1,
+                # "pdffound": pdffound,
+                "doc_id": doc.id,
+                # "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
+                "filesize": doc.filesize,
+                "pagecount": doc.page_count,
+                "doc_uuid_id": doc.uuid_id,
+                # "pdftmpfound": pdftmpfound,
+        })
+            
+
+        self.__template_name = "arsip_inaktif/datalist.html"
+        if self.__request.method == 'POST':
+            pass
+        else:        
+            self.__context = {  'menu': getmenu(), 
+                                'appname': __package__.split('.')[1], 
+                                'year': self.__year,
+                                'data': datalist,
+                                'form': SearchDoc()
+                            }
+    @property
+    def context(self):
+        return self.__context
+    @property
+    def template_name(self):
+        return self.__template_name
+    @property
+    def year(self):
+        return self.__year
+
+def getmenu():
+    years = Bundle.objects.order_by("year").values("year").distinct()
+    return [x['year'] for x in years if x['year'] != '']
+    
+def getdata_by_year(year):
+    docs = Doc.objects.filter(bundle__year__exact=year)
+    datalist = []
+    for ke, doc in enumerate(docs):
+        datalist.append({
+            "box_number": doc.bundle.box_number,
+            "bundle_number": doc.bundle.bundle_number,
+            "doc_number": doc.doc_number,
+            "bundle_code": doc.bundle.code,
+            "bundle_title": doc.bundle.title,
+            "bundle_year": doc.bundle.year,
+            "doc_description": doc.description,
+            "doc_count": doc.doc_count,
+            "doc_orinot": doc.orinot,
+            "row_number": ke + 1,
+            # "pdffound": pdffound,
+            "doc_id": doc.id,
+            # "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
+            "filesize": doc.filesize,
+            "pagecount": doc.page_count,
+            "doc_uuid_id": doc.uuid_id,
+            "doc_type": doc.doc_type,
+            "doc_access": doc.access,
+            # "pdftmpfound": pdftmpfound,
+    })
+    return datalist
+
+def getdata_all():
+    years = Bundle.objects.order_by("year").values("year").distinct()
+    listyears =  [x['year'] for x in years]
+    listyears.sort()
+    datadict = []
+    for year in listyears:
+        docs = Doc.objects.filter(bundle__year__exact=year)
+        datalist = []
+        for ke, doc in enumerate(docs):
+            datalist.append({
+                "box_number": doc.bundle.box_number,
+                "bundle_number": doc.bundle.bundle_number,
+                "doc_number": doc.doc_number,
+                "bundle_code": doc.bundle.code,
+                "bundle_title": doc.bundle.title,
+                "bundle_year": doc.bundle.year,
+                "doc_description": doc.description,
+                "doc_count": doc.doc_count,
+                "doc_orinot": doc.orinot,
+                "row_number": ke + 1,
+                # "pdffound": pdffound,
+                "doc_id": doc.id,
+                # "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
+                "filesize": doc.filesize,
+                "pagecount": doc.page_count,
+                "doc_uuid_id": doc.uuid_id,
+                "doc_type": doc.doc_type,
+                "doc_access": doc.access,
+                # "pdftmpfound": pdftmpfound,
+        })
+        d = {
+            'year':year,
+            'data':datalist
+        }
+        datadict.append(d)
+    return datadict
+
+
+def create_xls(datalist, sheet, year):
+    # wb = Workbook()
+    # sheet = wb.active
+    sheet.title = year
+    sheet.column_dimensions['A'].width = 7
+    sheet.column_dimensions['B'].width = 7
+    sheet.column_dimensions['C'].width = 7
+    sheet.column_dimensions['D'].width = 40
+    sheet.column_dimensions['E'].width = 40
+    sheet.column_dimensions['F'].width = 7
+    sheet.column_dimensions['G'].width = 3
+    sheet.column_dimensions['H'].width = 6 
+    sheet.column_dimensions['I'].width = 7 
+    sheet.column_dimensions['J'].width = 7
+    sheet.column_dimensions['K'].width = 7
+    sheet.column_dimensions['L'].width = 30
+
+    sheet.merge_cells('A1:L1')
+    sheet.merge_cells('A2:L2')
+    sheet.merge_cells('A3:L3')
+    aligncenter = Alignment(horizontal='center')
+    headerfont = Font(name='Arial Narrow', size=14, bold=True)
+    sheet['A1'] = "DAFTAR ARSIP INAKTIF {}".format(year)
+    sheet['A1'].alignment = aligncenter
+    sheet['A1'].font = headerfont
+    sheet['A2'] = "UNIT PENGOLAH: BALAI WILAYAH SUNGAI MALUKU UTARA"
+    sheet['A2'].alignment = aligncenter
+    sheet['A2'].font = headerfont
+    today = date.today()
+    sheet['A3'] = "TAHUN PENATAAN {}".format(today.year)
+    sheet['A3'].alignment = aligncenter
+    sheet['A3'].font = headerfont
+    
+    centervh = Alignment(horizontal='center', vertical='center', wrap_text=True)
+    centerv = Alignment(vertical='center', wrap_text=True)
+    wraptxt = Alignment(wrap_text=True)
+
+    thin_border1 = Border(left=Side(style='thin'), 
+                        right=Side(style='thin'), 
+                        top=Side(style='thin'), 
+                        bottom=Side(style='thin'))
+    
+    thin_border2 = Border(bottom=Side(style='thin'),right=Side(style='thin'),left=Side(style='thin'))
+    thin_border3 = Border(top=Side(style='thin'), right=Side(style='thin'),left=Side(style='thin'))
+    thin_border4 = Border(right=Side(style='thin'),left=Side(style='thin'))
+    thin_border5 = Border(top=Side(style='thin'), bottom=Side(style='thin'))
+    thin_border6 = Border(top=Side(style='thin'))
+
+
+    font_style1 = Font(name='Arial Narrow', size=11, bold=True)
+    font_style2 = Font(name='Arial', size=8.5)
+    font_style3 = Font(name='Arial', size=8.5, italic=True)
+    color1 = PatternFill(start_color="c6d5f7", fill_type = "solid")
+
+    # sheet.row_dimensions[7].height = 28
+    for cell in sheet["7:7"]:
+        cell.alignment = centervh
+        cell.font = font_style1
+    sheet.merge_cells('A7:A8')
+    sheet.merge_cells('B7:B8')
+    sheet.merge_cells('C7:C8')
+    sheet.merge_cells('D7:D8')
+    sheet.merge_cells('E7:E8')
+    sheet.merge_cells('F7:F8')
+    sheet.merge_cells('G7:H8')
+    sheet.merge_cells('I7:K7')
+    sheet.merge_cells('L7:L8')
+
+
+
+
+    headers = ("NO BRKS", "NO URUT", "KODE", "INDEKS/JUDUL", "URAIAN MASALAH / KEGIATAN", "TAHUN")
+    for i in headers:
+        sheet.cell(row=7, column=headers.index(i)+1).value = i
+        sheet.cell(row=7, column=headers.index(i)+1).border = thin_border1
+        sheet.cell(row=8, column=headers.index(i)+1).border = thin_border1
+    
+    for i in range(1, 13):
+        sheet.cell(row=9, column=i).value = i
+        sheet.cell(row=9, column=i).alignment = centervh
+        sheet.cell(row=9, column=i).border = thin_border1
+        sheet.cell(row=9, column=i).font = Font(name='Arial Narrow', size=8, bold=True)
+        sheet.cell(row=7, column=i).fill = color1
+        sheet.cell(row=8, column=i).fill = color1
+        sheet.cell(row=9, column=i).fill = color1
+
+    sheet.row_dimensions[9].height = 9
+    
+    sheet.cell(row=7, column=7).value = "JUMLAH BERKAS"
+    sheet.cell(row=7, column=7).border = thin_border1
+    sheet.cell(row=8, column=7).border = thin_border1
+    sheet.cell(row=7, column=8).border = thin_border1
+    sheet.cell(row=8, column=8).border = thin_border1
+
+    sheet.cell(row=7, column=9).value = "KETERANGAN"
+    sheet.cell(row=7, column=9).border = thin_border1
+    sheet.cell(row=7, column=10).border = thin_border1
+    sheet.cell(row=7, column=11).border = thin_border1
+
+    sheet.cell(row=8, column=9).value = "ASLI"
+    sheet.cell(row=8, column=10).value = "COPY"
+    sheet.cell(row=8, column=11).value = "BOX"
+    sheet.cell(row=8, column=9).border = thin_border1
+    sheet.cell(row=8, column=10).border = thin_border1
+    sheet.cell(row=8, column=11).border = thin_border1
+    sheet.cell(row=8, column=9).font = font_style1
+    sheet.cell(row=8, column=10).font = font_style1
+    sheet.cell(row=8, column=11).font = font_style1
+    sheet.cell(row=8, column=12).font = font_style1
+    
+    sheet.cell(row=7, column=12).value = "KLASIFIKASI KEAMANAN DAN AKSES ARSIP DINAMIS"
+    sheet.cell(row=7, column=12).border = thin_border1
+    sheet.cell(row=8, column=12).border = thin_border1
+    sheet.cell(row=7, column=12).alignment = centervh
+
+    i = 10
+    result = datalist
+    curbox = result[0]["box_number"]
+    curbundle = result[0]["bundle_number"]
+    isfirst = True
+    for res in result:
+        sheet['{}{}'.format('K', i)].border = thin_border4
+        sheet['{}{}'.format('A', i)].border = thin_border4
+        sheet['{}{}'.format('B', i)].border = thin_border4
+        sheet['{}{}'.format('C', i)].border = thin_border4
+        sheet['{}{}'.format('D', i)].border = thin_border4
+        sheet['{}{}'.format('E', i)].border = thin_border4
+        sheet['{}{}'.format('F', i)].border = thin_border4
+        sheet['{}{}'.format('G', i)].border = thin_border4
+        sheet['{}{}'.format('H', i)].border = thin_border4
+        sheet['{}{}'.format('I', i)].border = thin_border4
+        sheet['{}{}'.format('J', i)].border = thin_border4
+        sheet['{}{}'.format('L', i)].border = thin_border4
+
+        sheet['{}{}'.format('B', i)].border = thin_border1
+        sheet['{}{}'.format('E', i)].border = thin_border1
+        sheet['{}{}'.format('G', i)].border = thin_border1
+        sheet['{}{}'.format('H', i)].border = thin_border1
+        sheet['{}{}'.format('I', i)].border = thin_border1
+        sheet['{}{}'.format('J', i)].border = thin_border1
+        sheet['{}{}'.format('L', i)].border = thin_border1
+
+
+        if isfirst:
+            isfirst = False
+            
+            sheet['{}{}'.format('A', i)].value = res["bundle_number"]
+            sheet['{}{}'.format('B', i)].value = res["doc_number"]
+            sheet['{}{}'.format('C', i)].value = res["bundle_code"]
+            sheet['{}{}'.format('D', i)].value = res["bundle_title"]
+            sheet['{}{}'.format('E', i)].value = res["doc_description"]
+            sheet['{}{}'.format('F', i)].value = res["bundle_year"]
+            sheet['{}{}'.format('G', i)].value = res["doc_count"]
+            sheet['{}{}'.format('H', i)].value = res["doc_type"]
+
+            if res["doc_orinot"] == "Asli":
+                sheet['{}{}'.format('I', i)].value = res["doc_orinot"]
+            else:
+                sheet['{}{}'.format('J', i)].value = res["doc_orinot"]
+
+            sheet['{}{}'.format('K', i)].value = res["box_number"]
+            sheet['{}{}'.format('L', i)].value = res["doc_access"]
+                
+        else:
+            if curbox != res["box_number"]:
+                curbox = res["box_number"]
+                sheet['{}{}'.format('K', i)].value = res["box_number"]
+                sheet['{}{}'.format('K', i)].border = thin_border3
+            else:
+                sheet['{}{}'.format('K', i)].value = ""
+                 
+            if curbundle != res["bundle_number"]:
+                curbundle = res["bundle_number"]
+                sheet['{}{}'.format('A', i)].value = res["bundle_number"]
+                sheet['{}{}'.format('C', i)].value = res["bundle_code"]
+                sheet['{}{}'.format('D', i)].value = res["bundle_title"]
+                sheet['{}{}'.format('F', i)].value = res["bundle_year"]
+                
+
+                sheet['{}{}'.format('A', i)].border = thin_border3
+                sheet['{}{}'.format('C', i)].border = thin_border3
+                sheet['{}{}'.format('D', i)].border = thin_border3
+                sheet['{}{}'.format('F', i)].border = thin_border3
+                # sheet['{}{}'.format('H', i)].border = thin_border3
+
+            else:
+                sheet['{}{}'.format('A', i)].value = ""
+                sheet['{}{}'.format('C', i)].value = ""
+                sheet['{}{}'.format('D', i)].value = ""
+                sheet['{}{}'.format('F', i)].value = ""
+                sheet['{}{}'.format('I', i)].value = ""
+                sheet['{}{}'.format('J', i)].value = ""
+
+            sheet['{}{}'.format('B', i)].value = res["doc_number"]
+            sheet['{}{}'.format('E', i)].value = res["doc_description"]
+            sheet['{}{}'.format('G', i)].value = res["doc_count"]
+            sheet['{}{}'.format('H', i)].value = res["doc_type"]
+            if res["doc_orinot"] == "Asli":
+                sheet['{}{}'.format('I', i)].value = res["doc_orinot"]
+            else:
+                sheet['{}{}'.format('J', i)].value = res["doc_orinot"]
+            
+            sheet['{}{}'.format('L', i)].value = res["doc_access"]
+
+        # sheet.cell(row=row, column=1).alignment = centerv
+        sheet['{}{}'.format('K', i)].alignment = centervh
+        sheet['{}{}'.format('A', i)].alignment = centervh
+        sheet['{}{}'.format('B', i)].alignment = centervh
+        sheet['{}{}'.format('C', i)].alignment = centervh
+        sheet['{}{}'.format('D', i)].alignment = centerv
+        sheet['{}{}'.format('E', i)].alignment = centerv
+        sheet['{}{}'.format('F', i)].alignment = centervh
+        sheet['{}{}'.format('G', i)].alignment = centervh
+        sheet['{}{}'.format('H', i)].alignment = centervh
+        sheet['{}{}'.format('I', i)].alignment = centervh
+        sheet['{}{}'.format('J', i)].alignment = centervh
+        sheet['{}{}'.format('L', i)].alignment = centervh
+
+
+        i += 1
+
+    sheet['{}{}'.format('A', i)].border = thin_border6
+    sheet['{}{}'.format('C', i)].border = thin_border6
+    sheet['{}{}'.format('D', i)].border = thin_border6
+    sheet['{}{}'.format('F', i)].border = thin_border6
+    sheet['{}{}'.format('K', i)].border = thin_border6
+    
+def tahun(request, year):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    if request.method == 'POST':
+        year = request.POST.get("year")
+        datalist = getdata_by_year(year)
+        # print(datalist)
+        filename = f"data_{__package__.split('.')[1]}_{year}.xlsx"
+        wb = Workbook()
+        sheet = wb.active
+        create_xls(datalist=datalist, sheet=sheet, year=year)
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename={}'.format(filename)    
+        wb.save(response)
+        return response
+        
+    gendata = GenerateScriptView(year, request)
+    gendata.gencontext()
+    # print(gendata.context)
+    return render(request=request, 
+                  template_name=gendata.template_name, 
+                  context=gendata.context)
+
+def report(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    today = date.today()
+    data = getdata_all()
+    wb = Workbook()
+    filename = f"data_{__package__.split('.')[1]}_tahun_penataan_{today.year}.xlsx"
+    for i in range(0, len(data)):
+        # sheet = wb.active
+        if i == 0:
+            sheet = wb.active
+            sheet.title = data[i]['year']
+        else:
+            wb.create_sheet(data[i]['year'])
+            sheet = wb[data[i]['year']]
+        create_xls(datalist=data[i]['data'], sheet=sheet, year=data[i]['year'])
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)    
+    wb.save(response)
+    return response

@@ -17,5 +17,7 @@ urlpatterns = [
     path('alihmedia_inactive/', include('apps.alihmedia_inactive.urls')),
     path('alihmedia_utilities/', include('apps.alihmedia_utilities.urls')),
     path('alihmedia_vital/', include('apps.alihmedia_vital.urls')),
+    path('arsip_inaktif/', include('apps.arsip_inaktif.urls')),
+
 
 ]
