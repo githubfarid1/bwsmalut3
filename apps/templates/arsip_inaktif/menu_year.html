@@ -15,9 +15,10 @@
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         {% if menu %} {% for m in menu %}
+        
           <a
           class="nav-link {% if m == year %}active{% endif %}"
-            href="{{ m }}"
+            href="{{ '/arsip_inaktif/tahun/' }}{{ m }}"
             >{{ m|title }}</a
           >
         </li>

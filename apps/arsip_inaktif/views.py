@@ -659,6 +659,18 @@ class GenerateScriptPerYearView:
             docs = Doc.objects.filter(bundle__year__exact=self.year)
         datalist = []
         for ke, doc in enumerate(docs):
+            folder = doc.bundle.department.folder
+            path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
+            pdffound = False
+            coverfilename = ""
+            if exists(path):
+                pdffound = True
+                coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
+            filetmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", f"{__package__.split('.')[1]}-{doc.id}.pdf")
+            pdftmpfound = False
+            if exists(filetmppath):
+                pdftmpfound = True
+            
             datalist.append({
                 "box_number": doc.bundle.box_number,
                 "bundle_number": doc.bundle.bundle_number,
@@ -670,9 +682,9 @@ class GenerateScriptPerYearView:
                 "doc_count": doc.doc_count,
                 "bundle_orinot": doc.bundle.orinot,
                 "row_number": ke + 1,
-                # "pdffound": pdffound,
+                "pdffound": pdffound,
                 "doc_id": doc.id,
-                # "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
+                "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
                 "filesize": doc.filesize,
                 "pagecount": doc.page_count,
                 "doc_uuid_id": doc.uuid_id,
@@ -680,7 +692,7 @@ class GenerateScriptPerYearView:
         })
             
 
-        self.__template_name = "arsip_inaktif/datalist2.html"
+        self.__template_name = "arsip_inaktif/datalist_year.html"
         if self.__request.method == 'POST':
             pass
         else:        
@@ -1039,3 +1051,72 @@ def report(request):
     response['Content-Disposition'] = 'attachment; filename={}'.format(filename)    
     wb.save(response)
     return response
+
+def statistics_year(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    years = getmenu_year()
+    yearlist = []
+    yearvaluelist = []
+    colorlist = []
+    foundall = 0
+    notfoundall = 0
+    
+    for year in years:
+        totrec = Doc.objects.filter(bundle__year__exact=year).count()
+        notfound = Doc.objects.filter(Q(bundle__year__exact=year) & Q(filesize__isnull=True)).count()
+        found = totrec - notfound
+        foundall += found
+        notfoundall += notfound
+        yearlist.append(" | ".join([year, "Sudah"]))
+        yearlist.append(" | ".join([year, "Belum"]))
+        yearvaluelist.append(found)
+        yearvaluelist.append(notfound)
+        colorlist.append("rgba(112, 185, 239, 1)")
+        colorlist.append("rgba(244, 204, 204, 1)")
+        total = foundall + notfoundall
+        procfound = foundall / total * 100
+        procnotfound = notfoundall / total * 100
+    fileinfolist = []
+    allfilelist = [os.path.join(root, file) for root, dirs, files in os.walk(os.path.join(settings.PDF_LOCATION, __package__.split('.')[1])) for file in files if file.endswith(".pdf")]
+    for filepath in allfilelist:
+        # infotime = os.path.getmtime(filepath)
+        infotime = os.stat(filepath).st_mtime
+        infodate = datetime.fromtimestamp(infotime).strftime('%d-%m-%Y')
+        mdict = {
+            "file": filepath,
+            "date": infodate,
+            "pages": fitz.open(filepath).page_count
+        }
+        fileinfolist.append(mdict)
+
+    num_of_dates = 30
+    start = datetime.today()
+    date_list = [start.date() - timedelta(days=x) for x in range(num_of_dates)]
+    date_list.sort()
+    docscan = []
+    doccolor = []
+    docdate = []
+    # print(date_list)
+    for d in date_list:
+        pages = 0
+        for fl in fileinfolist:
+            if fl['date'] == d.strftime('%d-%m-%Y'):
+                pages += fl['pages']
+        docdate.append(d.strftime('%d-%m-%Y'))
+        docscan.append(pages)
+        doccolor.append("rgba(112, 185, 239, 1)")
+    context = {
+        "menu": getmenu_year(),
+        "depnamelist": yearlist,
+        "depvaluelist": yearvaluelist,
+        "colorlist": colorlist,
+        "foundall": str(foundall),
+        "notfoundall": str(notfoundall),
+        "procfound":f"{procfound:.3f}",
+        "procnotfound":f"{procnotfound:.3f}",
+        "docdate": docdate,
+        "docscan": docscan,
+        "doccolor": doccolor,
+    }
+    return render(request=request, template_name='arsip_inaktif/statistics_year.html', context=context)
