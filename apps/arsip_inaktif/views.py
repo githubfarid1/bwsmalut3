@@ -539,6 +539,109 @@ def pdfupload(request, uuid_id):
     # context['url'] = url
     return render(request,'arsip_inaktif/pdfupload.html', context=context)
 
+def searchdoc(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    if request.GET.get("folder"):
+        query = request.GET.get("search")
+        folder = request.GET.get("folder")
+        d = Department.objects.get(folder=folder)
+        docs = Doc.objects.filter(Q(bundle__department_id__exact=d.id) & (Q(description__icontains=query)  | Q(bundle__title__icontains=query) | Q(bundle__year__contains=query)))
+        if not docs:
+            messages.info(request, "Data tidak ditemukan")
+        boxdata = []
+        for ke, doc in enumerate(docs):
+            path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], doc.bundle.department.folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
+            pdffound = False
+            filesize = 0
+            pagecount = 0
+            coverfilename = ""
+            if exists(path):
+                pdffound = True
+                coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], doc.bundle.department.folder, doc.bundle.box_number, doc.doc_number)
+            boxdata.append({
+                "department_folder": doc.bundle.department.folder,
+                "box_number": doc.bundle.box_number,
+                "bundle_number": doc.bundle.bundle_number,
+                "doc_number": doc.doc_number,
+                "bundle_code": doc.bundle.code,
+                "bundle_title": doc.bundle.title,
+                "bundle_year": doc.bundle.year,
+                "doc_description": doc.description,
+                "doc_count": doc.doc_count,
+                "bundle_orinot": doc.bundle.orinot,
+                "row_number": ke + 1,
+                "pdffound": pdffound,
+                "doc_id": doc.id,
+                "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
+                "filesize": doc.filesize,
+                "pagecount": doc.page_count,
+                "doc_uuid_id": doc.uuid_id,
+            })
+        context = {'data':boxdata, 'form': SearchDoc(), 'folder':folder, 'query':query}
+        return render(request,'arsip_inaktif/searchdoc.html', context=context)
+
+    context = {}
+    context['form'] = SearchDoc()
+    return render(request,'arsip_inaktif/searchdoc.html', context=context)
+
+@csrf_exempt
+def searchqrcode(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    if request.method == 'POST':
+        qrcode = request.POST.get("qrcode")
+        strlist = qrcode.strip().split('/')
+        try:
+            folder = strlist[3]
+            box_number = strlist[4]
+        except:
+            messages.info(request, "Data tidak ditemukan")
+            context = {}
+            context['form'] = SearchQRCodeForm()
+            return render(request, 'arsip_inaktif/searchqrcode.html', context=context)
+            # return HttpResponse("QRcode Error")
+        
+        # return HttpResponse(folder + box)
+        d = Department.objects.get(folder=folder)
+        depname = d.name
+        docs = Doc.objects.filter(bundle__department_id__exact=d.id, bundle__box_number__exact=box_number)
+        boxdata = []
+        for ke, doc in enumerate(docs):
+            path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
+            pdffound = False
+            coverfilename = ""
+            if exists(path):
+                pdffound = True
+                coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
+            boxdata.append({
+                "box_number": doc.bundle.box_number,
+                "bundle_number": doc.bundle.bundle_number,
+                "doc_number": doc.doc_number,
+                "bundle_code": doc.bundle.code,
+                "bundle_title": doc.bundle.title,
+                "bundle_year": doc.bundle.year,
+                "doc_description": doc.description,
+                "doc_count": doc.doc_count,
+                "bundle_orinot": doc.bundle.orinot,
+                "row_number": ke + 1,
+                "pdffound": pdffound,
+                "doc_id": doc.id,
+                "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
+                "filesize": doc.filesize,
+                "pagecount": doc.page_count,
+                "doc_uuid_id": doc.uuid_id,
+            })
+
+        # return HttpResponse(docs[2].bundle.title)
+        # context['form'] = SearchQRCodeForm()
+        context = {'data':boxdata, 'depname':depname, 'box_number': box_number, "folder": folder, 'form': SearchQRCodeForm()}
+        return render(request=request, template_name='arsip_inaktif/searchqrcode.html', context=context)
+        # pass
+    context = {}
+    context['form'] = SearchQRCodeForm()
+    # context['url'] = url
+    return render(request, 'arsip_inaktif/searchqrcode.html', context=context)
 
 #-----------------
 class GenerateScriptPerYearView:
