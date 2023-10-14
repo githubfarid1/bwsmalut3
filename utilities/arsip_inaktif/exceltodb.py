@@ -6,7 +6,7 @@ import os
 from settings import *
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from dbclass import Doc, Bundle, Base
+from dbclass import Doc, Bundle, Department, Base
 import uuid
 
 engine = create_engine('mysql+pymysql://{}:{}@localhost:{}/{}'.format(USER, PASSWORD, PORT, DBNAME) , echo=False)
@@ -146,11 +146,11 @@ def parse(ws, sheetname):
 
 def listtodb(boxlist, sheetname, session):
     defcode = boxlist[0]['data'][0]['kode']
-    # dep = Department(name=sheetname, defcode=defcode, link=TABLE_PREFIX + str(sheetname).replace(' ', "_").lower(), folder=str(sheetname).replace(' ', "_").lower() )
-    # session.add(dep)
-    # session.flush()
-    # session.commit()
-    # departmentId = dep.id
+    dep = Department(name=sheetname, defcode=defcode, link=TABLE_PREFIX + str(sheetname).replace(' ', "_").lower(), folder=str(sheetname).replace(' ', "_").lower() )
+    session.add(dep)
+    session.flush()
+    session.commit()
+    departmentId = dep.id
     for box in boxlist:
         box_number = box['box']
         for bundle in box['data']:
@@ -167,7 +167,7 @@ def listtodb(boxlist, sheetname, session):
             code = bundle['kode']
             if code is None:
                 code = defcode
-            bundleinsert = Bundle( box_number=box_number, bundle_number=bundle_number, code=code, title=bundle['index'], year=year, orinot=ket)
+            bundleinsert = Bundle(department_id=departmentId,box_number=box_number, bundle_number=bundle_number, code=code, title=bundle['index'], year=year, orinot=ket)
             session.add(bundleinsert)
             session.flush()
             for doc in bundle['data']:

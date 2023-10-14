@@ -10,6 +10,7 @@
         opacity: 0.7;
         background-color: #FF9800!important;
       }
+    
       {% comment %} body {
         padding-top: 3rem;
         padding-bottom: 3rem;
@@ -24,97 +25,102 @@
 
 {% block content %}
 <div class="container-fluid">
-<h3 class="text-center">Data Inaktif {{ year }}</h3>
+<h3 class="text-center">Data Inaktif</h3>
 
 {% include 'arsip_inaktif/menu.html'%}
-
-{% if data %}
-<div class="row">
-    <div class="col-sm-4">
-        <form action="" method="post">
-            {% csrf_token %}
-            <input name="year" type="hidden" value="{{ year }}">
-            <button type="submit" class="btn btn-success mt-4">Export ke Excel</button>
-        </form>
-    </div>
-    <div class="col-sm-4">
-    </div>
-    <div class="col-sm-4">
-            <form action="" method="get">
-                <div class="row">
-                <div class="col-sm-10">
+    <div class="container mt-2 mb-3">
+        <div class="row justify-content-center">
+            <div class="col-lg-3 col-md-8 col-sm-12">
+                
+                <form action="{% url link %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
                     {{form|crispy}}
-                </div>
-                <div class="col-sm-2 mt-3">
-                    <button type="submit" class="btn btn-primary mt-2">Cari</button>
-                </div>
+                    <br>
+                    <button type="submit" class="btn btn-primary mb-3">Submit..</button>
+                </form>
             </div>
-            </form>
-        
+        </div>
     </div>
-</div>    
-<div class="row">
-    {% for d in data %}
-    <div class="col-12 col-lg-3 mt-3">
-        {% if d.pdffound %}
-        <div class="card">
-            <div class="row no-gutters">
-                <div class="col-sm-6 mt-3">
-                    <div class="ps-3">
-                    <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
-                </div>
-                </div>
-                <div class="col-sm-6 mt-3 text-center">
-                        <p><small>No. Berkas: {{d.bundle_number}}<br>No. Urut: {{d.doc_number}}<br>Tahun: {{d.bundle_year}}<br>Ukuran: {{d.filesize}} kb<br>Jml Hlmn: {{d.pagecount}}<br>
-                        </small> </p>
-                </div>
-                <div class="col-sm-12">
-                    <div class="px-3 py-2">
+
+
+
+    {% if data %}
+    
+    <div class="row">
+        <h4>{{ depname }} :: BOX Nomor {{ box_number }}</h4>
+
+        {% for d in data %}
+        <div class="col-12 col-lg-3 mt-3">
+            {% if d.pdffound %}
+            <div class="card">
+                <div class="row no-gutters px-3 py-2">
+                    <div class="col-sm-6 mt-3 mb-2">
+                        <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
+                    </div>
+                    <div class="col-sm-6 mt-3 text-center">
+                            <p><small>No. Berkas: {{d.bundle_number}}<br>No. Urut: {{d.doc_number}}<br>Tahun: {{d.bundle_year}}<br>Ukuran: {{d.filesize}} kb<br>Jml Hlmn: {{d.pagecount}}<br>
+                            </small> </p>
+                    </div>
+                    <div class="col-sm-12">
                         <h5 class="card-title">{{d.doc_description}}</h5>
                         <p class="card-text font-italic"><small>{{d.bundle_title}}</small></p>
                     </div>
-                </div>
-                <div class="col-sm-12 mt-2 px-4">
-                    <a href="{% url 'alihmedia_inactive_pdfdownload' d.doc_uuid_id %}" target="_new" class="btn btn-info btn-block mb-2 w-100">Download</a>
-                </div>
+                    {% comment %} <div class="col-sm-12 mt-2">
+                        <a href="{% url 'arsip_inaktif_pdfdownload' d.doc_uuid_id %}" target="_new" class="btn btn-info btn-block mb-2 w-100">Download</a>
+                    </div> {% endcomment %}
 
+                    <div class="col-sm-6 my-1">
+                        <a href="{% url 'arsip_inaktif_pdfdownload' d.doc_uuid_id %}" target="_new" class="btn btn-info btn-block btn-sm">Download</a>
+                    </div>
+                    <div class="col-sm-6 my-1">
+                        <a href="{% url 'arsip_inaktif_pdfremove' d.doc_uuid_id %}" class="btn btn-danger btn-block btn-sm">Hapus PDF</a>
+                    </div>
+                    {% comment %} <div class="col-sm-6 my-1">
+                        <a href="{% url 'alihmedia_vital_update' d.doc_uuid_id %}?next={{ request.path }}" class="btn btn-success btn-block btn-sm">Edit</a>
+                    </div>
+                    <div class="col-sm-6 my-1">
+                        <a href="{% url 'alihmedia_vital_delete' d.doc_uuid_id %}" class="btn btn-danger btn-block btn-sm">Hapus</a>
+                    </div> {% endcomment %}
+        
+                </div>
             </div>
-        </div>
-        {% else %}
+            {% else %}
 
-        {% if d.pdftmpfound %}
-        <div class="card bg-light">
-       {% else %}
-       <div class="card bg-white">
-       {% endif %}  
-            <div class="row no-gutters">
-                <div class="col-sm-5 mt-3">
-                    <div class="card-body">
-                    {% if d.pdffound %}
-                        <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
-                    {% endif %}
-                </div>
-                </div>
-                <div class="col-sm-7 mt-3 text-center">
-                        <p><strong><small>Kode: {{d.bundle_code}}<br>No. Box: {{d.box_number}}<br>No. Berkas: {{d.bundle_number}}<br>No. Urut: {{d.doc_number}}</strong><br>Tahun: {{d.bundle_year}}<br>Ukuran: {{d.filesize}} kb<br>Jml Hlmn: {{d.pagecount}}<br>
-                        </small> </p>
-                </div>
-                <div class="col-sm-12">
-                    <div class="card-body">
-                        <a href="{% url 'alihmedia_inactive_pdfupload' d.doc_uuid_id %}"><h5 class="card-title">{{d.doc_description}}</h5></a>
+            {% if d.pdftmpfound %}
+            <div class="card bg-light">
+           {% else %}
+           <div class="card bg-secondary">
+           {% endif %}  
+                <div class="row no-gutters px-3 py-2">
+                    <div class="col-sm-5 mt-3">
+                        <div class="ps-3">
+                        {% if d.pdffound %}
+                            <a href="{% static d.coverfilepath %}" target="_new"><img class="card-img border" src="{% static d.coverfilepath %}" alt=""></a>
+                        {% endif %}
+                    </div>
+                    </div>
+                    <div class="col-sm-7 mt-3 text-center">
+                            <p><small>No. Berkas: {{d.bundle_number}}<br><strong>No. Urut: {{d.doc_number}}</strong><br>Tahun: {{d.bundle_year}}<br>Ukuran: {{d.filesize}} kb<br>Jml Hlmn: {{d.pagecount}}<br>
+                            </small> </p>
+                    </div>
+                    <div class="col-sm-12">
+                        <h5 class="card-title">{{d.doc_description}}</h5>
                         <p class="card-text font-italic"><small>{{d.bundle_title}}</small></p>
                     </div>
+                    <div class="col-sm-4 mt-2">
+                        <a href="{% url 'arsip_inaktif_pdfupload' d.doc_uuid_id %}" class="btn btn-warning btn-block btn-sm mb-2 mx-2">Upload</a>
+                    </div>
+    
                 </div>
-
             </div>
-        </div>
 
-        {% endif %}
+            {% endif %}
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
+    {% endif %}
 </div>
-{% endif %}
-</div>
+
 
 {% endblock %}
 {% block javascripts %}
