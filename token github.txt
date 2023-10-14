@@ -1,2 +1,1 @@
-token github:
 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
