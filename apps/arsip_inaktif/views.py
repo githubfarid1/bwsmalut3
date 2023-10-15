@@ -1369,9 +1369,10 @@ def create_dadigital_xls(datalist, sheet):
     sheet.column_dimensions['E'].width = 10
     sheet.column_dimensions['F'].width = 15
     sheet.column_dimensions['G'].width = 20
+    sheet.column_dimensions['H'].width = 10
 
-    sheet.merge_cells('A1:G1')
-    sheet.merge_cells('A2:G2')
+    sheet.merge_cells('A1:H1')
+    sheet.merge_cells('A2:H2')
 
 
     for cell in sheet["7:7"]:
@@ -1383,7 +1384,9 @@ def create_dadigital_xls(datalist, sheet):
     sheet.merge_cells('E7:E8')
     sheet.merge_cells('F7:F8')
     sheet.merge_cells('G7:G8')
-    for i in range(1, 8):
+    sheet.merge_cells('H7:H8')
+
+    for i in range(1, 9):
         sheet.cell(row=9, column=i).value = i
         sheet.cell(row=9, column=i).alignment = centervh
         sheet.cell(row=9, column=i).border = thin_border1
@@ -1391,6 +1394,7 @@ def create_dadigital_xls(datalist, sheet):
         sheet.cell(row=7, column=i).fill = color1
         sheet.cell(row=8, column=i).fill = color1
         sheet.cell(row=9, column=i).fill = color1
+        
     sheet.row_dimensions[9].height = 9
     sheet.cell(row=7, column=1).value = "NOMOR"
     sheet.cell(row=7, column=1).border = thin_border1
@@ -1418,6 +1422,10 @@ def create_dadigital_xls(datalist, sheet):
     sheet.cell(row=7, column=7).border = thin_border1
     sheet.cell(row=8, column=7).border = thin_border1
 
+    sheet.cell(row=7, column=8).value = "LINK FILE"
+    sheet.cell(row=7, column=8).border = thin_border1
+    sheet.cell(row=8, column=8).border = thin_border1
+
     i = 10
     result = datalist
     no = 0
@@ -1428,7 +1436,9 @@ def create_dadigital_xls(datalist, sheet):
         sheet['{}{}'.format('D', i)].border = thin_border6
         sheet['{}{}'.format('E', i)].border = thin_border6
         sheet['{}{}'.format('F', i)].border = thin_border6
-        sheet['{}{}'.format('G', i)].border = thin_border8
+        sheet['{}{}'.format('G', i)].border = thin_border6
+        sheet['{}{}'.format('H', i)].border = thin_border8
+   
         sheet['{}{}'.format('B', i)].value = res["title"]
         sheet['{}{}'.format('B', i)].alignment = leftvh
         i += 1
@@ -1460,6 +1470,13 @@ def create_dadigital_xls(datalist, sheet):
             sheet['{}{}'.format('E', i)].border = thin_border3
             sheet['{}{}'.format('F', i)].border = thin_border3
             sheet['{}{}'.format('G', i)].border = thin_border3
+
+            filelocation = os.path.join(__package__.split('.')[1], res['folder'], str(res['box_number']), str(data['doc_number']) + ".pdf")
+            # sheet['{}{}'.format('H', i)].fill = color1
+            sheet['{}{}'.format('H', i)].value = '=HYPERLINK(CONCATENATE("D:/media/{}")'.format(filelocation) + ', "LIHAT")'
+            sheet['{}{}'.format('H', i)].border = thin_border1
+            sheet['{}{}'.format('H', i)].font = Font(underline='single', bold=True, color="96251b")
+            sheet['{}{}'.format('H', i)].alignment = centervh
             
             
             i += 1
@@ -1471,14 +1488,6 @@ def create_dadigital_xls(datalist, sheet):
     sheet['{}{}'.format('E', i)].border = thin_border6
     sheet['{}{}'.format('F', i)].border = thin_border6
     sheet['{}{}'.format('G', i)].border = thin_border6
-
-
-            
-        
-	
-
-    
-
 
     
 def get_data_digitalisasi():
@@ -1500,11 +1509,12 @@ def get_data_digitalisasi():
                 'doc_type': doc.doc_type,
                 'year': bundle.year,
                 'date_scan': infodate,
+                'doc_number': doc.doc_number,
             }
             data.append(mdict)
         
         if len(data) != 0:
-            datalist.append({'title': bundle.title, 'data': data})
+            datalist.append({'title': bundle.title, 'folder':folder, 'box_number': bundle.box_number, 'data': data})
     return datalist
     
 def digitalisasi(request):
