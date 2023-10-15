@@ -20,6 +20,17 @@
             <li class="nav-item"><a class="nav-link" href="{% url 'arsip_inaktif_searchqrcode' %}"><span class="nav-icon"></span> Scan Dokumen QR Code</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'arsip_inaktif_export' %}"><span class="nav-icon"></span> Export per Klasifikasi</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'arsip_inaktif_statistic_scan' %}"><span class="nav-icon"></span> Statistik Scan Per Bulan</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'arsip_inaktif_digitalisasi' %}"><span class="nav-icon"></span> Daftar Alih Digital</a></li>
+          </ul>
+        </li>
+        <li class="nav-group"><a class="nav-link nav-group-toggle" href="#">
+          <svg class="nav-icon">
+            <use xlink:href="{% static 'assets/vendors/coreui/icons/svg/free.svg' %}#cil-cursor"></use>
+          </svg> Arsip Aktif</a>
+          <ul class="nav-group-items">
+            {% comment %} <li class="nav-item"><a class="nav-link" href="{% url 'alihmedia_vital_index' %}"><span class="nav-icon"></span> Daftar Berkas</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'alihmedia_vital_searchdoc' %}"><span class="nav-icon"></span> Cari Dokumen</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'alihmedia_vital_export' %}"><span class="nav-icon"></span> Export ke Excel</a></li> {% endcomment %}
           </ul>
         </li>
 

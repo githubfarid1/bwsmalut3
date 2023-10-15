@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import irigasi, air_baku, pantai, sungai, keuangan, tahun, report, pdfdownload, statistics, pdfremove, pdfupload, searchdoc, searchqrcode, statistics_year, statistic_scan, export
+from .views import irigasi, air_baku, pantai, sungai, keuangan, tahun, report, pdfdownload, statistics, pdfremove, pdfupload, searchdoc, searchqrcode, statistics_year, statistic_scan, export, digitalisasi
 
 #tes2, tes1
 prefix = __package__.split('.')[1] + "_"
@@ -20,6 +20,8 @@ urlpatterns = [
     path(route='searchqrcode', view=searchqrcode, name=prefix + 'searchqrcode'),
     path(route='statistic_scan', view=statistic_scan, name=prefix + 'statistic_scan'),
     path(route='export', view=export, name=prefix + 'export'),
+    path(route='digitalisasi', view=digitalisasi, name=prefix + 'digitalisasi'),
+
 
         
 
