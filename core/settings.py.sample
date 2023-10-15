@@ -41,7 +41,14 @@ INSTALLED_APPS = [
     'django_extensions',
     'crispy_forms',
     'apps.alihmedia_vital',
-    # 'apps.utility',
+    'apps.alihmedia_inactive',
+    'django_extensions',
+    'crispy_forms',
+    'apps.alihmedia_vital',
+    'apps.arsip_inaktif',
+    'apps.arsip_aktif',
+    'apps.arsip_vital',
+
 
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
