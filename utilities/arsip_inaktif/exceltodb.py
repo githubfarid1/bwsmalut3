@@ -29,7 +29,7 @@ def checkexcel(ws, sheetname):
 def parse(ws, sheetname):
     boxlist = []
     first = True
-    for i in range(7, ws.max_row + 1):
+    for i in range(7, ws.max_row + 2):
         if first:
             begin = i
             first = False

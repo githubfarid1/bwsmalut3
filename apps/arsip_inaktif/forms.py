@@ -1,8 +1,7 @@
 from django import forms
 from .models import Department, Doc
-
 from django.forms import ModelForm
-
+import calendar
 
 class UploadFileForm(forms.Form):
     # title = forms.CharField(max_length=50)
@@ -47,3 +46,8 @@ class ExportForm(forms.Form):
 
 class SearchDocByYear(forms.Form):
     search = forms.CharField(label="Kata Kunci")
+
+class StatisticScan(forms.Form):
+    month_choices = [(value, calendar.month_name[value]) for value in range(1, 13)]
+    month = forms.ChoiceField(choices=month_choices)
+    year = forms.IntegerField()

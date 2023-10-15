@@ -13,7 +13,7 @@ from datetime import datetime, timedelta, date
 import fitz
 from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.http import JsonResponse
-from .forms import UploadFileForm, DeletePdfFile, SearchQRCodeForm, ListDocByBox, DeleteDoc, SearchDoc, ExportForm, SearchDocByYear
+from .forms import UploadFileForm, DeletePdfFile, SearchQRCodeForm, ListDocByBox, DeleteDoc, SearchDoc, ExportForm, SearchDocByYear, StatisticScan
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import Group
@@ -23,6 +23,7 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.styles.borders import Border, Side
 from django.db.models import Max
 from .forms import SearchDocByYear
+import calendar
 
 def getmenu():
     return Department.objects.all()
@@ -71,7 +72,7 @@ def getdatabyfolder(folder):
     d = Department.objects.get(folder=folder)
     depname = d.name
     folder = d.folder
-    docs = Doc.objects.filter(bundle__department_id__exact=d.id)
+    docs = Doc.objects.filter(bundle__department_id__exact=d.id).order_by("bundle__year")
     # return HttpResponse(docs)
     boxdata = []
     for ke, doc in enumerate(docs):
@@ -643,6 +644,157 @@ def searchqrcode(request):
     # context['url'] = url
     return render(request, 'arsip_inaktif/searchqrcode.html', context=context)
 
+def create_xls(datalist, app_name, folder):
+    wb = Workbook()
+    wb.create_sheet("CONFIG")
+    sheet = wb["CONFIG"]
+    sheet['A1'].value = os.path.join("D:", "media") + "\\"
+
+    sheet = wb.active
+    sheet.title = "DATA INAKTIF"
+    sheet.column_dimensions['A'].width = 7
+    sheet.column_dimensions['B'].width = 7
+    sheet.column_dimensions['C'].width = 7
+    sheet.column_dimensions['D'].width = 7
+    sheet.column_dimensions['E'].width = 57
+    sheet.column_dimensions['F'].width = 45
+    sheet.column_dimensions['G'].width = 7
+    sheet.column_dimensions['H'].width = 5 
+    sheet.column_dimensions['I'].width = 7 
+    sheet.column_dimensions['J'].width = 8
+    sheet.merge_cells('A1:J1')
+    sheet['A1'] = "DAFTAR ARSIP INAKTIF"
+    sheet['A1'].alignment = Alignment(horizontal='center')
+    sheet['A1'].font = Font(name='Arial Narrow', size=14, bold=True)
+    centervh = Alignment(horizontal='center', vertical='center', wrap_text=True)
+    centerv = Alignment(vertical='center', wrap_text=True)
+    wraptxt = Alignment(wrap_text=True)
+
+    thin_border1 = Border(left=Side(style='thin'), 
+                        right=Side(style='thin'), 
+                        top=Side(style='thin'), 
+                        bottom=Side(style='thin'))
+    
+    thin_border2 = Border(bottom=Side(style='thin'),right=Side(style='thin'),left=Side(style='thin'))
+    thin_border3 = Border(top=Side(style='thin'), right=Side(style='thin'),left=Side(style='thin'))
+    thin_border4 = Border(right=Side(style='thin'),left=Side(style='thin'))
+    thin_border5 = Border(top=Side(style='thin'), bottom=Side(style='thin'))
+
+    font_style1 = Font(name='Arial Narrow', size=11, bold=True)
+    font_style2 = Font(name='Arial', size=8.5)
+    font_style3 = Font(name='Arial', size=8.5, italic=True)
+    color1 = PatternFill(start_color="c6d5f7", fill_type = "solid")
+
+    sheet.row_dimensions[7].height = 28
+    for cell in sheet["7:7"]:
+        cell.alignment = centervh
+        cell.font = font_style1
+    
+    headers = ("NO BOX", "NO BRKS", "NO URUT", "KODE", "INDEKS", "URAIAN MASALAH", "THN", "JML", "KET", "ACTION")
+    for i in headers:
+        sheet.cell(row=7, column=headers.index(i)+1).value = i
+        sheet.cell(row=7, column=headers.index(i)+1).border = thin_border1
+    
+    i = 8
+    result = datalist
+    curbox = result[0]["box_number"]
+    curbundle = result[0]["bundle_number"]
+    isfirst = True
+    for res in result:
+        sheet['{}{}'.format('A', i)].border = thin_border4
+        sheet['{}{}'.format('B', i)].border = thin_border4
+        sheet['{}{}'.format('C', i)].border = thin_border4
+        sheet['{}{}'.format('D', i)].border = thin_border4
+        sheet['{}{}'.format('E', i)].border = thin_border4
+        sheet['{}{}'.format('F', i)].border = thin_border4
+        sheet['{}{}'.format('G', i)].border = thin_border4
+        sheet['{}{}'.format('H', i)].border = thin_border4
+        sheet['{}{}'.format('I', i)].border = thin_border4
+        sheet['{}{}'.format('J', i)].border = thin_border4
+        sheet['{}{}'.format('C', i)].border = thin_border5
+        sheet['{}{}'.format('F', i)].border = thin_border5
+        sheet['{}{}'.format('H', i)].border = thin_border5
+        if isfirst:
+            isfirst = False
+            sheet['{}{}'.format('A', i)].value = res["box_number"]
+            sheet['{}{}'.format('B', i)].value = res["bundle_number"]
+            sheet['{}{}'.format('C', i)].value = res["doc_number"]
+            sheet['{}{}'.format('D', i)].value = res["bundle_code"]
+            sheet['{}{}'.format('E', i)].value = res["bundle_title"]
+            sheet['{}{}'.format('F', i)].value = res["doc_description"]
+            sheet['{}{}'.format('G', i)].value = res["bundle_year"]
+            sheet['{}{}'.format('H', i)].value = res["doc_count"]
+            sheet['{}{}'.format('I', i)].value = res["bundle_orinot"]
+        else:
+            if curbox != res["box_number"]:
+                curbox = res["box_number"]
+                sheet['{}{}'.format('A', i)].value = res["box_number"]
+                sheet['{}{}'.format('A', i)].border = thin_border3
+            else:
+                sheet['{}{}'.format('A', i)].value = "" 
+            if curbundle != res["bundle_number"]:
+                curbundle = res["bundle_number"]
+                sheet['{}{}'.format('B', i)].value = res["bundle_number"]
+                sheet['{}{}'.format('D', i)].value = res["bundle_code"]
+                sheet['{}{}'.format('E', i)].value = res["bundle_title"]
+                sheet['{}{}'.format('G', i)].value = res["bundle_year"]
+                sheet['{}{}'.format('I', i)].value = res["bundle_orinot"]
+
+                sheet['{}{}'.format('B', i)].border = thin_border3
+                sheet['{}{}'.format('D', i)].border = thin_border3
+                sheet['{}{}'.format('E', i)].border = thin_border3
+                sheet['{}{}'.format('G', i)].border = thin_border3
+                sheet['{}{}'.format('I', i)].border = thin_border3
+
+            else:
+                sheet['{}{}'.format('B', i)].value = ""
+                sheet['{}{}'.format('D', i)].value = ""
+                sheet['{}{}'.format('E', i)].value = ""
+                sheet['{}{}'.format('G', i)].value = ""
+                sheet['{}{}'.format('I', i)].value = ""
+            sheet['{}{}'.format('C', i)].value = res["doc_number"]
+            sheet['{}{}'.format('F', i)].value = res["doc_description"]
+            sheet['{}{}'.format('H', i)].value = res["doc_count"]
+        # sheet.cell(row=row, column=1).alignment = centerv
+        sheet['{}{}'.format('A', i)].alignment = centervh
+        sheet['{}{}'.format('B', i)].alignment = centervh
+        sheet['{}{}'.format('C', i)].alignment = centervh
+        sheet['{}{}'.format('D', i)].alignment = centervh
+        sheet['{}{}'.format('E', i)].alignment = centerv
+        sheet['{}{}'.format('F', i)].alignment = centerv
+        sheet['{}{}'.format('G', i)].alignment = centervh
+        sheet['{}{}'.format('H', i)].alignment = centervh
+        sheet['{}{}'.format('I', i)].alignment = centervh
+        sheet['{}{}'.format('J', i)].alignment = centervh
+        
+        if res['filesize'] is not None:
+            filelocation = os.path.join(app_name, folder, str(res['box_number']), str(res['doc_number']) + ".pdf")
+            sheet['{}{}'.format('F', i)].fill = color1
+            sheet['{}{}'.format('J', i)].fill = color1
+            sheet['{}{}'.format('J', i)].value = '=HYPERLINK(CONCATENATE(CONFIG!A1, "{}")'.format(filelocation) + ', "LIHAT")'
+            sheet['{}{}'.format('J', i)].border = thin_border1
+            sheet['{}{}'.format('J', i)].font = Font(underline='single', bold=True, color="96251b")
+        i += 1
+    return wb
+
+user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
+def export(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    if request.GET.get("folder"):
+        folder = request.GET.get("folder")
+        datalist = getdatabyfolder(folder)
+        # return HttpResponse(json.dumps(datalist, default=str), content_type="application/json")
+        filename = f"data_{__package__.split('.')[1]}_{folder}.xlsx"
+        wb = create_xls(datalist, __package__.split('.')[1], folder)
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename={}'.format(filename)    
+        wb.save(response)
+        return response
+    context = {}
+    context['form'] = ExportForm()
+    return render(request=request, template_name='arsip_inaktif/export.html', context=context)
+
 #-----------------
 class GenerateScriptPerYearView:
     def __init__(self, year, request) -> None:
@@ -1035,6 +1187,7 @@ def report(request):
         return redirect('login')
     today = date.today()
     data = getdata_all()
+    print(data)
     wb = Workbook()
     filename = f"data_{__package__.split('.')[1]}_tahun_penataan_{today.year}.xlsx"
     for i in range(0, len(data)):
@@ -1120,3 +1273,53 @@ def statistics_year(request):
         "doccolor": doccolor,
     }
     return render(request=request, template_name='arsip_inaktif/statistics_year.html', context=context)
+
+def statistic_scan(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    monthname = ''
+    year = ''
+    docscan = []
+    doccolor = []
+    docdate = []
+    if request.method == 'POST':
+        fileinfolist = []
+        allfilelist = [os.path.join(root, file) for root, dirs, files in os.walk(os.path.join(settings.PDF_LOCATION, __package__.split('.')[1])) for file in files if file.endswith(".pdf")]
+        for filepath in allfilelist:
+            # infotime = os.path.getmtime(filepath)
+            infotime = os.stat(filepath).st_mtime
+            infodate = datetime.fromtimestamp(infotime).strftime('%d-%m-%Y')
+            mdict = {
+                "file": filepath,
+                "date": infodate,
+                "pages": fitz.open(filepath).page_count
+            }
+            fileinfolist.append(mdict)
+
+        monthstr = request.POST.get("month")
+        yearstr = request.POST.get("year")
+        month = int(monthstr)
+        year = int(yearstr)
+        monthname = calendar.month_name[month]
+        num_days = calendar.monthrange(year, month)[1]
+        date_list = [date(year, month, day) for day in range(1, num_days+1)]
+
+        for d in date_list:
+            pages = 0
+            for fl in fileinfolist:
+                if fl['date'] == d.strftime('%d-%m-%Y'):
+                    pages += fl['pages']
+            docdate.append(d.strftime('%d-%m-%Y'))
+            docscan.append(pages)
+            doccolor.append("rgba(112, 185, 239, 1)")
+        
+        # print(month, year)
+    context = {'form': StatisticScan(),
+                "docdate": docdate,
+                "docscan": docscan,
+                "doccolor": doccolor,
+                "month": monthname,
+                "year": year,
+               
+            }
+    return render(request,'arsip_inaktif/statistic_scan.html', context=context)
