@@ -66,6 +66,7 @@ def getdatabybox(box_number, link):
             "pdftmpfound": pdftmpfound,
         })
     return (boxdata, depname, folder)
+
 def getdatabyfolder(folder):
     d = Department.objects.get(folder=folder)
     depname = d.name
