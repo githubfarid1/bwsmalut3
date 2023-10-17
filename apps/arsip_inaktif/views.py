@@ -297,7 +297,7 @@ class GenerateScriptView:
 def irigasi(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    print(__package__.split('.')[1])
+    # print(__package__.split('.')[1])
     data = GenerateScriptView(__package__.split('.')[1] + "_" + sys._getframe().f_code.co_name, request)
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
@@ -864,6 +864,72 @@ class GenerateScriptPerYearView:
     def year(self):
         return self.__year
 
+
+class GenerateScriptDigitalizedView:
+    def __init__(self, request) -> None:
+        # self.__year = year
+        self.__request = request
+
+    def gencontext(self):
+        if self.__request.GET.get("search"):
+            query = self.__request.GET.get("search")
+            docs = Doc.objects.filter(Q(filesize__isnull=False) & (Q(description__icontains=query)  | Q(bundle__title__icontains=query)))
+        else:
+            docs = Doc.objects.filter(filesize__isnull=False)
+        datalist = []
+        for ke, doc in enumerate(docs):
+            folder = doc.bundle.department.folder
+            path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
+            pdffound = False
+            coverfilename = ""
+            if exists(path):
+                pdffound = True
+                coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
+            filetmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", f"{__package__.split('.')[1]}-{doc.id}.pdf")
+            pdftmpfound = False
+            if exists(filetmppath):
+                pdftmpfound = True
+            
+            datalist.append({
+                "box_number": doc.bundle.box_number,
+                "bundle_number": doc.bundle.bundle_number,
+                "doc_number": doc.doc_number,
+                "bundle_code": doc.bundle.code,
+                "bundle_title": doc.bundle.title,
+                "bundle_year": doc.bundle.year,
+                "doc_description": doc.description,
+                "doc_count": doc.doc_count,
+                "bundle_orinot": doc.bundle.orinot,
+                "row_number": ke + 1,
+                "pdffound": pdffound,
+                "doc_id": doc.id,
+                "coverfilepath": os.path.join(settings.COVER_URL, coverfilename),
+                "filesize": doc.filesize,
+                "pagecount": doc.page_count,
+                "doc_uuid_id": doc.uuid_id,
+                # "pdftmpfound": pdftmpfound,
+        })
+            
+
+        self.__template_name = "arsip_inaktif/datalist_digitalized.html"
+        if self.__request.method == 'POST':
+            pass
+        else:        
+            self.__context = {
+                                'appname': __package__.split('.')[1], 
+                                'data': datalist,
+                                'form': SearchDocByYear()
+                            }
+    @property
+    def context(self):
+        return self.__context
+    @property
+    def template_name(self):
+        return self.__template_name
+    @property
+    def year(self):
+        return self.__year
+
 def getmenu_year():
     years = Bundle.objects.order_by("year").values("year").distinct()
     return [x['year'] for x in years if x['year'] != '']
@@ -1187,7 +1253,7 @@ def report(request):
         return redirect('login')
     today = date.today()
     data = getdata_all()
-    print(data)
+    # print(data)
     wb = Workbook()
     filename = f"data_{__package__.split('.')[1]}_tahun_penataan_{today.year}.xlsx"
     for i in range(0, len(data)):
@@ -1520,16 +1586,24 @@ def get_data_digitalisasi():
 def digitalisasi(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    
-    datalist = get_data_digitalisasi()
-    # return HttpResponse(datalist)            
-    filename = f"data_{__package__.split('.')[1]}_dadigitalisasi.xlsx"
+    if request.method == 'POST':
+        datalist = get_data_digitalisasi()
+        # return HttpResponse(datalist)            
+        filename = f"data_{__package__.split('.')[1]}_dadigitalisasi.xlsx"
 
-    wb = Workbook()
-    sheet = wb.active
-    create_dadigital_xls(datalist=datalist, sheet=sheet)
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)    
-    wb.save(response)
-    return response
+        wb = Workbook()
+        sheet = wb.active
+        create_dadigital_xls(datalist=datalist, sheet=sheet)
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename={}'.format(filename)    
+        wb.save(response)
+        return response
+        
+    gendata = GenerateScriptDigitalizedView(request)
+    gendata.gencontext()
+    # print(gendata.context)
+    return render(request=request, 
+                  template_name=gendata.template_name, 
+                  context=gendata.context)
+
 
