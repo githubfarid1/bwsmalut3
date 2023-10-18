@@ -1427,7 +1427,7 @@ def create_dadigital_xls(datalist, sheet):
     sheet['A2'].alignment = aligncenter
     sheet['A2'].font = headerfont
 
-    sheet.title = "DA DIGITALISASI"
+    sheet.title = "DATA SUDAH ALIHMEDIA"
     sheet.column_dimensions['A'].width = 7
     sheet.column_dimensions['B'].width = 40
     sheet.column_dimensions['C'].width = 3
@@ -1539,7 +1539,7 @@ def create_dadigital_xls(datalist, sheet):
 
             filelocation = os.path.join(__package__.split('.')[1], res['folder'], str(res['box_number']), str(data['doc_number']) + ".pdf")
             # sheet['{}{}'.format('H', i)].fill = color1
-            sheet['{}{}'.format('H', i)].value = '=HYPERLINK(CONCATENATE("D:/media/{}")'.format(filelocation) + ', "LIHAT")'
+            sheet['{}{}'.format('H', i)].value = '=HYPERLINK(CONCATENATE(CONFIG!A1, "{}")'.format(filelocation) + ', "LIHAT")'
             sheet['{}{}'.format('H', i)].border = thin_border1
             sheet['{}{}'.format('H', i)].font = Font(underline='single', bold=True, color="96251b")
             sheet['{}{}'.format('H', i)].alignment = centervh
@@ -1592,6 +1592,10 @@ def digitalisasi(request):
         filename = f"data_{__package__.split('.')[1]}_dadigitalisasi.xlsx"
 
         wb = Workbook()
+        wb.create_sheet("CONFIG")
+        sheet = wb["CONFIG"]
+        sheet['A1'].value = os.path.join("D:", "media") + "\\"
+        # wb.create_sheet("DATA SUDAH ALIHMEDIA")
         sheet = wb.active
         create_dadigital_xls(datalist=datalist, sheet=sheet)
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
