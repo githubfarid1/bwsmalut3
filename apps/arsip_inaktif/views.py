@@ -348,6 +348,18 @@ def pdfdownload(request, uuid_id):
     path = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(box_number), str(doc_number) + ".pdf")
     if exists(path):
         filename = f"{__package__.split('.')[1]}_{folder}_{box_number}_{doc_number}.pdf"
+        # img = open("/home/farid/dev/python/bwsmalut3/copywm.png", "rb").read()
+        
+        # pix = fitz.Pixmap("/home/farid/dev/python/bwsmalut3/copywm.png")
+        # if not pix.alpha:
+        #     pix = fitz.Pixmap(pix, 1)  # alpha channel added
+        # pixel_count = pix.width * pix.height
+        # alphas = bytes([76]*pixel_count)
+        # pix.set_alpha(alphas)
+        # doc = fitz.open(path)
+        # for page in doc:
+        #     pass
+        
         with open(path, 'rb') as pdf:
             response = HttpResponse(pdf.read(), content_type='application/pdf')
             response['Content-Disposition'] = f'inline;filename={filename}'
