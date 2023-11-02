@@ -18,6 +18,8 @@ urlpatterns = [
     path('alihmedia_utilities/', include('apps.alihmedia_utilities.urls')),
     path('alihmedia_vital/', include('apps.alihmedia_vital.urls')),
     path('arsip_inaktif/', include('apps.arsip_inaktif.urls')),
+    path('file_explorer/', include('apps.file_explorer.urls')),
+
 
 
 ]
