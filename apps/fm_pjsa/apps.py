@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class FileExplorerConfig(AppConfig):
+class FmPjsaConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.file_explorer'
+    name = 'apps.fm_pjsa'
