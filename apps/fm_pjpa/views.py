@@ -14,9 +14,9 @@ from sanitize_filename import sanitize
 from django.contrib.auth.models import Group
 from urllib.parse import unquote, urlparse
 from django.contrib.auth.decorators import user_passes_test
-import datetime
+from datetime import date, datetime
 import mimetypes
-
+import time
 
 def check_permission(request, depslug):
     if request.user.is_superuser:
@@ -39,7 +39,7 @@ def check_permission(request, depslug):
 def getmenu_year(department_id):
     years = Subfolder.objects.filter(department_id=department_id).order_by("year").values("year").distinct()
     yearlist = [int(x['year']) for x in years if x['year'] != '']
-    today = datetime.date.today()
+    today = date.today()
     if not today.year in yearlist:
         yearlist.append(today.year)
     yearlist.append(today.year+1)
@@ -149,7 +149,14 @@ def add_department(request):
 
 def get_fileinfo(filepath):
     file_size = os.path.getsize(filepath)
-    unit = 'kb'
+    unit = 'bytes'
+    if file_size < 90000000:
+        unit = 'kb'
+    elif file_size < 900000000:
+        unit = 'mb'
+    elif file_size < 9000000000:
+        unit = 'gb'
+    # print(file_size)    
     exponents_map = {'bytes': 0, 'kb': 1, 'mb': 2, 'gb': 3}
     if unit not in exponents_map:
         raise ValueError("Must select from \
@@ -157,12 +164,15 @@ def get_fileinfo(filepath):
     else:
         size = file_size / 1024 ** exponents_map[unit]
         file_size = round(size, 3)
-
+    
+    filesizestr = f"{str(file_size)} {unit}"    
+    
     mime_type, encoding = mimetypes.guess_type(filepath)
+    # print(mime_type)
     if 'pdf' in mime_type:
         filemime, filetype = 'pdf.png', 'PDF'
     elif 'excel' in mime_type:
-        filemime, filetype = 'excel.png', 'MS Excel'
+        filemime, filetype = 'excel.png', 'Excel'
     elif 'png' in mime_type:
         filemime, filetype = 'image.png', 'Image'
     elif 'jpg' in mime_type:
@@ -171,12 +181,20 @@ def get_fileinfo(filepath):
         filemime, filetype = 'image.png', 'Image'
     elif 'mp3' in mime_type:
         filemime, filetype = 'sound.png', 'Image'
-    elif 'mp4' in mime_type:
+    elif 'video' in mime_type:
         filemime, filetype = 'video.png', 'Video'
+    elif 'powerpoint' in mime_type:
+        filemime, filetype = 'ppt.png', 'Power Point'
+    elif 'wordprocessingml' in mime_type:
+        filemime, filetype = 'doc.png', 'Word'
+
+
+        
     else:
         filemime, filetype = 'unknown.png', 'Unknown'
         
-    return filemime, file_size, filetype
+    return filemime, filesizestr, filetype
+
 
 def subfolder(request, id):
     # messages.info(request, "File Sudah ada")
@@ -191,46 +209,75 @@ def subfolder(request, id):
     for file in files:
         filepath = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], file.subfolder.department.folder, str(file.subfolder.year), str(file.subfolder.folder), str(file.filename))
         filemime = 'unknown.png'
+        filesize = 0
+        filetype = 'Unknown'
+        found = False
         if exists(filepath):
             filemime, filesize, filetype = get_fileinfo(filepath)
+            found = True
+            icon_location = os.path.join('assets/filetypes', filemime)
+        else:
+            icon_location = os.path.join('assets/filetypes', 'inprocess.png')
         data.append({'filename': file.filename,
                      'tags': file.tags,
                      'uuid_id': file.uuid_id,
                      'description': file.description,
-                     'icon_location': os.path.join('assets/filetypes', filemime),
+                     'icon_location': icon_location,
                      'filesize': filesize,
-                     'filetype': filetype
+                     'filetype': filetype,
+                     'found': found,
+                     'upload_date': file.upload_date,
                      })    
         
     common_tags = File.tags.most_common()[:10]
-    if request.method == 'POST' and request.FILES['fileupload']:
-        form = FileForm(request.POST)
-        upload = request.FILES['fileupload']
-        folderstrlist = [__package__.split('.')[1], subfolder.department.folder, str(subfolder.year), str(subfolder.folder)]
-        folderstrlistwfile = folderstrlist.copy()
-        folderstrlistwfile.append(str(upload))
-        filetmpname = "$$".join(folderstrlistwfile)
-        filetmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", filetmpname)
-        # folder = os.path.join(settings.FM_LOCATION, file)
+    if request.method == 'POST':
+        if request.FILES and request.FILES['fileupload']:
+            form = FileForm(request.POST)
+            upload = request.FILES['fileupload']
+            folderstrlist = [__package__.split('.')[1], subfolder.department.folder, str(subfolder.year), str(subfolder.folder)]
+            folderstrlistwfile = folderstrlist.copy()
+            folderstrlistwfile.append(str(upload))
+            filetmpname = "$$".join(folderstrlistwfile)
+            filetmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", filetmpname)
+            filepath = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], subfolder.department.folder, str(subfolder.year), str(subfolder.folder), str(upload))
+            if exists(filepath) or exists(filetmppath):
+                messages.info(request, "File Sudah ada")
+                return redirect(request.build_absolute_uri())
+            # print(form.errors)
+            if form.is_valid():
+                # breakpoint()
+                newsubfolder = form.save(commit=False)
+                newsubfolder.filename = upload
+                slugs = "-".join([__package__.split('.')[1], subfolder.department.folder, str(subfolder.year), str(subfolder.folder), str(upload)])
+                newsubfolder.slug = slugify(slugs)
+                newsubfolder.subfolder_id = id
+                newsubfolder.upload_date = datetime.now()
+                newsubfolder.save()
+                # Without this next line the tags won't be saved.
+                form.save_m2m()
+                fss = FileSystemStorage()
+                fss.save(filetmppath, upload)
+                # form = FileForm()
+                return redirect(request.build_absolute_uri())
+        else:
+            doc = File.objects.get(uuid_id=request.POST['uuid_id'])
+            doc.delete()
+            subfolder = str(doc.subfolder.folder)
+            year = str(doc.subfolder.year)
+            depfolder = str(doc.subfolder.department.folder)
+            filename = doc.filename
+            path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, year, subfolder, filename)
+            folderstrlistwfile = [__package__.split('.')[1], depfolder, year, subfolder, filename]
+            filetmpname = "$$".join(folderstrlistwfile)
+            filetmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", filetmpname)
+            # print(filetmppath)
+            if exists(filetmppath):
+                os.remove(filetmppath)
+            if exists(path):
+                os.remove(path)
             
-        filepath = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], subfolder.department.folder, str(subfolder.year), str(subfolder.folder), str(upload))
-        # print(filepath)
-        if exists(filepath):
-            messages.info(request, "File Sudah ada")
             return redirect(request.build_absolute_uri())
-        # print(form.errors)
-        if form.is_valid():
-            # breakpoint()
-            newsubfolder = form.save(commit=False)
-            newsubfolder.filename = upload
-            newsubfolder.slug = slugify(newsubfolder.filename)
-            newsubfolder.subfolder_id = id
-            newsubfolder.save()
-            # Without this next line the tags won't be saved.
-            form.save_m2m()
-            fss = FileSystemStorage()
-            fss.save(filetmppath, upload)
-            form = FileForm()
+
     else:
         form = FileForm()
     
@@ -240,7 +287,8 @@ def subfolder(request, id):
     'subfoldername': subfolder.name,
     'year': subfolder.year,
     'common_tags':common_tags,
-    'form':form,        
+    'form':form,
+    'depslug': depslug      
     }
 
     return render(request=request, template_name='fm_pjpa/subfolder.html', context=context)
@@ -278,5 +326,5 @@ def tagged(request, slug):
     return render(request, 'fm_pjpa/subfolder.html', context)
 
 def page_404(request):
-    print('sss')
     return render(request, 'fm_pjpa/page_404.html', {})
+

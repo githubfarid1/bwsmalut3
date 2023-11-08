@@ -25,7 +25,7 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h3 class="text-center">Data {{ depname }} Tahun {{ year }}</h3>
+  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> :: <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a> :: Tahun {{ year }}</h4>
   {% include 'fm_pjpa/menu_year.html'%}
   <div class="container">
     <div class="row justify-content-center">
@@ -44,29 +44,32 @@
   <div class="row">
     <p></p>
     <h4>Daftar Folder</h4>
-
        {% for d in data %}
       <div class="col-12 col-lg-3 mt-3">
-        <div class="card">
+        <div class="card border-primary mb-3">
           <div class="row no-gutters px-3 py-2">
-              <div class="col-sm-6 mt-3 text-center">
-                      <p><small><a href="{% url 'fm_pjpa_subfolder' d.id %}">{{ d.name }}</a></small> </p>
-              </div>
-  
-              <div class="col-sm-6 my-1">
-                  {% comment %} <a href="{% url 'arsip_inaktif_pdfdownload' d.doc_uuid_id %}" target="_new" class="btn btn-info btn-block btn-sm">Download</a> {% endcomment %}
-              </div>
-              <div class="col-sm-6 my-1">
-                  {% comment %} <a href="{% url 'arsip_inaktif_pdfremove' d.doc_uuid_id %}" class="btn btn-danger btn-block btn-sm">Hapus PDF</a> {% endcomment %}
-              </div>
-  
+            <div class="col-sm-6 mt-3 text-center">
+              <a href="{% url 'fm_pjpa_subfolder' d.id %}"><img class="card-img border" src="{% static 'assets/filetypes/folder.png' %}" alt=""></a>
+            </div>
+            <div class="col-sm-6 mt-3 text-center">
+                <p><small><a href="{% url 'fm_pjpa_subfolder' d.id %}">{{ d.name }}</a></small> </p>
+            </div>
+          
+          <div class="col-sm-4">
+            <form action="" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="uuid_id" value="{{ d.uuid_id }}">
+              <button type="submit" class="btn btn-danger mt-2" onclick="return confirm('Hapus file File?')">Hapus</button>
+            </form>
           </div>
+
       </div>
     </div>
+  </div>
       {% endfor %}
   </div>
   {% endif %}
   
-</div>
+
 
 {% endblock content %}

@@ -30,7 +30,6 @@ class Subfolder(models.Model):
         default=None
     )        
 
-
     def __str__(self) -> str:
         return self.name
 
@@ -40,9 +39,8 @@ class File(models.Model):
     filename = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, max_length=100)
     tags = TaggableManager(related_name="pjpa_taggit")
-    description = models.TextField(null=True, blank=True),
-    # upload_date = models.DateField(null=True, blank=True),
-
+    description = models.TextField(null=True, blank=True)
+    upload_date = models.DateTimeField(null=True, blank=True)
     subfolder = models.ForeignKey(
         Subfolder,
         db_column='subfolder_id',

@@ -25,7 +25,7 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h3 class="text-center">Data {{ depname }}</h3>
+  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> :: {{ depname }}</h4>
   {% include 'fm_pjpa/menu_year.html'%}
 </div>
 {% endblock content %}
