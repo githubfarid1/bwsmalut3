@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import subfolder, tagged, add_department, department, department_year, page_404, department_list
+from .views import subfolder, tagged, add_department, department, department_year, page_404, department_list, filedownload
 prefix = __package__.split('.')[1] + "_"
 urlpatterns = [
     # path(route='atab/<int:year>', view=atab, name=prefix + "atab"),
@@ -11,5 +11,6 @@ urlpatterns = [
     path(route='department_year/<str:slug>/<int:year>', view=department_year, name=prefix + "department_year"),
     path(route='page_404', view=page_404, name=prefix + "page_404"),
     path(route='department_list', view=department_list, name=prefix + "department_list"),
+    path(route='filedownload/<str:uuid_id>', view=filedownload, name=prefix + 'filedownload'),
 
 ]

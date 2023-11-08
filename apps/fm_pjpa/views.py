@@ -15,6 +15,8 @@ from django.contrib.auth.models import Group
 from urllib.parse import unquote, urlparse
 from django.contrib.auth.decorators import user_passes_test
 import datetime
+import mimetypes
+
 
 def check_permission(request, depslug):
     if request.user.is_superuser:
@@ -49,12 +51,13 @@ def department(request, slug):
         return redirect('login')
     
     if not check_permission(request, slug):
-        return render(request=request, template_name='fm_pjpa/page_404.html', context={})
+        return render(request=request, template_name='fm_pjpa/page_404.html', context={'message':'Otorisasi Ditolak'})
         
-    dep = Department.objects.get(slug=slug)
+    dep = Department.objects.filter(slug=slug)
     if not dep:
-        return render(request=request, template_name='fm_pjpa/page_404.html', context={})
+        return render(request=request, template_name='fm_pjpa/page_404.html', context={'message':'Halaman tidak ada'})
     
+    dep = Department.objects.filter(slug=slug).first()
     context = {
         # 'data':subfolders,
         "menu": getmenu_year(dep.id),
@@ -67,7 +70,7 @@ def department_list(request):
     if not request.user.is_authenticated:
         return redirect('login')
     if not check_permission(request, ''):
-        return render(request=request, template_name='fm_pjpa/page_404.html', context={})
+        return render(request=request, template_name='fm_pjpa/page_404.html', context={'message':'Otorisasi Ditolak'})
     departments = Department.objects.all()
     context = {
         'data':departments,
@@ -80,18 +83,27 @@ def department_year(request, slug, year):
     if not request.user.is_authenticated:
         return redirect('login')
     if not check_permission(request, slug):
-        return render(request=request, template_name='fm_pjpa/page_404.html', context={})
+        return render(request=request, template_name='fm_pjpa/page_404.html', context={'message':'Otorisasi Ditolak'})
     dep = Department.objects.get(slug=slug)
+    depfolder = dep.folder
     subfolders = dep.subfolder_set.filter(year=year)
     if request.method == 'POST':
         form = SubfolderForm(request.POST)
         if form.is_valid():
             newfloder = form.save(commit=False)
-            newfloder.folder = sanitize(newfloder.name)
+            newfloder.folder = slugify(newfloder.name)
             newfloder.year = year
             newfloder.department_id = dep.id
+            foldertmp = slugify(newfloder.name)
+            yeartmp = str(year)
             newfloder.save()
-    
+            folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, yeartmp)
+            if not exists(folder):
+                os.mkdir(folder)
+            folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, yeartmp, foldertmp)
+            if not exists(folder):
+                os.mkdir(folder)
+
     form = SubfolderForm()
     context = {
         'data':subfolders,
@@ -108,15 +120,20 @@ def add_department(request):
     if not request.user.is_authenticated:
         return redirect('login')
     if not check_permission(request, ''):
-        return render(request=request, template_name='fm_pjpa/page_404.html', context={})
+        return render(request=request, template_name='fm_pjpa/page_404.html', context={'message':'Otorisasi Ditolak'})
     departments = Department.objects.all()
     if request.method == 'POST':
         form = DepartmentForm(request.POST)
         if form.is_valid():
             newdep = form.save(commit=False)
-            newdep.folder = sanitize(newdep.shortname)
+            newdep.folder = slugify(newdep.shortname)
             newdep.slug = slugify(newdep.shortname)
+            foldertmp = slugify(newdep.shortname)
             newdep.save()
+            folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], foldertmp)
+            if not exists(folder):
+                os.mkdir(folder)
+            
             
     form = DepartmentForm()
     context = {
@@ -129,33 +146,78 @@ def add_department(request):
     }
 
     return render(request=request, template_name='fm_pjpa/add_department.html', context=context)
-    
-def add_subfolder(request, depslug):
-    pass
+
+def get_fileinfo(filepath):
+    file_size = os.path.getsize(filepath)
+    unit = 'kb'
+    exponents_map = {'bytes': 0, 'kb': 1, 'mb': 2, 'gb': 3}
+    if unit not in exponents_map:
+        raise ValueError("Must select from \
+        ['bytes', 'kb', 'mb', 'gb']")
+    else:
+        size = file_size / 1024 ** exponents_map[unit]
+        file_size = round(size, 3)
+
+    mime_type, encoding = mimetypes.guess_type(filepath)
+    if 'pdf' in mime_type:
+        filemime, filetype = 'pdf.png', 'PDF'
+    elif 'excel' in mime_type:
+        filemime, filetype = 'excel.png', 'MS Excel'
+    elif 'png' in mime_type:
+        filemime, filetype = 'image.png', 'Image'
+    elif 'jpg' in mime_type:
+        filemime, filetype = 'image.png', 'Image'
+    elif 'jpeg' in mime_type:
+        filemime, filetype = 'image.png', 'Image'
+    elif 'mp3' in mime_type:
+        filemime, filetype = 'sound.png', 'Image'
+    elif 'mp4' in mime_type:
+        filemime, filetype = 'video.png', 'Video'
+    else:
+        filemime, filetype = 'unknown.png', 'Unknown'
+        
+    return filemime, file_size, filetype
 
 def subfolder(request, id):
+    # messages.info(request, "File Sudah ada")
     if not request.user.is_authenticated:
         return redirect('login')
     subfolder = Subfolder.objects.get(id=id)
     depslug = subfolder.department.slug
     if not check_permission(request, depslug):
-        return render(request=request, template_name='fm_pjpa/page_404.html', context={})
+        return render(request=request, template_name='fm_pjpa/page_404.html', context={'message':'Otorisasi Ditolak'})
     files = subfolder.file_set.all()
+    data = []
+    for file in files:
+        filepath = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], file.subfolder.department.folder, str(file.subfolder.year), str(file.subfolder.folder), str(file.filename))
+        filemime = 'unknown.png'
+        if exists(filepath):
+            filemime, filesize, filetype = get_fileinfo(filepath)
+        data.append({'filename': file.filename,
+                     'tags': file.tags,
+                     'uuid_id': file.uuid_id,
+                     'description': file.description,
+                     'icon_location': os.path.join('assets/filetypes', filemime),
+                     'filesize': filesize,
+                     'filetype': filetype
+                     })    
+        
     common_tags = File.tags.most_common()[:10]
     if request.method == 'POST' and request.FILES['fileupload']:
         form = FileForm(request.POST)
         upload = request.FILES['fileupload']
-        folder1 = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], subfolder.year)
-        folder2 = os.path.join(folder1, str(subfolder.folder))
-        if not exists(folder1):
-            os.mkdir(folder1)
-        if not exists(folder2):
-            os.mkdir(folder2)
+        folderstrlist = [__package__.split('.')[1], subfolder.department.folder, str(subfolder.year), str(subfolder.folder)]
+        folderstrlistwfile = folderstrlist.copy()
+        folderstrlistwfile.append(str(upload))
+        filetmpname = "$$".join(folderstrlistwfile)
+        filetmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", filetmpname)
+        # folder = os.path.join(settings.FM_LOCATION, file)
             
-        filepath = os.path.join(folder2, str(upload))
+        filepath = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], subfolder.department.folder, str(subfolder.year), str(subfolder.folder), str(upload))
+        # print(filepath)
         if exists(filepath):
             messages.info(request, "File Sudah ada")
-            
+            return redirect(request.build_absolute_uri())
         # print(form.errors)
         if form.is_valid():
             # breakpoint()
@@ -167,12 +229,13 @@ def subfolder(request, id):
             # Without this next line the tags won't be saved.
             form.save_m2m()
             fss = FileSystemStorage()
-            fss.save(filepath, upload)
+            fss.save(filetmppath, upload)
+            form = FileForm()
     else:
         form = FileForm()
     
     context = {
-    'data':files,
+    'data':data,
     'depname':subfolder.department.name,
     'subfoldername': subfolder.name,
     'year': subfolder.year,
@@ -182,6 +245,27 @@ def subfolder(request, id):
 
     return render(request=request, template_name='fm_pjpa/subfolder.html', context=context)
 
+
+def filedownload(request, uuid_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    doc = File.objects.get(uuid_id=uuid_id)
+    subfolder = str(doc.subfolder.folder)
+    year = str(doc.subfolder.year)
+    depfolder = str(doc.subfolder.department.folder)
+    filename = doc.filename
+    path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, year, subfolder, filename)
+    # return HttpResponse(path)
+    if exists(path):
+       
+        mime_type, encoding = mimetypes.guess_type(path)
+        # return HttpResponse(mime_type)
+        with open(path, 'rb') as pdf:
+            response = HttpResponse(pdf.read(), content_type=f'{mime_type}')
+            response['Content-Disposition'] = f'inline;filename={filename}'
+            return response
+    raise Http404
 
 def tagged(request, slug):
     tag = get_object_or_404(Tag, slug=slug)

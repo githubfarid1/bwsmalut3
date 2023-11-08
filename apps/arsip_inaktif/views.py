@@ -368,44 +368,44 @@ def pdfdownload(request, uuid_id):
 
 @user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())
 @csrf_exempt
-def pdfremove(request, uuid_id):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    doc = Doc.objects.get(uuid_id=uuid_id)
-    folder = doc.bundle.department.folder
-    doc_id = doc.id
-    pdfpath = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
-    if not exists(pdfpath):
-        messages.info(request, "File tidak ada")
-        return redirect(f"/{__package__.split('.')[1]}/{folder}#{str(doc.bundle.box_number)}")
-    coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
-    if request.method == 'POST':
-        if exists(pdfpath):
-            # ts = str(time.time())
-            # pdfrename = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf." + str(ts))
-            # os.rename(pdfpath, pdfrename)
-            os.remove(pdfpath)
-            coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
-            if exists(os.path.join(settings.COVER_LOCATION, coverfilename)):
-                os.remove(os.path.join(settings.COVER_LOCATION, coverfilename))
-            tmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", f"{__package__.split('.')[1]}-{doc_id}.pdf")
-            if exists(tmppath):
-                os.remove(tmppath)
-            doc.filesize = None
-            doc.page_count = None
-            doc.save()     
-            messages.info(request, "Berhasil dihapus")
-            return redirect(f"/{__package__.split('.')[1]}/{folder}#{doc.bundle.box_number}")
-        else:
-            messages.info(request, "File tidak ada")
-    context = {}
-    context['uuid_id'] = uuid_id
-    context['isexist'] = exists(pdfpath)
-    context['data'] = doc
-    context["coverfilepath"] =  os.path.join(settings.COVER_URL, coverfilename)
+# def pdfremove(request, uuid_id):
+#     if not request.user.is_authenticated:
+#         return redirect('login')
+#     doc = Doc.objects.get(uuid_id=uuid_id)
+#     folder = doc.bundle.department.folder
+#     doc_id = doc.id
+#     pdfpath = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf")
+#     if not exists(pdfpath):
+#         messages.info(request, "File tidak ada")
+#         return redirect(f"/{__package__.split('.')[1]}/{folder}#{str(doc.bundle.box_number)}")
+#     coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
+#     if request.method == 'POST':
+#         if exists(pdfpath):
+#             # ts = str(time.time())
+#             # pdfrename = os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder, str(doc.bundle.box_number), str(doc.doc_number) + ".pdf." + str(ts))
+#             # os.rename(pdfpath, pdfrename)
+#             os.remove(pdfpath)
+#             coverfilename = "{}_{}_{}_{}.png".format(__package__.split('.')[1], folder, doc.bundle.box_number, doc.doc_number)
+#             if exists(os.path.join(settings.COVER_LOCATION, coverfilename)):
+#                 os.remove(os.path.join(settings.COVER_LOCATION, coverfilename))
+#             tmppath = os.path.join(settings.MEDIA_ROOT, "tmpfiles", f"{__package__.split('.')[1]}-{doc_id}.pdf")
+#             if exists(tmppath):
+#                 os.remove(tmppath)
+#             doc.filesize = None
+#             doc.page_count = None
+#             doc.save()     
+#             messages.info(request, "Berhasil dihapus")
+#             return redirect(f"/{__package__.split('.')[1]}/{folder}#{doc.bundle.box_number}")
+#         else:
+#             messages.info(request, "File tidak ada")
+#     context = {}
+#     context['uuid_id'] = uuid_id
+#     context['isexist'] = exists(pdfpath)
+#     context['data'] = doc
+#     context["coverfilepath"] =  os.path.join(settings.COVER_URL, coverfilename)
 
-    # context['url'] = url
-    return render(request,'arsip_inaktif/pdfremove.html', context=context)
+#     # context['url'] = url
+#     return render(request,'arsip_inaktif/pdfremove.html', context=context)
 
 def statistics(request):
     if not request.user.is_authenticated:
@@ -852,7 +852,7 @@ class GenerateScriptPerYearView:
                 "filesize": doc.filesize,
                 "pagecount": doc.page_count,
                 "doc_uuid_id": doc.uuid_id,
-                # "pdftmpfound": pdftmpfound,
+                "pdftmpfound": pdftmpfound,
         })
             
 

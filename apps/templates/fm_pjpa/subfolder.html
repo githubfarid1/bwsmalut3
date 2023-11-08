@@ -55,6 +55,16 @@
       <div class="col-12 col-lg-3 mt-3">
         <div class="card">
           <div class="row no-gutters px-3 py-2">
+              <div class="col-sm-6 mt-3">
+                  <div class="ps-3">
+                    <a href="{% url 'fm_pjpa_filedownload' d.uuid_id %}" target="_new"><img class="card-img border" src="{% static d.icon_location %}" alt=""></a>
+                  </div>
+              </div>
+              <div class="col-sm-6 mt-3 text-center">
+                <p><small>Ukuran: {{d.filesize}} KB<br>Tipe: {{d.filetype}}
+                </small></p>
+              </div>
+
               <div class="col-sm-12 mt-3 text-center">
                     {{ d.filename }} <br/>{{ d.description }}
                       {% comment %} <p><small><a href="{% url 'file_explorer_subfolder' d.id %}">{{ d.name }}</a></small> </p> {% endcomment %}
@@ -64,12 +74,9 @@
                 <a href="{% url 'fm_pjpa_tagged' tag.slug %}" class="mr-1 badge badge-info">#{{ tag }}</a>
                 {% endfor %}
               </div>
-              <div class="col-sm-6 my-1">
-                <a href="" target="_new" class="btn btn-info btn-block btn-sm">Download</a>
-            </div>
-            <div class="col-sm-6 my-1">
-                <a href="" class="btn btn-danger btn-block btn-sm">Hapus</a>
-            </div>
+              <div class="col-sm-4">
+                  <a href="" class="justify-content-end btn btn-danger btn-block btn-sm">Hapus</a>
+              </div>
 
           </div>
       </div>

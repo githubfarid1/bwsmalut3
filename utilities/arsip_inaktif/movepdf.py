@@ -21,10 +21,10 @@ tmppdfs = pathlib.Path(TMPPDF_LOCATION)
 for pdf in list(tmppdfs.iterdir()):
     # print(tmp)
     filename = pathlib.Path(pdf).name
+    if filename[:len(APP_NAME)] != APP_NAME:
+        continue
     docid = filename.replace(".pdf", "").replace(APP_NAME + "-", "")
     result = session.query(Doc).filter(Doc.id == docid).first()
-    # result = session.query(Doc).get(docid)
-   
     box_number = result.bundle.box_number
     doc_number = result.doc_number
     folder = result.bundle.department.folder
