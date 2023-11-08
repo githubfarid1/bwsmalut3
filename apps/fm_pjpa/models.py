@@ -10,6 +10,7 @@ class Department(models.Model):
     # link = models.CharField(max_length=40, unique=True)
     folder = models.CharField(max_length=40, unique=True)
     slug = models.SlugField(unique=True, max_length=40, default=None)
+    create_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.name
@@ -21,6 +22,7 @@ class Subfolder(models.Model):
     # link = models.CharField(max_length=50, unique=True)
     year = models.CharField(max_length=4, validators=[MinLengthValidator(4)], default='2023')
     folder = models.CharField(max_length=50, unique=True)
+    create_date = models.DateTimeField(null=True, blank=True)
     
     department = models.ForeignKey(
         Department,

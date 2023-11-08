@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %} {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %} | Data Inaktif {% endblock %}
+{% block title %} | {{ depname }} {% endblock %}
 {% block stylesheets %}
     <link href="{% static 'assets/vendors/coreui/icons/css/free.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
@@ -25,7 +25,7 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> :: {{ depname }}</h4>
+  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; {{ depname }}</h4>
   {% include 'fm_pjpa/menu_year.html'%}
 </div>
 {% endblock content %}

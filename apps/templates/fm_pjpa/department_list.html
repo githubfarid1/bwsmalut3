@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %} {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %} | Data Inaktif {% endblock %}
+{% block title %} | DAFTAR PPK {% endblock %}
 {% block stylesheets %}
     <link href="{% static 'assets/vendors/coreui/icons/css/free.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
@@ -31,29 +31,26 @@
   <div class="row">
     <p></p>
     <h4>Daftar PPK</h4>
-       {% for d in data %}
-      <div class="col-12 col-lg-3 mt-3">
-        <div class="card border-primary mb-3">
-          <div class="row no-gutters px-3 py-2">
-              <div class="col-sm-6 mt-3 text-center">
-                <a href="{% url 'fm_pjpa_department' d.slug %}"><img class="card-img border" src="{% static 'assets/filetypes/satker.png' %}" alt=""></a>
-              </div>
-              <div class="col-sm-6 mt-3 text-center">
-                      <p><small><a href="{% url 'fm_pjpa_department' d.slug %}">{{ d.name }}</a></small> </p>
-              </div>
-              <div class="col-sm-4">
-                <form action="" method="post">
-                  {% csrf_token %}
-                  <input type="hidden" name="uuid_id" value="{{ d.uuid_id }}">
-                  <button type="submit" class="btn btn-danger mt-2" onclick="return confirm('Hapus file File?')">Hapus</button>
-                </form>
-            </div>
-    
-  
+    {% for d in data %}
+    <div class="col-12 col-lg-3 mt-3">
+      <div class="card border-primary mb-3">
+        <div class="row no-gutters px-3 py-2">
+          <div class="col-sm-6 mt-3 text-center">
+            <a href="{% url 'fm_pjpa_department' d.slug %}"><img class="card-img border" src="{% static 'assets/filetypes/satker.png' %}" alt=""></a>
           </div>
-      </div>
+
+          <div class="col-sm-6 mt-3 text-center">
+            <p><small>Waktu Buat: {{ d.create_date }}</small></p>
+          </div>
+          <div class="col-sm-12 mt-3 text-center">
+              <h5>{{ d.name }}</h5>
+            </div>
+
+
+        </div>
     </div>
-      {% endfor %}
+  </div>
+    {% endfor %}
 </div>
 {% endif %}
 {% endblock content %}

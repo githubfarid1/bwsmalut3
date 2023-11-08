@@ -5,7 +5,7 @@ import sys
 from django.template.defaultfilters import slugify
 from .forms import FileForm, DepartmentForm, SubfolderForm
 from taggit.models import Tag
-import os
+import os, shutil
 from django.conf import settings
 from os.path import exists
 from django.contrib import messages
@@ -42,7 +42,9 @@ def getmenu_year(department_id):
     today = date.today()
     if not today.year in yearlist:
         yearlist.append(today.year)
-    yearlist.append(today.year+1)
+    if not today.year+1 in yearlist:    
+        yearlist.append(today.year+1)
+    yearlist.sort()
     return yearlist        
 
 
@@ -72,8 +74,16 @@ def department_list(request):
     if not check_permission(request, ''):
         return render(request=request, template_name='fm_pjpa/page_404.html', context={'message':'Otorisasi Ditolak'})
     departments = Department.objects.all()
+    data = []
+    for dep in departments:
+        data.append({
+            'name': dep.name,
+            'create_date': dep.create_date,
+            'slug': dep.slug
+        })
+    
     context = {
-        'data':departments,
+        'data':data,
     }
 
     return render(request=request, template_name='fm_pjpa/department_list.html', context=context)
@@ -88,12 +98,26 @@ def department_year(request, slug, year):
     depfolder = dep.folder
     subfolders = dep.subfolder_set.filter(year=year)
     if request.method == 'POST':
+        if request.POST.get('id'):
+            subfolder = Subfolder.objects.get(id=request.POST['id'])
+            if File.objects.filter(subfolder_id=subfolder.id).count() != 0:
+                messages.info(request, "Tidak bisa dihapus karena ada file terhubung")
+                return redirect(request.build_absolute_uri())
+            else:
+                path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], dep.folder, subfolder.year, subfolder.folder)
+                # return HttpResponse(path)
+                subfolder.delete()
+                os.rmdir(path)
+                messages.info(request, "Hapus Folder Berhasil")
+                return redirect(request.build_absolute_uri())
+
         form = SubfolderForm(request.POST)
         if form.is_valid():
             newfloder = form.save(commit=False)
             newfloder.folder = slugify(newfloder.name)
             newfloder.year = year
             newfloder.department_id = dep.id
+            newfloder.create_date = datetime.now()
             foldertmp = slugify(newfloder.name)
             yeartmp = str(year)
             newfloder.save()
@@ -122,22 +146,42 @@ def add_department(request):
     if not check_permission(request, ''):
         return render(request=request, template_name='fm_pjpa/page_404.html', context={'message':'Otorisasi Ditolak'})
     departments = Department.objects.all()
+    data = []
+    for dep in departments:
+        data.append({
+            'name': dep.name,
+            'create_date': dep.create_date,
+            'slug': dep.slug
+        })
     if request.method == 'POST':
+        if request.POST.get('slug'):
+            dep = Department.objects.get(slug=request.POST['slug'])
+            if Subfolder.objects.filter(department_id=dep.id).count() != 0:
+                messages.info(request, "Tidak bisa dihapus karena ada folder terhubung")
+                return redirect(request.build_absolute_uri())
+            else:
+                path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], dep.folder)
+                dep.delete()
+                shutil.rmtree(path)
+                messages.info(request, "Hapus PPK Berhasil")
+                return redirect(request.build_absolute_uri())
+                
         form = DepartmentForm(request.POST)
         if form.is_valid():
             newdep = form.save(commit=False)
             newdep.folder = slugify(newdep.shortname)
             newdep.slug = slugify(newdep.shortname)
             foldertmp = slugify(newdep.shortname)
+            newdep.create_date = datetime.now()
             newdep.save()
             folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], foldertmp)
             if not exists(folder):
                 os.mkdir(folder)
-            
+            return redirect(request.build_absolute_uri())
             
     form = DepartmentForm()
     context = {
-    'data':departments,
+    'data':data,
     # 'depname':subfolder.department.name,
     # 'subfoldername': subfolder.name,
     # 'year': subfolder.year,

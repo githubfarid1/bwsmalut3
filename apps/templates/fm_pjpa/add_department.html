@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %} {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %} | Data Inaktif {% endblock %}
+{% block title %} | Tambah PPK {% endblock %}
 {% block stylesheets %}
     <link href="{% static 'assets/vendors/coreui/icons/css/free.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
@@ -50,11 +50,21 @@
               <a href="{% url 'fm_pjpa_department' d.slug %}"><img class="card-img border" src="{% static 'assets/filetypes/satker.png' %}" alt=""></a>
             </div>
 
-              <div class="col-sm-6 mt-3 text-center">
-                <p><small><a href="{% url 'fm_pjpa_department' d.slug %}">{{ d.name }}</a></small> </p>
+            <div class="col-sm-6 mt-3 text-center">
+              <p><small>Waktu Buat: {{ d.create_date }}</small></p>
+            </div>
+            <div class="col-sm-12 mt-3 text-center">
+                <h5>{{ d.name }}</h5>
               </div>
 
-  
+              <div class="col-sm-4">
+                <form action="" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="slug" value="{{ d.slug }}">
+                  <button type="submit" class="btn btn-danger mt-2" onclick="return confirm('Hapus file PPK?')">Hapus</button>
+                </form>
+              </div>
+
           </div>
       </div>
     </div>

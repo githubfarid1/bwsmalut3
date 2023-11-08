@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %} {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %} | Data Inaktif {% endblock %}
+{% block title %} | Daftar Folder {% endblock %}
 {% block stylesheets %}
     <link href="{% static 'assets/vendors/coreui/icons/css/free.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
@@ -25,7 +25,7 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> :: <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a> :: Tahun {{ year }}</h4>
+  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a> &#62;&#62; Tahun {{ year }}</h4>
   {% include 'fm_pjpa/menu_year.html'%}
   <div class="container">
     <div class="row justify-content-center">
@@ -52,14 +52,17 @@
               <a href="{% url 'fm_pjpa_subfolder' d.id %}"><img class="card-img border" src="{% static 'assets/filetypes/folder.png' %}" alt=""></a>
             </div>
             <div class="col-sm-6 mt-3 text-center">
-                <p><small><a href="{% url 'fm_pjpa_subfolder' d.id %}">{{ d.name }}</a></small> </p>
+              <p><small>Waktu Buat: {{ d.create_date }}</small></p>
             </div>
-          
+            <div class="col-sm-12 mt-3 text-center">
+                <h5>{{ d.name }}</h5>
+              </div>
+            
           <div class="col-sm-4">
             <form action="" method="post">
               {% csrf_token %}
-              <input type="hidden" name="uuid_id" value="{{ d.uuid_id }}">
-              <button type="submit" class="btn btn-danger mt-2" onclick="return confirm('Hapus file File?')">Hapus</button>
+              <input type="hidden" name="id" value="{{ d.id }}">
+              <button type="submit" class="btn btn-danger mt-2" onclick="return confirm('Hapus file Folder?')">Hapus</button>
             </form>
           </div>
 
