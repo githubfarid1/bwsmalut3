@@ -25,7 +25,29 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; {{ depname }}</h4>
-  {% include 'fm_pjpa/menu_year.html'%}
+  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> <br/><div class="text-success">Nama PPK: {{ depname }}</div></h4>
+  {% comment %} {% include 'fm_pjpa/menu_year.html'%} {% endcomment %}
+  {% if years %}
+    
+  <div class="row">
+    <p></p>
+    <h4>Daftar Tahun</h4>
+       {% for d in years %}
+      <div class="col-12 col-lg-3 mt-3">
+        <div class="card border-primary mb-3">
+          <div class="row no-gutters px-3 py-2">
+            <div class="col-sm-6 mt-3 text-center">
+              <a href="{% url 'fm_pjpa_department_year' slug d %}"><img class="card-img border" src="{% static 'assets/filetypes/year.png' %}" alt=""></a>
+            </div>
+            <div class="col-sm-6 mt-3 text-center">
+              <p><h5>Tahun: {{ d }}</h5></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+  </div>
+  {% endif %}
+
 </div>
 {% endblock content %}

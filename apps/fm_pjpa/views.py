@@ -62,7 +62,7 @@ def department(request, slug):
     dep = Department.objects.filter(slug=slug).first()
     context = {
         # 'data':subfolders,
-        "menu": getmenu_year(dep.id),
+        "years": getmenu_year(dep.id),
         'depname':dep.name,
         'slug': slug,
     }

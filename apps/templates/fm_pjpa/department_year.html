@@ -25,8 +25,8 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a> &#62;&#62; Tahun {{ year }}</h4>
-  {% include 'fm_pjpa/menu_year.html'%}
+  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a><br/> <div class="text-success">Tahun {{ year }}</div></h4>
+  {% comment %} {% include 'fm_pjpa/menu_year.html'%} {% endcomment %}
   <div class="container">
     <div class="row justify-content-center">
           <div class="col-lg-6 col-md-8 col-sm-12">  
