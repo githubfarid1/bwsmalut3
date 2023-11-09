@@ -24,7 +24,11 @@ class DepartmentForm(forms.ModelForm):
             'name',
             'shortname',
         ]
-
+        
+        labels = {
+                "name": "Nama PPK",
+                "shortname": "Nama singkat"
+        }
 
 class SubfolderForm(forms.ModelForm):
     class Meta:
