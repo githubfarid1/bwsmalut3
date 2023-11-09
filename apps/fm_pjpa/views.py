@@ -16,7 +16,7 @@ from urllib.parse import unquote, urlparse
 from django.contrib.auth.decorators import user_passes_test
 from datetime import date, datetime
 import mimetypes
-import time
+from django.utils import timezone
 
 def check_permission(request, depslug):
     if request.user.is_superuser:
@@ -114,19 +114,23 @@ def department_year(request, slug, year):
         form = SubfolderForm(request.POST)
         if form.is_valid():
             newfloder = form.save(commit=False)
-            newfloder.folder = slugify(newfloder.name)
-            newfloder.year = year
-            newfloder.department_id = dep.id
-            newfloder.create_date = datetime.now()
             foldertmp = slugify(newfloder.name)
             yeartmp = str(year)
-            newfloder.save()
             folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, yeartmp)
             if not exists(folder):
                 os.mkdir(folder)
             folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, yeartmp, foldertmp)
-            if not exists(folder):
+            if exists(folder):
+                messages.info(request, "Folder sudah ada")
+                return redirect(request.build_absolute_uri())
+            else:
                 os.mkdir(folder)
+
+            newfloder.folder = slugify(newfloder.name)
+            newfloder.year = year
+            newfloder.department_id = dep.id
+            newfloder.create_date = timezone.now()
+            newfloder.save()
 
     form = SubfolderForm()
     context = {
@@ -172,7 +176,8 @@ def add_department(request):
             newdep.folder = slugify(newdep.shortname)
             newdep.slug = slugify(newdep.shortname)
             foldertmp = slugify(newdep.shortname)
-            newdep.create_date = datetime.now()
+
+            newdep.create_date = timezone.now()
             newdep.save()
             folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], foldertmp)
             if not exists(folder):
@@ -295,7 +300,7 @@ def subfolder(request, id):
                 slugs = "-".join([__package__.split('.')[1], subfolder.department.folder, str(subfolder.year), str(subfolder.folder), str(upload)])
                 newsubfolder.slug = slugify(slugs)
                 newsubfolder.subfolder_id = id
-                newsubfolder.upload_date = datetime.now()
+                newsubfolder.upload_date = timezone.now()
                 newsubfolder.save()
                 # Without this next line the tags won't be saved.
                 form.save_m2m()

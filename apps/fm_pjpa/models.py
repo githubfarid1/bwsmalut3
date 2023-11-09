@@ -21,7 +21,7 @@ class Subfolder(models.Model):
     name = models.CharField(max_length=255)
     # link = models.CharField(max_length=50, unique=True)
     year = models.CharField(max_length=4, validators=[MinLengthValidator(4)], default='2023')
-    folder = models.CharField(max_length=50, unique=True)
+    folder = models.CharField(max_length=50)
     create_date = models.DateTimeField(null=True, blank=True)
     
     department = models.ForeignKey(
