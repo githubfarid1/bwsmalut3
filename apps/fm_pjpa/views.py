@@ -174,7 +174,6 @@ def add_department(request):
         if form.is_valid():
             newdep = form.save(commit=False)
             foldertmp = slugify(newdep.shortname)
-<<<<<<< HEAD
             folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], foldertmp)
             if not exists(folder):
                 os.mkdir(folder)
@@ -187,16 +186,6 @@ def add_department(request):
             return redirect(request.build_absolute_uri())
         else:
             messages.info(request, "Nama PPK atau Nama singkat sudah ada")    
-=======
-
-            newdep.create_date = timezone.now()
-            newdep.save()
-            folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], foldertmp)
-            if not exists(folder):
-                os.mkdir(folder)
-            return redirect(request.build_absolute_uri())
-            
->>>>>>> 3a38aefada0ddbb0fc59233bb1b681e844cc2fc9
     form = DepartmentForm()
     context = {
     'data':data,
