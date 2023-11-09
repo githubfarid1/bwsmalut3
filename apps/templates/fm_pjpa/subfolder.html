@@ -31,7 +31,7 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' depslug %}> {{ depname }}</a> &#62;&#62; Tahun <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department_year' depslug year %}>{{ year }}</a><br/> <div class="text-success">Nama Folder: {{ subfoldername }}</div> </h4>
+  <h4 class="text-left"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' depslug %}> {{ depname }}</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department_year' depslug year %}>{{ year }}</a>  &#62;&#62;{{ subfoldername }}</h4>
   <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8 col-sm-12">  
@@ -50,7 +50,8 @@
 </div>
   {% if data %}
     
-  <div class="row">
+  <div class="row mt-2">
+     <h4>Daftar File <strong>{{ subfoldername }}</strong></h4>
        {% for d in data %}
       <div class="col-12 col-lg-3 mt-3">
         <div class="card {% if not d.found %}bg-secondary{% endif %} border-primary mb-3">

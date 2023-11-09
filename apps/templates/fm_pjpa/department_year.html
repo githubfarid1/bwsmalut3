@@ -25,7 +25,9 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a><br/> <div class="text-success">Tahun {{ year }}</div></h4>
+  {% comment %} <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a><br/> <div class="text-success">Tahun {{ year }}</div></h4>
+   {% endcomment %}
+  <h5 class="text-left"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a> &#62;&#62; {{ year }}</h5>
   {% comment %} {% include 'fm_pjpa/menu_year.html'%} {% endcomment %}
   <div class="container">
     <div class="row justify-content-center">
@@ -43,7 +45,7 @@
     
   <div class="row">
     <p></p>
-    <h4>Daftar Folder</h4>
+    <h4>Daftar Folder {{ depname }} {{ year }}</h4>
        {% for d in data %}
       <div class="col-12 col-lg-3 mt-3">
         <div class="card border-primary mb-3">

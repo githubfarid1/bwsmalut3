@@ -25,13 +25,13 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> <br/><div class="text-success">Nama PPK: {{ depname }}</div></h4>
+  <h4 class="text-left"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; {{ depname }}</h4>
   {% comment %} {% include 'fm_pjpa/menu_year.html'%} {% endcomment %}
   {% if years %}
     
   <div class="row">
     <p></p>
-    <h4>Daftar Tahun</h4>
+    <h4>Pilih Tahun</h4>
        {% for d in years %}
       <div class="col-12 col-lg-3 mt-3">
         <div class="card border-primary mb-3">
