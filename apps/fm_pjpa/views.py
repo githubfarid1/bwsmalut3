@@ -224,6 +224,8 @@ def get_fileinfo(filepath):
         filemime, filetype = 'pdf.png', 'PDF'
     elif 'excel' in mime_type:
         filemime, filetype = 'excel.png', 'Excel'
+    elif 'sheet' in mime_type:
+        filemime, filetype = 'excel.png', 'Excel'
     elif 'png' in mime_type:
         filemime, filetype = 'image.png', 'Image'
     elif 'jpg' in mime_type:
@@ -266,7 +268,7 @@ def subfolder(request, id):
         mime_type = ''
         if exists(filepath):
             filemime, filesize, filetype, mime_type = get_fileinfo(filepath)
-            return HttpResponse(mime_type)
+            # return HttpResponse(mime_type)
             found = True
             icon_location = os.path.join('assets/filetypes', filemime)
         else:
