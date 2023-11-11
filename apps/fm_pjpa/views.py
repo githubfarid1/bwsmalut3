@@ -240,6 +240,8 @@ def get_fileinfo(filepath):
         filemime, filetype = 'ppt.png', 'Power Point'
     elif 'wordprocessingml' in mime_type:
         filemime, filetype = 'doc.png', 'Word'
+    elif 'word' in mime_type:
+        filemime, filetype = 'doc.png', 'Word'
 
 
         
