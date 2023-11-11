@@ -47,3 +47,4 @@ apps/static/assets/.temp
 /utilities/alihmedia_vital/rungencover.sh
 /utilities/alihmedia_vital/runmovepdf.sh
 /utilities/alihmedia_vital/runbackup.sh
+/utilities/file_explorer/runmovefile.sh
