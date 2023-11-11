@@ -270,7 +270,7 @@ def subfolder(request, id):
         mime_type = ''
         if exists(filepath):
             filemime, filesize, filetype, mime_type = get_fileinfo(filepath)
-            # return HttpResponse(mime_type)
+            return HttpResponse(mime_type)
             found = True
             icon_location = os.path.join('assets/filetypes', filemime)
         else:
