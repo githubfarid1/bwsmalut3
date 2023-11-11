@@ -244,7 +244,7 @@ def get_fileinfo(filepath):
     else:
         filemime, filetype = 'unknown.png', 'Unknown'
         
-    return filemime, filesizestr, filetype
+    return filemime, filesizestr, filetype, mime_type
 
 
 def subfolder(request, id):
@@ -263,8 +263,10 @@ def subfolder(request, id):
         filesize = 0
         filetype = 'Unknown'
         found = False
+        mime_type = ''
         if exists(filepath):
-            filemime, filesize, filetype = get_fileinfo(filepath)
+            filemime, filesize, filetype, mime_type = get_fileinfo(filepath)
+            return HttpResponse(mime_type)
             found = True
             icon_location = os.path.join('assets/filetypes', filemime)
         else:
