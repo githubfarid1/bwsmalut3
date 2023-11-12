@@ -1,0 +1,11 @@
+delete from django_migrations where app = 'fm_pjsa'
+drop table fm_pjsa_department
+drop table fm_pjsa_subfolder
+drop table fm_pjsa_file
+
+ubah apps.py
+ubah models.py (pjpa_taggit jadi pjsa_taggit)
+
+python manage.py migrate
+
+tambahkan folder fm_pjsa di nas-media/fms

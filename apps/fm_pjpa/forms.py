@@ -11,6 +11,10 @@ class FileForm(forms.ModelForm):
             'description',
             # 'tags',
         ]
+        labels = {
+                "description": "Deskripsi File",
+        }
+
         widgets = {
             # 'tags': forms.TextInput(attrs={'data-role': 'tagsinput'}),
             'description': forms.Textarea(attrs={'rows': '3'}),
@@ -36,3 +40,6 @@ class SubfolderForm(forms.ModelForm):
         fields = [
             'name',
         ]
+        labels = {
+                "name": "Nama Folder",
+        }

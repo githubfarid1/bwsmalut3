@@ -25,12 +25,13 @@
 
 {% block content %}
 <div class="container-fluid">
-  {% comment %} <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a><br/> <div class="text-success">Tahun {{ year }}</div></h4>
+  {% comment %} <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjsa_department_list' %}">SATKER PJSA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjsa_department' slug %}>{{ depname }}</a><br/> <div class="text-success">Tahun {{ year }}</div></h4>
    {% endcomment %}
-  <h5 class="text-left"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a> &#62;&#62; {{ year }}</h5>
-  {% comment %} {% include 'fm_pjpa/menu_year.html'%} {% endcomment %}
+  <h5 class="text-left"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjsa_department_list' %}">SATKER PJSA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjsa_department' slug %}>{{ depname }}</a> &#62;&#62; {{ year }}</h5>
+  {% comment %} {% include 'fm_pjsa/menu_year.html'%} {% endcomment %}
   <div class="container">
     <h5 class="text-center">Input Folder</h5>
+
     <div class="row justify-content-center">
           <div class="col-lg-6 col-md-8 col-sm-12">  
               <form action="" method="post">
@@ -52,7 +53,7 @@
         <div class="card border-primary mb-3">
           <div class="row no-gutters px-3 py-2">
             <div class="col-sm-6 mt-3 text-center">
-              <a href="{% url 'fm_pjpa_subfolder' d.id %}"><img class="card-img border" src="{% static 'assets/filetypes/folder.png' %}" alt=""></a>
+              <a href="{% url 'fm_pjsa_subfolder' d.id %}"><img class="card-img border" src="{% static 'assets/filetypes/folder.png' %}" alt=""></a>
             </div>
             <div class="col-sm-6 mt-3 text-center">
               <p><small>Waktu Buat: {{ d.create_date }}</small></p>

@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %} {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %} | Data Inaktif {% endblock %}
+{% block title %} | Daftar File {% endblock %}
 {% block stylesheets %}
     <link href="{% static 'assets/vendors/coreui/icons/css/free.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
@@ -31,45 +31,65 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h3 class="text-center">{{ depname }} :: {{ subfoldername }} :: Tahun {{ year }}</h3>
+  <h4 class="text-left"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjsa_department_list' %}">SATKER PJSA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjsa_department' depslug %}> {{ depname }}</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjsa_department_year' depslug year %}>{{ year }}</a>  &#62;&#62;{{ subfoldername }}</h4>
   <div class="container mt-5">
+    <h5 class="text-center">Input File</h5>
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8 col-sm-12">  
-            <form action="" method="post">
+            <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{form|crispy}}
                 <button type="submit" class="btn btn-primary">Upload</button>
             </form>
-            <p>Common Tags: 
+            {% comment %} <p>Common Tags: 
                 {% for mt in common_tags %}
                     <a href="#" class="badge badge-success">{{mt}}</a>
                 {% endfor %}
-            </p>
+            </p> {% endcomment %}
         </div>
     </div>
 </div>
   {% if data %}
     
-  <div class="row">
+  <div class="row mt-2">
+     <h4>Daftar File <strong>{{ subfoldername }}</strong></h4>
        {% for d in data %}
       <div class="col-12 col-lg-3 mt-3">
-        <div class="card">
+        <div class="card {% if not d.found %}bg-secondary{% endif %} border-primary mb-3">
           <div class="row no-gutters px-3 py-2">
+              <div class="col-sm-6 mt-3">
+                  <div class="ps-3">
+                    {% if d.found %}
+                      <a href="{% url 'fm_pjsa_filedownload' d.uuid_id %}" download="{% url 'fm_pjsa_filedownload' d.uuid_id %}" target="_new"><img class="card-img border" src="{% static d.icon_location %}" alt=""></a>
+                    {% else %}
+                      <img class="card-img border" src="{% static d.icon_location %}" alt="">
+                    {% endif %}
+                  </div>
+              </div>
+              <div class="col-sm-6 mt-3 text-center">
+                <p><small>Ukuran: {{d.filesize}}<br>Tipe: {{d.filetype}}<br>Upload: {{d.upload_date}}
+                </small></p>
+              </div>
+
               <div class="col-sm-12 mt-3 text-center">
-                    {{ d.filename }} <br/>{{ d.description }}
+                    <strong>{{ d.filename }}</strong> <br/><small>Keterangan: <i>{{ d.description|truncatechars:100 }}</i></small>
                       {% comment %} <p><small><a href="{% url 'file_explorer_subfolder' d.id %}">{{ d.name }}</a></small> </p> {% endcomment %}
               </div>
-              <div style="display:flex">
+              {% comment %} <div style="display:flex">
                 {% for tag in d.tags.all %}
                 <a href="{% url 'fm_pjsa_tagged' tag.slug %}" class="mr-1 badge badge-info">#{{ tag }}</a>
                 {% endfor %}
+              </div> {% endcomment %}
+              <div class="col-sm-4">
+                  {% comment %} <a href="{% url 'fm_pjsa_fileremove' d.uuid_id %}" class="justify-content-end btn btn-danger btn-block btn-sm">Hapus</a> {% endcomment %}
+
+                  <form action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="uuid_id" value="{{ d.uuid_id }}">
+                    <button type="submit" class="btn btn-danger mt-2" onclick="return confirm('Hapus file File?')">Hapus</button>
+                  </form>
+    
               </div>
-              <div class="col-sm-6 my-1">
-                <a href="" target="_new" class="btn btn-info btn-block btn-sm">Download</a>
-            </div>
-            <div class="col-sm-6 my-1">
-                <a href="" class="btn btn-danger btn-block btn-sm">Hapus</a>
-            </div>
 
           </div>
       </div>
