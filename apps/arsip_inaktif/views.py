@@ -293,6 +293,7 @@ class GenerateScriptView:
     def template_name(self):
         return self.__template_name
 
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')    
 @csrf_exempt
 def irigasi(request):
     if not request.user.is_authenticated:
@@ -302,6 +303,7 @@ def irigasi(request):
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
 
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')    
 @csrf_exempt
 def air_baku(request):
     if not request.user.is_authenticated:
@@ -310,6 +312,7 @@ def air_baku(request):
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
 
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')    
 @csrf_exempt
 def sungai(request):
     if not request.user.is_authenticated:
@@ -318,6 +321,7 @@ def sungai(request):
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
 
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')    
 @csrf_exempt
 def pantai(request):
     if not request.user.is_authenticated:
@@ -326,6 +330,7 @@ def pantai(request):
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
 
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')    
 @csrf_exempt
 def keuangan(request):
     if not request.user.is_authenticated:
@@ -334,7 +339,7 @@ def keuangan(request):
     data.gencontext()
     return render(request=request, template_name=data.template_name, context=data.context)
 
-@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')
 def pdfdownload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -366,8 +371,8 @@ def pdfdownload(request, uuid_id):
             return response
     raise Http404
 
-@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())
-@csrf_exempt
+#@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())
+#@csrf_exempt
 def statistics(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -440,7 +445,7 @@ def statistics(request):
     }
     return render(request=request, template_name='arsip_inaktif/statistics.html', context=context)
 
-@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')
 @csrf_exempt
 def pdfremove(request, uuid_id):
     if not request.user.is_authenticated:
@@ -481,6 +486,7 @@ def pdfremove(request, uuid_id):
     # context['url'] = url
     return render(request,'arsip_inaktif/pdfremove.html', context=context)
 
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')
 @csrf_exempt
 def pdfupload(request, uuid_id):
     if not request.user.is_authenticated:
@@ -513,6 +519,7 @@ def pdfupload(request, uuid_id):
     # context['url'] = url
     return render(request,'arsip_inaktif/pdfupload.html', context=context)
 
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')
 def searchdoc(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -559,6 +566,7 @@ def searchdoc(request):
     context['form'] = SearchDoc()
     return render(request,'arsip_inaktif/searchdoc.html', context=context)
 
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')
 @csrf_exempt
 def searchqrcode(request):
     if not request.user.is_authenticated:
@@ -750,7 +758,7 @@ def create_xls(datalist, app_name, folder):
         i += 1
     return wb
 
-user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all() or Group.objects.get(name='asesor') in user.groups.all())
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')
 def export(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -1198,7 +1206,7 @@ def create_year_xls(datalist, sheet, year):
     sheet['{}{}'.format('F', i)].border = thin_border6
     sheet['{}{}'.format('K', i)].border = thin_border6
     
-@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all())    
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')    
 def tahun(request, year):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -1557,6 +1565,7 @@ def get_data_digitalisasi():
             datalist.append({'title': bundle.title, 'folder':folder, 'box_number': bundle.box_number, 'data': data})
     return datalist
     
+@user_passes_test(lambda user: Group.objects.get(name='arsip') in user.groups.all(), login_url='arsip_inaktif_authorization_rejected')
 def digitalisasi(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -1584,4 +1593,5 @@ def digitalisasi(request):
                   template_name=gendata.template_name, 
                   context=gendata.context)
 
-
+def authorization_rejected(request):
+    return render(request=request, template_name='page_404.html', context={'message':'Otorisasi Ditolak'})

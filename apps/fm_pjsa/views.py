@@ -71,8 +71,8 @@ def department(request, slug):
 def department_list(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    if not check_permission(request, ''):
-        return render(request=request, template_name='fm_pjsa/page_404.html', context={'message':'Otorisasi Ditolak'})
+    # if not check_permission(request, ''):
+    #     return render(request=request, template_name='fm_pjsa/page_404.html', context={'message':'Otorisasi Ditolak'})
     departments = Department.objects.all()
     data = []
     for dep in departments:
