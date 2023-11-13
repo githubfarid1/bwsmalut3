@@ -40,7 +40,7 @@ class File(models.Model):
     uuid_id = models.UUIDField(default=uuid.uuid4, editable=False)
     filename = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, max_length=100)
-    tags = TaggableManager(related_name="opsda_taggit")
+    tags = TaggableManager(related_name="balai_taggit")
     description = models.TextField(null=True, blank=True)
     upload_date = models.DateTimeField(null=True, blank=True)
     subfolder = models.ForeignKey(

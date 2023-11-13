@@ -53,11 +53,11 @@ def department(request, slug):
         return redirect('login')
     
     if not check_permission(request, slug):
-        return render(request=request, template_name='fm_opsda/page_404.html', context={'message':'Otorisasi Ditolak'})
+        return render(request=request, template_name='fm_balai/page_404.html', context={'message':'Otorisasi Ditolak'})
         
     dep = Department.objects.filter(slug=slug)
     if not dep:
-        return render(request=request, template_name='fm_opsda/page_404.html', context={'message':'Halaman tidak ada'})
+        return render(request=request, template_name='fm_balai/page_404.html', context={'message':'Halaman tidak ada'})
     
     dep = Department.objects.filter(slug=slug).first()
     context = {
@@ -66,13 +66,13 @@ def department(request, slug):
         'depname':dep.name,
         'slug': slug,
     }
-    return render(request=request, template_name='fm_opsda/department.html', context=context)
+    return render(request=request, template_name='fm_balai/department.html', context=context)
 
 def department_list(request):
     if not request.user.is_authenticated:
         return redirect('login')
     # if not check_permission(request, ''):
-    #     return render(request=request, template_name='fm_opsda/page_404.html', context={'message':'Otorisasi Ditolak'})
+    #     return render(request=request, template_name='fm_balai/page_404.html', context={'message':'Otorisasi Ditolak'})
     departments = Department.objects.all()
     data = []
     for dep in departments:
@@ -86,14 +86,14 @@ def department_list(request):
         'data':data,
     }
 
-    return render(request=request, template_name='fm_opsda/department_list.html', context=context)
+    return render(request=request, template_name='fm_balai/department_list.html', context=context)
         
     
 def department_year(request, slug, year):
     if not request.user.is_authenticated:
         return redirect('login')
     if not check_permission(request, slug):
-        return render(request=request, template_name='fm_opsda/page_404.html', context={'message':'Otorisasi Ditolak'})
+        return render(request=request, template_name='fm_balai/page_404.html', context={'message':'Otorisasi Ditolak'})
     dep = Department.objects.get(slug=slug)
     depfolder = dep.folder
     subfolders = dep.subfolder_set.filter(year=year)
@@ -141,14 +141,14 @@ def department_year(request, slug, year):
         'year': year,
         'form': form,
     }
-    return render(request=request, template_name='fm_opsda/department_year.html', context=context)
+    return render(request=request, template_name='fm_balai/department_year.html', context=context)
 
 
 def add_department(request):
     if not request.user.is_authenticated:
         return redirect('login')
     if not check_permission(request, ''):
-        return render(request=request, template_name='fm_opsda/page_404.html', context={'message':'Otorisasi Ditolak'})
+        return render(request=request, template_name='fm_balai/page_404.html', context={'message':'Otorisasi Ditolak'})
     departments = Department.objects.all()
     data = []
     for dep in departments:
@@ -200,7 +200,7 @@ def add_department(request):
     'form':form,        
     }
 
-    return render(request=request, template_name='fm_opsda/add_department.html', context=context)
+    return render(request=request, template_name='fm_balai/add_department.html', context=context)
 
 def get_fileinfo(filepath):
     file_size = os.path.getsize(filepath)
@@ -259,7 +259,7 @@ def subfolder(request, id):
     subfolder = Subfolder.objects.get(id=id)
     depslug = subfolder.department.slug
     if not check_permission(request, depslug):
-        return render(request=request, template_name='fm_opsda/page_404.html', context={'message':'Otorisasi Ditolak'})
+        return render(request=request, template_name='fm_balai/page_404.html', context={'message':'Otorisasi Ditolak'})
     files = subfolder.file_set.all()
     data = []
     for file in files:
@@ -349,7 +349,7 @@ def subfolder(request, id):
     'depslug': depslug      
     }
 
-    return render(request=request, template_name='fm_opsda/subfolder.html', context=context)
+    return render(request=request, template_name='fm_balai/subfolder.html', context=context)
 
 
 def filedownload(request, uuid_id):
@@ -381,8 +381,8 @@ def tagged(request, slug):
         'tag':tag,
         'data':files,
     }
-    return render(request, 'fm_opsda/subfolder.html', context)
+    return render(request, 'fm_balai/subfolder.html', context)
 
 def page_404(request):
-    return render(request, 'fm_opsda/page_404.html', {})
+    return render(request, 'fm_balai/page_404.html', {})
 
