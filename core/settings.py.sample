@@ -41,16 +41,17 @@ INSTALLED_APPS = [
     'django_extensions',
     'crispy_forms',
     'apps.alihmedia_vital',
-    'apps.alihmedia_inactive',
-    'django_extensions',
-    'crispy_forms',
-    'apps.alihmedia_vital',
     'apps.arsip_inaktif',
     'apps.arsip_aktif',
     'apps.arsip_vital',
-
+    # 'apps.file_explorer',
+    'apps.fm_pjpa',
+    'apps.fm_pjsa',
+    'taggit',
 
 ]
+SITE_ID = 1
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -177,3 +178,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 PYTHON_UTILITY = "/home/farid/dev/python/arsip-utility/util-env/bin/python"
 GENCOVER_SCRIPT = "/home/farid/dev/python/arsip-utility/gencover.py"
 MOVEPDF_SCRIPT = "/home/farid/dev/python/arsip-utility/movepdf.py"
+
+
+FM_LOCATION = "/home/farid/fms/"
+FM_FILETYPE_LOCATION = os.path.join(BASE_DIR, "apps","static", "assets", 'filetypes')
+TIME_ZONE = 'Asia/Jayapura'
