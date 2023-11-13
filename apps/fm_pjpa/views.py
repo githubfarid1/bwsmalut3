@@ -174,6 +174,9 @@ def add_department(request):
         if form.is_valid():
             newdep = form.save(commit=False)
             foldertmp = slugify(newdep.shortname)
+            if not exists(os.path.join(settings.FM_LOCATION, __package__.split('.')[1])):
+                os.mkdir(os.path.join(settings.FM_LOCATION, __package__.split('.')[1]))
+                          
             folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], foldertmp)
             if not exists(folder):
                 os.mkdir(folder)
