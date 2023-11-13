@@ -186,7 +186,7 @@ def add_department(request):
 
             newdep.create_date = timezone.now()
             newdep.save()
-            Group.objects.get_or_create(name=f"{settings.FM_LOCATION, __package__.split('.')[1]}_{foldertmp}")
+            Group.objects.get_or_create(name=f"{__package__.split('.')[1]}_{foldertmp}")
             return redirect(request.build_absolute_uri())
         else:
             messages.info(request, "Nama PPK atau Nama singkat sudah ada")    
