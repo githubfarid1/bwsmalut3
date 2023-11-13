@@ -17,6 +17,8 @@ from django.contrib.auth.decorators import user_passes_test
 from datetime import date, datetime
 import mimetypes
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+
 # tes commit
 def check_permission(request, depslug):
     if request.user.is_superuser:
@@ -251,7 +253,7 @@ def get_fileinfo(filepath):
         
     return filemime, filesizestr, filetype, mime_type
 
-
+@csrf_exempt
 def subfolder(request, id):
     # messages.info(request, "File Sudah ada")
     if not request.user.is_authenticated:
