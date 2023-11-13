@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import user_passes_test
 from datetime import date, datetime
 import mimetypes
 from django.utils import timezone
-#tess
+# tes commit
 def check_permission(request, depslug):
     if request.user.is_superuser:
         return True
@@ -176,7 +176,7 @@ def add_department(request):
             foldertmp = slugify(newdep.shortname)
             if not exists(os.path.join(settings.FM_LOCATION, __package__.split('.')[1])):
                 os.mkdir(os.path.join(settings.FM_LOCATION, __package__.split('.')[1]))
-
+                          
             folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], foldertmp)
             if not exists(folder):
                 os.mkdir(folder)
