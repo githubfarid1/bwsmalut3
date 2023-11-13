@@ -383,6 +383,8 @@ def statistics(request):
     colorlist = []
     foundall = 0
     notfoundall = 0
+    procfound = 0
+    procnotfound = 0
     for d in deps:
         folder = d.folder
         foundlist = [os.path.join(root, file) for root, dirs, files in os.walk(os.path.join(settings.PDF_LOCATION, __package__.split('.')[1], folder)) for file in files if file.endswith(".pdf")]
@@ -1262,7 +1264,9 @@ def statistics_year(request):
     colorlist = []
     foundall = 0
     notfoundall = 0
-    
+    procfound = 0
+    procnotfound = 0
+
     for year in years:
         totrec = Doc.objects.filter(bundle__year__exact=year).count()
         notfound = Doc.objects.filter(Q(bundle__year__exact=year) & Q(filesize__isnull=True)).count()

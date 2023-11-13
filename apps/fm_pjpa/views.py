@@ -183,6 +183,7 @@ def add_department(request):
 
             newdep.create_date = timezone.now()
             newdep.save()
+            Group.objects.get_or_create(name=foldertmp)
             return redirect(request.build_absolute_uri())
         else:
             messages.info(request, "Nama PPK atau Nama singkat sudah ada")    
