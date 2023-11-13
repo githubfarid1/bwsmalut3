@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import user_passes_test
 from datetime import date, datetime
 import mimetypes
 from django.utils import timezone
-
+#tess
 def check_permission(request, depslug):
     if request.user.is_superuser:
         return True

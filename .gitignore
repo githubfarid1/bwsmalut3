@@ -48,3 +48,7 @@ apps/static/assets/.temp
 /utilities/alihmedia_vital/runmovepdf.sh
 /utilities/alihmedia_vital/runbackup.sh
 /utilities/file_explorer/runmovefile.sh
+
+/utilities/arsip_inaktif/rungencover.sh
+/utilities/arsip_inaktif/runmovepdf.sh
+/utilities/arsip_inaktif/settings.py
