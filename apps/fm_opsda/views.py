@@ -17,7 +17,9 @@ from django.contrib.auth.decorators import user_passes_test
 from datetime import date, datetime
 import mimetypes
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 def check_permission(request, depslug):
     if request.user.is_superuser:
         return True
@@ -48,6 +50,7 @@ def getmenu_year(department_id):
     return yearlist        
 
 
+@csrf_exempt
 def department(request, slug):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -68,6 +71,7 @@ def department(request, slug):
     }
     return render(request=request, template_name='fm_opsda/department.html', context=context)
 
+@csrf_exempt
 def department_list(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -89,6 +93,7 @@ def department_list(request):
     return render(request=request, template_name='fm_opsda/department_list.html', context=context)
         
     
+@csrf_exempt
 def department_year(request, slug, year):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -144,6 +149,7 @@ def department_year(request, slug, year):
     return render(request=request, template_name='fm_opsda/department_year.html', context=context)
 
 
+@csrf_exempt
 def add_department(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -251,7 +257,7 @@ def get_fileinfo(filepath):
         
     return filemime, filesizestr, filetype, mime_type
 
-
+@csrf_exempt
 def subfolder(request, id):
     # messages.info(request, "File Sudah ada")
     if not request.user.is_authenticated:
@@ -351,7 +357,7 @@ def subfolder(request, id):
 
     return render(request=request, template_name='fm_opsda/subfolder.html', context=context)
 
-
+@csrf_exempt
 def filedownload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -373,6 +379,7 @@ def filedownload(request, uuid_id):
             return response
     raise Http404
 
+@csrf_exempt
 def tagged(request, slug):
     tag = get_object_or_404(Tag, slug=slug)
     # Filter posts by tag name  

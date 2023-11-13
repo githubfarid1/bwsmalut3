@@ -20,6 +20,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 # tes commit
+@csrf_exempt
 def check_permission(request, depslug):
     if request.user.is_superuser:
         return True
@@ -49,7 +50,7 @@ def getmenu_year(department_id):
     yearlist.sort()
     return yearlist        
 
-
+@csrf_exempt
 def department(request, slug):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -70,6 +71,7 @@ def department(request, slug):
     }
     return render(request=request, template_name='fm_balai/department.html', context=context)
 
+@csrf_exempt
 def department_list(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -90,7 +92,7 @@ def department_list(request):
 
     return render(request=request, template_name='fm_balai/department_list.html', context=context)
         
-    
+@csrf_exempt    
 def department_year(request, slug, year):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -145,7 +147,7 @@ def department_year(request, slug, year):
     }
     return render(request=request, template_name='fm_balai/department_year.html', context=context)
 
-
+@csrf_exempt
 def add_department(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -353,7 +355,7 @@ def subfolder(request, id):
 
     return render(request=request, template_name='fm_balai/subfolder.html', context=context)
 
-
+@csrf_exempt
 def filedownload(request, uuid_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -375,6 +377,7 @@ def filedownload(request, uuid_id):
             return response
     raise Http404
 
+@csrf_exempt
 def tagged(request, slug):
     tag = get_object_or_404(Tag, slug=slug)
     # Filter posts by tag name  
@@ -385,6 +388,7 @@ def tagged(request, slug):
     }
     return render(request, 'fm_balai/subfolder.html', context)
 
+@csrf_exempt
 def page_404(request):
     return render(request, 'fm_balai/page_404.html', {})
 
