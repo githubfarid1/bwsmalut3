@@ -7,6 +7,8 @@ drop table fm_opsda_subfolder;
 drop table fm_opsda_file;
 SET foreign_key_checks = 1;
 
+hapus semua data di migratios folder kecuali init
+python manage.py makemigrations
 python manage.py migrate
 
 tambahkan folder fm_opsda di nas-media/fms
