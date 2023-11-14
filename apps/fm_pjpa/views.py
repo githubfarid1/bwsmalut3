@@ -441,7 +441,7 @@ def showfolder(request, slug, year):
         'year': year,
         'depname':dep.name,
         'depslug': slug,
-        'curfolder': 'ddd',
+        'curfolder': curfolder,
         'folderlist': folderlist
     }
     return render(request=request, template_name='fm_pjpa/showfolder.html', context=context)
