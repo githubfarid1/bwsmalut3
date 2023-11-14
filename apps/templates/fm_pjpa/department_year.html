@@ -52,7 +52,7 @@
         <div class="card border-primary mb-3">
           <div class="row no-gutters px-3 py-2">
             <div class="col-sm-6 mt-3 text-center">
-              <a href="{% url 'fm_pjpa_subfolder' d.id %}"><img class="card-img border" src="{% static 'assets/filetypes/folder.png' %}" alt=""></a>
+              <a href=""><img class="card-img border" src="{% static 'assets/filetypes/folder.png' %}" alt=""></a>
             </div>
             <div class="col-sm-6 mt-3 text-center">
               <p><small>Waktu Buat: {{ d.create_date }}</small></p>
@@ -62,11 +62,6 @@
               </div>
             
           <div class="col-sm-4">
-            <form action="" method="post">
-              {% csrf_token %}
-              <input type="hidden" name="id" value="{{ d.id }}">
-              <button type="submit" class="btn btn-danger mt-2" onclick="return confirm('Hapus file Folder?')">Hapus</button>
-            </form>
           </div>
 
       </div>
