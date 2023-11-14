@@ -48,20 +48,15 @@
     <p></p>
     <h4>Daftar Folder {{ depname }} {{ year }}</h4>
        {% for d in data %}
-      <div class="col-2 col-lg-3 mt-3">
+      <div class="col-lg-2 mt-3">
         <div class="card border-primary mb-3">
           <div class="row no-gutters px-3 py-2">
-            <div class="col-sm-12 mt-3 text-center">
+            <div class="col-lg-2 mt-3 text-center">
               <a href=""><img class="card-img border" src="{% static 'assets/filetypes/folder.png' %}" alt=""></a>
             </div>
-            <div class="col-sm-12 mt-3 text-center">
-              <p><small>Waktu Buat: {{ d.create_date }}</small></p>
-            </div>
-            <div class="col-sm-12 mt-3 text-center">
+            <div class="col-lg-2 mt-3 text-center">
                 <h5>{{ d.name }}</h5>
             </div>
-            
-
       </div>
     </div>
   </div>
