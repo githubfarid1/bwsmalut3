@@ -27,10 +27,10 @@
 <div class="container-fluid">
   {% comment %} <h4 class="text-center"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a><br/> <div class="text-success">Tahun {{ year }}</div></h4>
    {% endcomment %}
-   <p class="text-left"><a class="btn btn-sm btn-warning mb-2" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-sm btn-warning mb-2" href={% url 'fm_pjpa_department' depslug %}> {{ depname }}</a> &#62;&#62; <a class="btn btn-sm btn-warning mb-2" href={% url 'fm_pjpa_department_year' depslug year %}>{{ year }}</a>
+   <p class="text-left"><a class="btn btn-warning mb-2" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-warning mb-2" href={% url 'fm_pjpa_department' depslug %}> {{ depname }}</a> &#62;&#62; <a class="btn btn-warning mb-2" href={% url 'fm_pjpa_department_year' depslug year %}>{{ year }}</a>
    {% for bread in breadcrumbs %}
     {% if bread.link != '' %}
-    &#62;&#62; <a class="btn btn-sm btn-warning mb-2" href="{% url 'fm_pjpa_showfolder' slug year %}?folder={{bread.link}}"> {{ bread.label }}</a>
+    &#62;&#62; <a class="btn btn-warning mb-2" href="{% url 'fm_pjpa_showfolder' slug year %}?folder={{bread.link}}"> {{ bread.label }}</a>
     {% else %}
     &#62;&#62;  {{ bread.label }}    
     {% endif %}
