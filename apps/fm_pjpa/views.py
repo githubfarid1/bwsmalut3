@@ -408,7 +408,7 @@ def page_404(request):
     return render(request, 'fm_pjpa/page_404.html', {})
 
 def showfolder(request, slug, year):
-    folder = request.GET.get("folder")
-    path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], slug, year, folder)
-    contents =os.listdir(path)
-    return HttpResponse(contents)
+    # folder = request.GET.get("folder")
+    # path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], slug, year, folder)
+    # contents =os.listdir(path)
+    return HttpResponse('tes')
