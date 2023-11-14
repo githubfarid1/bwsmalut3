@@ -184,6 +184,10 @@ def add_department(request):
             folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], foldertmp)
             if not exists(folder):
                 os.mkdir(folder)
+                today = date.today()
+                os.mkdir(os.path.join(folder, str(today.year)))
+                os.mkdir(os.path.join(folder, str(today.year+1)))
+                
             newdep.folder = slugify(newdep.shortname)
             newdep.slug = slugify(newdep.shortname)
             
