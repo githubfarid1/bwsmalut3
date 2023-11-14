@@ -268,6 +268,9 @@ def get_fileinfo(filepath):
             filemime, filetype = 'doc.png', 'Word'
         elif 'msword' in mime_type:
             filemime, filetype = 'doc.png', 'Word'
+        elif 'compressed' in mime_type:
+            filemime, filetype = 'zip.png', 'Zip'
+
         else:
             filemime, filetype = 'unknown.png', 'Unknown'
     else:
