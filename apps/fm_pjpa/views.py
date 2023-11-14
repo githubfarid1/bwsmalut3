@@ -420,6 +420,7 @@ def build_breadcrumbs(url):
             'link': '/'.join(tmpl),
         }
         result.append(mdict)
+    result[:-1]['link'] = ''
     return result
 
 def showfolder(request, slug, year):
