@@ -392,3 +392,7 @@ def tagged(request, slug):
 def page_404(request):
     return render(request, 'fm_pjpa/page_404.html', {})
 
+def showfolder(request):
+    folder = request.GET.get("folder")
+    
+    return HttpResponse(folder)
