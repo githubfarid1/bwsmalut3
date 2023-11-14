@@ -243,6 +243,7 @@ def get_fileinfo(filepath):
     
     mime_type, encoding = mimetypes.guess_type(filepath)
     # print(mime_type)
+    mtime = os.path.getmtime(filepath)
     if mime_type != None:
         if 'pdf' in mime_type:
             filemime, filetype = 'pdf.png', 'PDF'
@@ -276,7 +277,7 @@ def get_fileinfo(filepath):
     else:
         filemime, filetype = 'unknown.png', 'Unknown'
                 
-    return filemime, filesizestr, filetype, mime_type
+    return filemime, filesizestr, filetype, mime_type, mtime
 
 @csrf_exempt
 def subfolder(request, id):
@@ -441,7 +442,7 @@ def showfolder(request, slug, year):
     data = []
     for file in contents:
         if os.path.isfile(os.path.join(path, file)):
-            filemime, filesize, filetype, mime_type = get_fileinfo(os.path.join(path, file))
+            filemime, filesize, filetype, mime_type, mtime = get_fileinfo(os.path.join(path, file))
             icon_location = os.path.join('assets/filetypes', filemime)
             data.append({
                 'name': file,
@@ -451,6 +452,7 @@ def showfolder(request, slug, year):
                 'filetype': filetype,
                 'mimetype': mime_type,
                 'folder': folder,
+                'mtime': mtime,
                 
             })
         else:
