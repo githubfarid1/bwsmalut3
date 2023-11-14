@@ -260,7 +260,7 @@ def get_fileinfo(filepath):
             filemime, filetype = 'sound.png', 'Image'
         elif 'video' in mime_type:
             filemime, filetype = 'video.png', 'Video'
-        elif 'powerpoint' in mime_type:
+        elif 'powerpoint' or 'presentation' in mime_type:
             filemime, filetype = 'ppt.png', 'Power Point'
         elif 'wordprocessingml' in mime_type:
             filemime, filetype = 'doc.png', 'Word'
