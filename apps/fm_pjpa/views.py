@@ -62,6 +62,10 @@ def department(request, slug):
     if not dep:
         return render(request=request, template_name='fm_pjpa/page_404.html', context={'message':'Halaman tidak ada'})
     
+    # folder = request.GET.get("folder")
+    path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], slug)
+    contents =os.listdir(path)    
+    print(contents)
     dep = Department.objects.filter(slug=slug).first()
     context = {
         # 'data':subfolders,
