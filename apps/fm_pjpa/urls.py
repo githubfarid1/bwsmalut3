@@ -13,6 +13,6 @@ urlpatterns = [
     path(route='department_list', view=department_list, name=prefix + "department_list"),
     path(route='filedownload/<str:uuid_id>', view=filedownload, name=prefix + 'filedownload'),
     path(route='showfolder/<str:slug>/<str:year>', view=showfolder, name=prefix + "showfolder"),
-    path(route='download/<str:slug>/<str:year>/<str:folder>/<str:filename>', view=download, name=prefix + 'download'),
+    path(route='download/<str:slug>/<str:year>', view=download, name=prefix + 'download'),
 
 ]

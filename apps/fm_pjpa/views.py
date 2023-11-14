@@ -469,9 +469,11 @@ def showfolder(request, slug, year):
 
 
 @csrf_exempt
-def download(request, slug, year, folder, filename):
+def download(request, slug, year):
     if not request.user.is_authenticated:
         return redirect('login')
+    folder = request.GET.get("folder")
+    filename = request.GET.get("filename")
     path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], slug, year, folder, filename)
     # return HttpResponse(path)
     if exists(path):
