@@ -246,9 +246,15 @@ def get_fileinfo(filepath):
     if mime_type != None:
         if 'pdf' in mime_type:
             filemime, filetype = 'pdf.png', 'PDF'
-        elif 'excel' or 'sheet' in mime_type:
+        elif 'excel' in mime_type:
             filemime, filetype = 'excel.png', 'Excel'
-        elif 'png' or 'jpg' or 'jpeg' in mime_type:
+        elif 'sheet' in mime_type:
+            filemime, filetype = 'excel.png', 'Excel'
+        elif 'png' in mime_type:
+            filemime, filetype = 'image.png', 'Image'
+        elif 'jpg' in mime_type:
+            filemime, filetype = 'image.png', 'Image'
+        elif 'jpeg' in mime_type:
             filemime, filetype = 'image.png', 'Image'
         elif 'mp3' in mime_type:
             filemime, filetype = 'sound.png', 'Image'
@@ -256,7 +262,9 @@ def get_fileinfo(filepath):
             filemime, filetype = 'video.png', 'Video'
         elif 'powerpoint' or 'presentation' in mime_type:
             filemime, filetype = 'ppt.png', 'Power Point'
-        elif 'wordprocessingml' or 'msword' in mime_type:
+        elif 'wordprocessingml' in mime_type:
+            filemime, filetype = 'doc.png', 'Word'
+        elif 'msword' in mime_type:
             filemime, filetype = 'doc.png', 'Word'
         else:
             filemime, filetype = 'unknown.png', 'Unknown'
