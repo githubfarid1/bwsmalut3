@@ -237,7 +237,7 @@ def get_fileinfo(filepath):
         ['bytes', 'kb', 'mb', 'gb']")
     else:
         size = file_size / 1024 ** exponents_map[unit]
-        file_size = round(size, 3)
+        file_size = round(size, 2)
     
     filesizestr = f"{str(file_size)} {unit}"    
     
