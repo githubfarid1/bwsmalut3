@@ -104,50 +104,54 @@ def department_year(request, slug, year):
         return render(request=request, template_name='fm_pjpa/page_404.html', context={'message':'Otorisasi Ditolak'})
     dep = Department.objects.get(slug=slug)
     depfolder = dep.folder
-    subfolders = dep.subfolder_set.filter(year=year)
-    if request.method == 'POST':
-        if request.POST.get('id'):
-            subfolder = Subfolder.objects.get(id=request.POST['id'])
-            if File.objects.filter(subfolder_id=subfolder.id).count() != 0:
-                messages.info(request, "Tidak bisa dihapus karena ada file terhubung")
-                return redirect(request.build_absolute_uri())
-            else:
-                path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], dep.folder, subfolder.year, subfolder.folder)
-                # return HttpResponse(path)
-                subfolder.delete()
-                os.rmdir(path)
-                messages.info(request, "Hapus Folder Berhasil")
-                return redirect(request.build_absolute_uri())
+    # subfolders = dep.subfolder_set.filter(year=year)
+    # if request.method == 'POST':
+    #     if request.POST.get('id'):
+    #         subfolder = Subfolder.objects.get(id=request.POST['id'])
+    #         if File.objects.filter(subfolder_id=subfolder.id).count() != 0:
+    #             messages.info(request, "Tidak bisa dihapus karena ada file terhubung")
+    #             return redirect(request.build_absolute_uri())
+    #         else:
+    #             path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], dep.folder, subfolder.year, subfolder.folder)
+    #             # return HttpResponse(path)
+    #             subfolder.delete()
+    #             os.rmdir(path)
+    #             messages.info(request, "Hapus Folder Berhasil")
+    #             return redirect(request.build_absolute_uri())
 
-        form = SubfolderForm(request.POST)
-        if form.is_valid():
-            newfloder = form.save(commit=False)
-            foldertmp = slugify(newfloder.name)
-            yeartmp = str(year)
-            folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, yeartmp)
-            if not exists(folder):
-                os.mkdir(folder)
-            folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, yeartmp, foldertmp)
-            if exists(folder):
-                messages.info(request, "Folder sudah ada")
-                return redirect(request.build_absolute_uri())
-            else:
-                os.mkdir(folder)
+    #     form = SubfolderForm(request.POST)
+    #     if form.is_valid():
+    #         newfloder = form.save(commit=False)
+    #         foldertmp = slugify(newfloder.name)
+    #         yeartmp = str(year)
+    #         folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, yeartmp)
+    #         if not exists(folder):
+    #             os.mkdir(folder)
+    #         folder = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, yeartmp, foldertmp)
+    #         if exists(folder):
+    #             messages.info(request, "Folder sudah ada")
+    #             return redirect(request.build_absolute_uri())
+    #         else:
+    #             os.mkdir(folder)
 
-            newfloder.folder = slugify(newfloder.name)
-            newfloder.year = year
-            newfloder.department_id = dep.id
-            newfloder.create_date = timezone.now()
-            newfloder.save()
+    #         newfloder.folder = slugify(newfloder.name)
+    #         newfloder.year = year
+    #         newfloder.department_id = dep.id
+    #         newfloder.create_date = timezone.now()
+    #         newfloder.save()
 
-    form = SubfolderForm()
+    # form = SubfolderForm()
+    # folder = request.GET.get("folder")
+    path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder)
+    contents =os.listdir(path)    
+    
     context = {
-        'data':subfolders,
-        "menu": getmenu_year(dep.id),
+        'data':contents,
+        # "menu": getmenu_year(dep.id),
         'depname':dep.name,
         'slug': slug,
         'year': year,
-        'form': form,
+        # 'form': form,
     }
     return render(request=request, template_name='fm_pjpa/department_year.html', context=context)
 
