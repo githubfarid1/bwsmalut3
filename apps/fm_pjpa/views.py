@@ -452,7 +452,7 @@ def showfolder(request, slug, year):
                 'filetype': filetype,
                 'mimetype': mime_type,
                 'folder': folder,
-                'mtime': mtime,
+                'mtime': 'mtime',
                 
             })
         else:
@@ -474,7 +474,6 @@ def showfolder(request, slug, year):
         # 'folderlist': folderlist
     }
     return render(request=request, template_name='fm_pjpa/showfolder.html', context=context)
-
 
 @csrf_exempt
 def download(request, slug, year):
