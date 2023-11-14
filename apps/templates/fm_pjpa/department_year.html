@@ -46,13 +46,13 @@
     
   <div class="row">
     <p></p>
-    <h4>Daftar Folder {{ depname }} {{ year }} {{ slug }}</h4>
+    <h4>Daftar Folder {{ depname }} {{ year }}</h4>
        {% for d in data %}
       <div class="col-2 col-lg-2 mt-3">
         <div class="card border-primary mb-3">
           <div class="row no-gutters px-3 py-2">
             <div class="col-sm-12 mt-3 text-center">
-              {% comment %} <a href="{% url fm_pjpa_showfolder slug year %}"><img class="card-img border" src="{% static 'assets/filetypes/folder.png' %}" alt=""></a> {% endcomment %}
+              <a href="{% url fm_pjpa_showfolder 'ppk2' '2023' %}"><img class="card-img border" src="{% static 'assets/filetypes/folder.png' %}" alt=""></a>
             </div>
             <div class="col-sm-12 mt-3 text-center">
                 <h5>{{ d }}</h5>
