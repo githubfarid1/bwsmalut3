@@ -142,11 +142,14 @@ def department_year(request, slug, year):
 
     # form = SubfolderForm()
     # folder = request.GET.get("folder")
+    data = []
     path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, str(year))
-    contents =os.listdir(path)    
-    
+    contents = os.listdir(path)    
+    for file in contents:
+        if os.path.isdir(os.path.join(path, file)):
+            data.append(file)
     context = {
-        'data':contents,
+        'data': data,
         # "menu": getmenu_year(dep.id),
         'depname':dep.name,
         'slug': slug,
