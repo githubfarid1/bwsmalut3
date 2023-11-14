@@ -452,7 +452,7 @@ def showfolder(request, slug, year):
                 'filetype': filetype,
                 'mimetype': mime_type,
                 'folder': folder,
-                'mtime': mtime,
+                'mtime': datetime.fromtimestamp(mtime),
                 
             })
         else:
