@@ -430,10 +430,13 @@ def showfolder(request, slug, year):
                 'type': 'folder',
                 'link': os.path.join(folder, file)
             })
-            
+    
+    dep = Department.objects.get(slug=slug)        
     context = {
         'data': data,
         'slug': slug,
         'year': year,
+        'depname':dep.name,
+        
     }
     return render(request=request, template_name='fm_pjpa/showfolder.html', context=context)
