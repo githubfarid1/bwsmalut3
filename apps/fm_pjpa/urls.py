@@ -12,6 +12,6 @@ urlpatterns = [
     path(route='page_404', view=page_404, name=prefix + "page_404"),
     path(route='department_list', view=department_list, name=prefix + "department_list"),
     path(route='filedownload/<str:uuid_id>', view=filedownload, name=prefix + 'filedownload'),
-    path(route='showfolder/<str:slug>/<str:year>/(?P<folder>\d+)', view=showfolder, name=prefix + "showfolder"),
+    path(route='showfolder/<str:slug>/<str:year>', view=showfolder, name=prefix + "showfolder"),
 
 ]
