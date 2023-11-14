@@ -394,5 +394,5 @@ def page_404(request):
 
 def showfolder(request):
     folder = request.GET.get("folder")
-    
-    return HttpResponse(folder)
+    path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1])    
+    return HttpResponse(path)
