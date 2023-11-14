@@ -54,7 +54,7 @@
     
   <div class="row">
     <p></p>
-    <h4>Daftar Folder {{ depname }} {{ year }}</h4>
+    {% comment %} <h4>Daftar Folder {{ depname }} {{ year }}</h4> {% endcomment %}
        {% for d in data %}
        {% if d.type == 'folder' %}
         <div class="col-2 col-lg-2 mt-3">
@@ -77,7 +77,7 @@
                         <a href="" download="" target="_new"><img class="card-img border" src="{% static d.icon_location %}" alt=""></a>
                     </div>
                     <div class="col-sm-12 mt-3 text-center">
-                        <h5>{{ d.mimetype}}</h5>
+                        <p>{{ d.name}}</p>
                     </div>
                 </div>
             </div>
