@@ -65,7 +65,7 @@ def department(request, slug):
     # folder = request.GET.get("folder")
     path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], slug)
     contents =os.listdir(path)    
-    print(contents)
+    return HttpResponse(contents)
     dep = Department.objects.filter(slug=slug).first()
     context = {
         # 'data':subfolders,
