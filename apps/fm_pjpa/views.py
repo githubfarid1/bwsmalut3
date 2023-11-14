@@ -243,31 +243,34 @@ def get_fileinfo(filepath):
     
     mime_type, encoding = mimetypes.guess_type(filepath)
     # print(mime_type)
-    if 'pdf' in mime_type:
-        filemime, filetype = 'pdf.png', 'PDF'
-    elif 'excel' in mime_type:
-        filemime, filetype = 'excel.png', 'Excel'
-    elif 'sheet' in mime_type:
-        filemime, filetype = 'excel.png', 'Excel'
-    elif 'png' in mime_type:
-        filemime, filetype = 'image.png', 'Image'
-    elif 'jpg' in mime_type:
-        filemime, filetype = 'image.png', 'Image'
-    elif 'jpeg' in mime_type:
-        filemime, filetype = 'image.png', 'Image'
-    elif 'mp3' in mime_type:
-        filemime, filetype = 'sound.png', 'Image'
-    elif 'video' in mime_type:
-        filemime, filetype = 'video.png', 'Video'
-    elif 'powerpoint' in mime_type:
-        filemime, filetype = 'ppt.png', 'Power Point'
-    elif 'wordprocessingml' in mime_type:
-        filemime, filetype = 'doc.png', 'Word'
-    elif 'msword' in mime_type:
-        filemime, filetype = 'doc.png', 'Word'
+    if mime_type != None:
+        if 'pdf' in mime_type:
+            filemime, filetype = 'pdf.png', 'PDF'
+        elif 'excel' in mime_type:
+            filemime, filetype = 'excel.png', 'Excel'
+        elif 'sheet' in mime_type:
+            filemime, filetype = 'excel.png', 'Excel'
+        elif 'png' in mime_type:
+            filemime, filetype = 'image.png', 'Image'
+        elif 'jpg' in mime_type:
+            filemime, filetype = 'image.png', 'Image'
+        elif 'jpeg' in mime_type:
+            filemime, filetype = 'image.png', 'Image'
+        elif 'mp3' in mime_type:
+            filemime, filetype = 'sound.png', 'Image'
+        elif 'video' in mime_type:
+            filemime, filetype = 'video.png', 'Video'
+        elif 'powerpoint' in mime_type:
+            filemime, filetype = 'ppt.png', 'Power Point'
+        elif 'wordprocessingml' in mime_type:
+            filemime, filetype = 'doc.png', 'Word'
+        elif 'msword' in mime_type:
+            filemime, filetype = 'doc.png', 'Word'
+        else:
+            filemime, filetype = 'unknown.png', 'Unknown'
     else:
         filemime, filetype = 'unknown.png', 'Unknown'
-        
+                
     return filemime, filesizestr, filetype, mime_type
 
 @csrf_exempt
