@@ -427,7 +427,8 @@ def showfolder(request, slug, year):
         else:
             data.append({
                 'name': file,
-                'type': 'folder'
+                'type': 'folder',
+                'link': os.path.join(folder, file)
             })
             
     context = {
