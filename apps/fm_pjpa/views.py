@@ -411,4 +411,24 @@ def showfolder(request, slug, year):
     folder = request.GET.get("folder")
     path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], slug, year, folder)
     contents =os.listdir(path)
-    return HttpResponse(contents)
+    data = []
+    for file in contents:
+        if os.path.isfile(os.path.join(path, file)):
+            fileinfo = get_fileinfo(os.path.isfile(os.path.join(path, file)))
+            data.append({
+                'name': file,
+                'type': 'file',
+                'fileinfo': fileinfo
+            })
+        else:
+            data.append({
+                'name': file,
+                'type': 'folder'
+            })
+            
+    context = {
+        'data': data,
+        'slug': slug,
+        'year': year,
+    }
+    return render(request=request, template_name='fm_pjpa/showfolder.html', context=context)
