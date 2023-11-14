@@ -463,6 +463,7 @@ def showfolder(request, slug, year):
         'depname':dep.name,
         'depslug': slug,
         'breadcrumbs': build_breadcrumbs(folder),
+        'folder': folder,
         # 'folderlist': folderlist
     }
     return render(request=request, template_name='fm_pjpa/showfolder.html', context=context)
