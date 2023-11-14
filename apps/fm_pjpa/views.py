@@ -407,6 +407,21 @@ def tagged(request, slug):
 def page_404(request):
     return render(request, 'fm_pjpa/page_404.html', {})
 
+def build_breadcrumbs(url):
+    folderlist = str(url).split("/")
+    result = []
+    maxcount = len(folderlist)
+    for idx, folder in enumerate(folderlist):
+        tmpl = []
+        for i in range(0, idx+1):
+            tmpl.append(folderlist[i])
+        mdict = {
+            'label': folder,
+            'link': '/'.join(tmpl),
+        }
+        result.append(mdict)
+    return result
+
 def showfolder(request, slug, year):
     folder = request.GET.get("folder")
     folderlist = str(folder).split("/")
@@ -441,7 +456,7 @@ def showfolder(request, slug, year):
         'year': year,
         'depname':dep.name,
         'depslug': slug,
-        'curfolder': curfolder,
-        'folderlist': folderlist
+        'breadcrumbs': build_breadcrumbs(folder),
+        # 'folderlist': folderlist
     }
     return render(request=request, template_name='fm_pjpa/showfolder.html', context=context)
