@@ -74,7 +74,7 @@
             <div class="card border-primary mb-3">
                 <div class="row no-gutters px-3 py-2">
                     <div class="col-sm-12 mt-3 text-center">
-                        <a href="" download="" target="_new"><img class="card-img border" src="{% static d.icon_location %}" alt=""></a>
+                        <a href="{% url 'fm_pjpa_download' slug year folder d.name %}" download="{% url 'fm_pjpa_download' slug year folder d.name %}" target="_new"><img class="card-img border" src="{% static d.icon_location %}" alt=""></a>
                     </div>
                     <div class="col-sm-12 mt-3 text-center">
                         <p>{{ d.name}}</p>

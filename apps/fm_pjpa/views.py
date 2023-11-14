@@ -444,7 +444,9 @@ def showfolder(request, slug, year):
                 'icon_location': icon_location,
                 'filesize': filesize,
                 'filetype': filetype,
-                'mimetype': mime_type
+                'mimetype': mime_type,
+                'folder': folder,
+                
             })
         else:
             data.append({
@@ -464,3 +466,19 @@ def showfolder(request, slug, year):
         # 'folderlist': folderlist
     }
     return render(request=request, template_name='fm_pjpa/showfolder.html', context=context)
+
+
+@csrf_exempt
+def download(request, slug, year, folder, filename):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], slug, year, folder, filename)
+    # return HttpResponse(path)
+    if exists(path):
+        mime_type, encoding = mimetypes.guess_type(path)
+        # return HttpResponse(mime_type)
+        with open(path, 'rb') as pdf:
+            response = HttpResponse(pdf.read(), content_type=f'{mime_type}')
+            response['Content-Disposition'] = f'inline;filename={filename}'
+            return response
+    raise Http404
