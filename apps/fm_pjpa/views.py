@@ -456,10 +456,13 @@ def showfolder(request, slug, year):
                 
             })
         else:
+            mtime = os.path.getmtime(os.path.join(path, file))
             data.append({
                 'name': file,
                 'type': 'folder',
-                'link': os.path.join(folder, file)
+                'link': os.path.join(folder, file),
+                'mtime': datetime.fromtimestamp(mtime),
+                
             })
     
     dep = Department.objects.get(slug=slug)        
