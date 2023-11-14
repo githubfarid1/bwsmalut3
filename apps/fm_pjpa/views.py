@@ -65,12 +65,12 @@ def department(request, slug):
     # folder = request.GET.get("folder")
     path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], slug)
     contents =os.listdir(path)    
-    return HttpResponse(contents)
-    dep = Department.objects.filter(slug=slug).first()
+    # return HttpResponse(contents)
+    # dep = Department.objects.filter(slug=slug).first()
     context = {
         # 'data':subfolders,
-        "years": getmenu_year(dep.id),
-        'depname':dep.name,
+        "years": contents,
+        # 'depname':dep.name,
         'slug': slug,
     }
     return render(request=request, template_name='fm_pjpa/department.html', context=context)
