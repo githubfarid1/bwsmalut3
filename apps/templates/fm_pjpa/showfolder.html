@@ -32,7 +32,7 @@
     {% if bread.link != '' %}
     &#62;&#62; <a class="btn btn-warning mb-2" href="{% url 'fm_pjpa_showfolder' slug year %}?folder={{bread.link}}"> {{ bread.label }}</a>
     {% else %}
-    &#62;&#62;  {{ bread.label }}    
+    &#62;&#62;  <div class=class="btn mb-2">{{ bread.label }}</div>    
     {% endif %}
    {% endfor %}
    </p>
