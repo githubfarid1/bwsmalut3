@@ -30,7 +30,7 @@
   <h5 class="text-left"><a class="btn btn-lg btn-warning" href="{% url 'fm_pjpa_department_list' %}">SATKER PJPA</a> &#62;&#62; <a class="btn btn-lg btn-warning" href={% url 'fm_pjpa_department' slug %}>{{ depname }}</a> &#62;&#62; {{ year }}</h5>
   {% comment %} {% include 'fm_pjpa/menu_year.html'%} {% endcomment %}
   <div class="container">
-    <h5 class="text-center">Input Folder</h5>
+    {% comment %} <h5 class="text-center">Input Folder</h5>
     <div class="row justify-content-center">
           <div class="col-lg-6 col-md-8 col-sm-12">  
               <form action="" method="post">
@@ -39,7 +39,7 @@
                   <button type="submit" class="btn btn-primary">Save</button>
               </form>
           </div>
-      </div>
+      </div> {% endcomment %}
   </div>
 
   {% if data %}
