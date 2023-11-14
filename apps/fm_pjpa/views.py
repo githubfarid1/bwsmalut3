@@ -422,6 +422,7 @@ def showfolder(request, slug, year):
                 'icon_location': icon_location,
                 'filesize': filesize,
                 'filetype': filetype,
+                'mimetype': mime_type
             })
         else:
             data.append({
