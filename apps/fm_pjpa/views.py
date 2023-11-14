@@ -414,11 +414,14 @@ def showfolder(request, slug, year):
     data = []
     for file in contents:
         if os.path.isfile(os.path.join(path, file)):
-            fileinfo = get_fileinfo(os.path.join(path, file))
+            filemime, filesize, filetype, mime_type = get_fileinfo(os.path.join(path, file))
+            icon_location = os.path.join('assets/filetypes', filemime)
             data.append({
                 'name': file,
                 'type': 'file',
-                'fileinfo': fileinfo
+                'icon_location': icon_location,
+                'filesize': filesize,
+                'filetype': filetype,
             })
         else:
             data.append({
