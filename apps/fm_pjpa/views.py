@@ -70,7 +70,7 @@ def department(request, slug):
     context = {
         # 'data':subfolders,
         "years": contents,
-        # 'depname':dep.name,
+        'depname':dep.name,
         'slug': slug,
     }
     return render(request=request, template_name='fm_pjpa/department.html', context=context)
