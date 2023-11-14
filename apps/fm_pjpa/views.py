@@ -142,7 +142,7 @@ def department_year(request, slug, year):
 
     # form = SubfolderForm()
     # folder = request.GET.get("folder")
-    path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder)
+    path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], depfolder, year)
     contents =os.listdir(path)    
     
     context = {
