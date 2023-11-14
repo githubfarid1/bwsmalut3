@@ -409,6 +409,9 @@ def page_404(request):
 
 def showfolder(request, slug, year):
     folder = request.GET.get("folder")
+    folderlist = str(folder).split("/")
+    curfolder = folderlist[0]
+    folderlist.pop(0)
     path = os.path.join(settings.FM_LOCATION, __package__.split('.')[1], slug, year, folder)
     contents =os.listdir(path)
     data = []
@@ -438,6 +441,7 @@ def showfolder(request, slug, year):
         'year': year,
         'depname':dep.name,
         'depslug': slug,
-        
+        'curfolder': curfolder,
+        'folderlist': folderlist
     }
     return render(request=request, template_name='fm_pjpa/showfolder.html', context=context)
