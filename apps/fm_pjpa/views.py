@@ -309,7 +309,6 @@ def showfolder(request, slug, year):
         'deplisturl': 'fm_pjpa_department_list',
         'showfolderurl': 'fm_pjpa_showfolder',
         'downloadurl': 'fm_pjpa_download',
-        'depyearurl': 'fm_pjpa_department_year',
     }
     return render(request=request, template_name='file_manager/showfolder.html', context=context)
 
