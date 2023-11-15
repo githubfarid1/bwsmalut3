@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class FmPjsaConfig(AppConfig):
+class FmPjpaConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.fm_opsda'
+    name = 'apps.fm_pjpa'
