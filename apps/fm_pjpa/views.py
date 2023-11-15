@@ -57,7 +57,7 @@ def department(request, slug):
         "years": contents,
         'depname':dep.name,
         'slug': slug,
-        'satkername': 'PJPA',
+        'satkername': 'PJPAx',
         'depurl': 'fm_pjpa_department',
         'deplisturl': 'fm_pjpa_department_list',
         'depyearurl': 'fm_pjpa_department_year',
